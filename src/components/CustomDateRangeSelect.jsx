@@ -8,7 +8,7 @@ function CustomDateRangeSelect({ options, initialValue, onSelect, iconProps }) {
     const dropdownRef = useRef(null);
 
     const selectedTextColor = selectedValue === initialValue 
-        ? 'text-slate-600 dark:text-slate-500' // Placeholder color
+        ? 'text-slate-600 dark:text-slate-300' // Placeholder color
         : 'text-slate-500 dark:text-white';   // Selected value color
 
     // Handle clicks outside the component to close the dropdown
