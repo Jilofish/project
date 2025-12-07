@@ -28,20 +28,20 @@ function App() {
     <Routes>
       <Route path="/" element={<MainLayout />}>
         {/* Dashboard */}
-        <Route index element={<DashboardPage />} />
+        <Route path="" element={<DashboardPage />} />
 
         {/* Purchasing */}
-        <Route path="createPurchase" element={<CreatePurchase />} />
-        <Route path="supplierList" element={<SupplierList />} />
-        <Route path="receivedItems" element={<ReceivedItems />} />
+        <Route path="purchasing/createpurchase" element={<CreatePurchase />} />
+        <Route path="purchasing/supplierlist" element={<SupplierList />} />
+        <Route path="purchasing/receiveditems" element={<ReceivedItems />} />
 
         {/* Sales */}
-        <Route path="createSalesInvoice" element={<CreateSalesInvoice />} />
-        <Route path="customerList" element={<CustomerList />} />
+        <Route path="sales/createSalesInvoice" element={<CreateSalesInvoice />} />
+        <Route path="sales/customerList" element={<CustomerList />} />
 
         {/* Inventory */}
-        <Route path="stockManagement" element={<StockManagement />} />
-        <Route path="inventoryCounting" element={<InventoryCounting />} />
+        <Route path="inventory/stockManagement" element={<StockManagement />} />
+        <Route path="inventory/inventoryCounting" element={<InventoryCounting />} />
 
         {/* Single Pages */}
         <Route path="reports" element={<Reports />} />
