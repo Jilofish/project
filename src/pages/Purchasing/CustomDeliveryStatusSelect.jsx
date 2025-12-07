@@ -34,12 +34,12 @@ function CustomDeliveryStatusSelect({ options, initialValue, onSelect, iconProps
     return (
         <div 
             ref={dropdownRef} 
-            className="relative py-1 px-3 bg-slate-300/10 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg transition-all"
+            className="relative py-1 px-3 bg-slate-300/30 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg transition-all"
         >
             <button
                 type="button"
                 // Adjusted width to 'w-32' for status names, matching original code structure
-                className={`w-32 bg-transparent focus:outline-none hover:cursor-pointer flex items-center justify-between ${selectedTextColor}`}
+                className={`w-30 bg-transparent focus:outline-none hover:cursor-pointer flex items-center justify-between ${selectedTextColor}`}
                 onClick={() => setIsOpen(!isOpen)}
                 aria-expanded={isOpen}
                 aria-haspopup="listbox"
@@ -47,7 +47,7 @@ function CustomDeliveryStatusSelect({ options, initialValue, onSelect, iconProps
                 <span className="text-sm">{selectedValue}</span>
                 <ArrowDownWideNarrow
                     {...iconProps}
-                    className={`${iconProps.className} ml-2`} 
+                    className={`${iconProps.className} ml-2 top-[-6] transform -translate-y-[-1px]`} 
                 />
             </button>
             {isOpen && (
