@@ -1,44 +1,358 @@
-import React from 'react'
+import React, { useState, useMemo } from 'react';
+
 import PurchasedStatsGrid from './PurchasedStatsGrid';
 import PurchasedOrdersTableHeader from './PurchasedOrdersTableHeader';
 import PurchasedOrdersTable from './PurchasedOrdersTable';
 import RowLimiter from '../../components/filter/RowLimiter';
 import TablePagination from '../../components/pagination/TablePagination';
 
-function CreatePurchase() {
-  const iconProps = {
-    className: 'w-4 h-4 text-slate-500 dark:text-slate-500',
-  };
+const ALL_OPTION = 'All';
 
-    // --- DATA FOR ALL FILTERS ---
-  const RowOptions = ['5', '15', '20'];
-  const HandleRowLimitChange = (newValue) => {
-    console.log('Row limiter value changed:', newValue);
-  };
+const PurchasedOrdersData = [
+  {
+    PO: 'PO-123456',
+    supplier: 'Earl Meats',
+    transactionDate: 'Sep 21, 2025',
+    deliveryDate: 'Sep 25, 2025',
+    total: '$1,234.56',
+    approvalStatus: 'Pending',
+    deliveryStatus: 'Out for Delivery',
+    paymentStatus: 'N/A',
+    remarks: 'Chicken Restock',
+  },
+  {
+    PO: 'PO-135790',
+    supplier: 'Javier Meats',
+    transactionDate: 'Sep 12, 2025',
+    deliveryDate: 'Sep 20, 2025',
+    total: '$1,900.25',
+    approvalStatus: 'Approved',
+    deliveryStatus: 'Delivered',
+    paymentStatus: 'Paid',
+    remarks: 'Beef Jowls x10',
+  },
+  {
+    PO: 'PO-24681',
+    supplier: 'Betez Trading',
+    transactionDate: 'Sep 11, 2025',
+    deliveryDate: 'Sep 19, 2025',
+    total: '$2,100.15',
+    approvalStatus: 'Rejected',
+    deliveryStatus: 'Order Placed',
+    paymentStatus: 'Unpaid',
+    remarks: 'Supply for Saog',
+  },
+  {
+    PO: "PO-987654",
+    supplier: "Global Foods Inc.",
+    transactionDate: "Dec 05, 2025",
+    deliveryDate: "Dec 10, 2025",
+    total: "$5,432.10",
+    approvalStatus: "Approved",
+    deliveryStatus: "Delivered",
+    paymentStatus: "Paid",
+    remarks: "Urgent shipment of grain"
+  },
+  {
+    PO: "PO-001122",
+    supplier: "Reyes Farms",
+    transactionDate: "Nov 28, 2025",
+    deliveryDate: "Dec 01, 2025",
+    total: "$850.75",
+    approvalStatus: "Pending",
+    deliveryStatus: "Out for Delivery",
+    paymentStatus: "N/A",
+    remarks: "Fruit and vegetable stock"
+  },
+  {
+        PO: "PO-765432",
+        supplier: "Fresh Produce Co.",
+        transactionDate: "Dec 09, 2025",
+        deliveryDate: "Dec 11, 2025",
+        total: "$450.00",
+        approvalStatus: "Pending",
+        deliveryStatus: "Order Placed",
+        paymentStatus: "Unpaid",
+        remarks: "Urgent lettuce and tomato order"
+    },
+    {
+        PO: "PO-981234",
+        supplier: "Betez Trading",
+        transactionDate: "Nov 30, 2025",
+        deliveryDate: "Dec 05, 2025",
+        total: "$1,999.99",
+        approvalStatus: "Approved",
+        deliveryStatus: "Delivered",
+        paymentStatus: "Paid",
+        remarks: "Kitchen equipment maintenance parts"
+    },
+    {
+        PO: "PO-345678",
+        supplier: "Central Dairy Inc.",
+        transactionDate: "Dec 02, 2025",
+        deliveryDate: "Dec 02, 2025",
+        total: "$675.30",
+        approvalStatus: "Approved",
+        deliveryStatus: "Out for Delivery",
+        paymentStatus: "N/A",
+        remarks: "Milk and cheese rush order"
+    },
+    {
+        PO: "PO-210987",
+        supplier: "Earl Meats",
+        transactionDate: "Oct 15, 2025",
+        deliveryDate: "Oct 20, 2025",
+        total: "$5,200.70",
+        approvalStatus: "Rejected",
+        deliveryStatus: "Delivered",
+        paymentStatus: "Unpaid",
+        remarks: "Order rejected due to quality issue"
+    },
+    {
+        PO: "PO-556677",
+        supplier: "Global Foods Inc.",
+        transactionDate: "Nov 18, 2025",
+        deliveryDate: "Nov 23, 2025",
+        total: "$1,250.40",
+        approvalStatus: "Pending",
+        deliveryStatus: "Order Placed",
+        paymentStatus: "Paid",
+        remarks: "Canned goods restock"
+    },
+    {
+        PO: "PO-112233",
+        supplier: "Javier Meats",
+        transactionDate: "Dec 06, 2025",
+        deliveryDate: "Dec 10, 2025",
+        total: "$3,800.10",
+        approvalStatus: "Approved",
+        deliveryStatus: "Out for Delivery",
+        paymentStatus: "N/A",
+        remarks: "Holiday beef tenderloin order"
+    },
+    {
+        PO: "PO-889900",
+        supplier: "Reyes Farms",
+        transactionDate: "Oct 25, 2025",
+        deliveryDate: "Oct 28, 2025",
+        total: "$580.95",
+        approvalStatus: "Approved",
+        deliveryStatus: "Delivered",
+        paymentStatus: "Paid",
+        remarks: "Seasonal squash and pumpkin"
+    },
+    {
+        PO: "PO-404040",
+        supplier: "Fresh Produce Co.",
+        transactionDate: "Nov 01, 2025",
+        deliveryDate: "Nov 03, 2025",
+        total: "$710.25",
+        approvalStatus: "Pending",
+        deliveryStatus: "Out for Delivery",
+        paymentStatus: "Unpaid",
+        remarks: "Weekly fruit basket delivery"
+    },
+    {
+        PO: "PO-606060",
+        supplier: "Central Dairy Inc.",
+        transactionDate: "Sep 05, 2025",
+        deliveryDate: "Sep 07, 2025",
+        total: "$990.00",
+        approvalStatus: "Rejected",
+        deliveryStatus: "Order Placed",
+        paymentStatus: "N/A",
+        remarks: "Cream shortage notification"
+    },
+    {
+        PO: "PO-707070",
+        supplier: "Earl Meats",
+        transactionDate: "Dec 07, 2025",
+        deliveryDate: "Dec 07, 2025",
+        total: "$2,150.00",
+        approvalStatus: "Approved",
+        deliveryStatus: "Delivered",
+        paymentStatus: "Paid",
+        remarks: "Last minute catering order"
+    }
+];
+
+// --- DATE HELPER FUNCTIONS ---
+const parseDate = (dateString) => {
+  return new Date(dateString); 
+};
+
+const isDateInRange = (transactionDateString, startDate, endDate) => {
+  const transactionDate = parseDate(transactionDateString);
   
+  transactionDate.setHours(0, 0, 0, 0); 
+  startDate.setHours(0, 0, 0, 0); 
+  endDate.setHours(23, 59, 59, 999); 
+
+  return transactionDate >= startDate && transactionDate <= endDate;
+};
+// ------------------------------
+
+function CreatePurchase() {
+    const iconProps = {
+        className: 'w-4 h-4 text-slate-500 dark:text-slate-500',
+    };
+
+    // --- DYNAMIC OPTION GENERATION (Explicitly uses ALL_OPTION) ---
+    const extractUniqueOptions = (key, placeholder) => {
+        const uniqueValues = [...new Set(PurchasedOrdersData.map(order => order[key]))];
+        return [placeholder, ALL_OPTION, ...uniqueValues.sort()];
+    };
+
+    const rowLimitOptions = [5, 10, 15]; 
+    
+    const dateRangeOptions = ['Date Range', ALL_OPTION, 'Today', 'Last 7 Days', 'Last 30 Days'];
+    
+    const supplierOptions = extractUniqueOptions('supplier', 'Supplier');
+    const deliveryOptions = extractUniqueOptions('deliveryStatus', 'Delivery Status');
+    const paymentOptions = extractUniqueOptions('paymentStatus', 'Payment Status');
+
+    //the placeholder
+    const initialRowLimit = rowLimitOptions[0];
+    const initialDateRange = dateRangeOptions[0];
+    const initialSupplier = supplierOptions[0];
+    const initialDeliveryStatus = deliveryOptions[0];
+    const initialPaymentStatus = paymentOptions[0];
+
+    // --- STATE MANAGEMENT ---
+    const [rowLimit, setRowLimit] = useState(initialRowLimit);
+    const [dateRangeFilter, setDateRangeFilter] = useState(initialDateRange);
+    const [supplierFilter, setSupplierFilter] = useState(initialSupplier);
+    const [deliveryStatusFilter, setDeliveryStatusFilter] = useState(initialDeliveryStatus);
+    const [paymentStatusFilter, setPaymentStatusFilter] = useState(initialPaymentStatus);
+    const [currentPage, setCurrentPage] = useState(1);
+
+    // --- HANDLER FUNCTIONS ---
+    const handleRowLimitChange = (newValue) => {
+        setRowLimit(parseInt(newValue));
+        setCurrentPage(1); 
+    };
+
+    const handleDateRangeChange = (newValue) => {
+        setDateRangeFilter(newValue);
+        setCurrentPage(1);
+    };
+
+    const handleSupplierChange = (newValue) => {
+        setSupplierFilter(newValue);
+        setCurrentPage(1);
+    };
+
+    const handleDeliveryChange = (newValue) => {
+        setDeliveryStatusFilter(newValue);
+        setCurrentPage(1);
+    };
+
+    const handlePaymentChange = (newValue) => {
+        setPaymentStatusFilter(newValue);
+        setCurrentPage(1);
+    };
+
+    // --- FILTERING LOGIC ---
+    const filteredOrders = useMemo(() => {
+      let filtered = PurchasedOrdersData;
+      
+      // 1. Date Range Filter
+      // Only apply if the value is NOT the placeholder AND NOT 'All'
+      if (dateRangeFilter !== initialDateRange && dateRangeFilter !== ALL_OPTION) {
+        const today = new Date();
+        let startDate = new Date(0); 
+
+        switch (dateRangeFilter) {
+          case 'Today':
+              startDate = today; 
+              break;
+          case 'Last 7 Days':
+              startDate = new Date(today);
+              startDate.setDate(today.getDate() - 7);
+              break;
+          case 'Last 30 Days':
+              startDate = new Date(today);
+              startDate.setDate(today.getDate() - 30);
+              break;
+        }
+
+        filtered = filtered.filter(order => 
+            isDateInRange(order.transactionDate, startDate, today)
+        );
+      }
+
+      // Supplier Filter
+      if (supplierFilter !== initialSupplier && supplierFilter !== ALL_OPTION) {
+          filtered = filtered.filter(order => order.supplier === supplierFilter);
+      }
+
+      // Delivery Status Filter
+      if (deliveryStatusFilter !== initialDeliveryStatus && deliveryStatusFilter !== ALL_OPTION) {
+          filtered = filtered.filter(order => order.deliveryStatus === deliveryStatusFilter);
+      }
+
+      // Payment Status Filter
+      if (paymentStatusFilter !== initialPaymentStatus && paymentStatusFilter !== ALL_OPTION) {
+          filtered = filtered.filter(order => order.paymentStatus === paymentStatusFilter);
+      }
+        
+        return filtered;
+    }, [dateRangeFilter, supplierFilter, deliveryStatusFilter, paymentStatusFilter, initialDateRange, initialSupplier, initialDeliveryStatus, initialPaymentStatus]); 
+
+    // --- Pagination Logic ---
+    const totalOrders = filteredOrders.length;
+    const totalPages = Math.ceil(totalOrders / rowLimit);
+    
+    const paginatedOrders = useMemo(() => {
+        const startIndex = (currentPage - 1) * rowLimit;
+        const endIndex = startIndex + rowLimit;
+        return filteredOrders.slice(startIndex, endIndex);
+    }, [filteredOrders, rowLimit, currentPage]);
+
+
   return (
     <div>
-      {/* Stats Grid */}
       <PurchasedStatsGrid/>
 
       <div className = "bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl rounded-2xl py-2 px-5 border border-slate-200/50 dark:border-slate-700/50">
-        {/* Filters Section */}
-        <PurchasedOrdersTableHeader/>
+          
+        <PurchasedOrdersTableHeader
+            dateRangeOptions={dateRangeOptions}
+            supplierOptions={supplierOptions}
+            deliveryOptions={deliveryOptions}
+            paymentOptions={paymentOptions}
+            
+            currentDateRange={dateRangeFilter}
+            currentSupplier={supplierFilter}
+            currentDeliveryStatus={deliveryStatusFilter}
+            currentPaymentStatus={paymentStatusFilter}
 
-        <PurchasedOrdersTable/>
-
-        <div class = "flex items-center justify-between mb-3">
-          <RowLimiter
-            options={RowOptions}
-            initialValue={RowOptions[0]}
-            onSelect={HandleRowLimitChange}
+            handleDateRangeChange={handleDateRangeChange}
+            handleSupplierChange={handleSupplierChange}
+            handleDeliveryChange={handleDeliveryChange}
+            handlePaymentChange={handlePaymentChange}
+            
             iconProps={iconProps}
-          />
-          <TablePagination/>
+        />
+
+        <PurchasedOrdersTable orders={paginatedOrders} />
+
+        <div className = "flex items-center justify-between mb-3">
+            <RowLimiter
+                options={rowLimitOptions}
+                initialValue={rowLimit.toString()}
+                onSelect={handleRowLimitChange}
+                iconProps={iconProps}
+            />
+            <TablePagination
+                totalPages={totalPages}
+                currentPage={currentPage}
+                onPageChange={setCurrentPage}
+            />
         </div>
       </div>
     </div>
-  )
+  );
 }
 
 export default CreatePurchase;

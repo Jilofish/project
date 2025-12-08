@@ -1,44 +1,9 @@
 import React from 'react';
-// Assuming MoreHorizontal is imported from lucide-react or similar
 import { MoreHorizontal } from 'lucide-react'; 
 
-const PurchasedOrders = [
-  {
-    PO: 'PO-123456',
-    supplier: 'Earl Meats',
-    transactionDate: 'Sep 21, 2025',
-    deliveryDate: 'Sep 25, 2025',
-    total: '$1,234.56',
-    approvalStatus: 'Pending',
-    deliveryStatus: 'Out for Delivery',
-    paymentStatus: 'N/A',
-    remarks: 'Chicken Restock',
-  },
-  {
-    PO: 'PO-135790',
-    supplier: 'Javier Meats',
-    transactionDate: 'Sep 12, 2025',
-    deliveryDate: 'Sep 20, 2025',
-    total: '$1,900.25',
-    approvalStatus: 'Approved',
-    deliveryStatus: 'Delivered',
-    paymentStatus: 'Paid',
-    remarks: 'Beef Jowls x10',
-  },
-  {
-    PO: 'PO-24681',
-    supplier: 'Betez Trading',
-    transactionDate: 'Sep 11, 2025',
-    deliveryDate: 'Sep 19, 2025',
-    total: '$2,100.15',
-    approvalStatus: 'Rejected',
-    deliveryStatus: 'Order Placed',
-    paymentStatus: 'Unpaid',
-    remarks: 'Supply for Saog',
-  }
-];
-
-function PurchasedOrdersTable() {
+function PurchasedOrdersTable({ orders }) {
+    // NOTE: The static PurchasedOrders data is removed and now received via the 'orders' prop.
+    
     const getApprovalStatusColor = (approvalStatus) => {
         switch (approvalStatus) {
             case "Approved":
@@ -89,13 +54,13 @@ function PurchasedOrdersTable() {
                     <th className="text-left p-4 text-sm font-semibold text-slate-600 dark:text-slate-200">Total</th>
                     <th className="text-left p-4 text-sm font-semibold text-slate-600 dark:text-slate-200">Approval Status</th>
                     <th className="text-left p-4 text-sm font-semibold text-slate-600 dark:text-slate-200">Delivery Status</th>
-                    <th className="text-left p-4 text-sm font-semibold text-slate-600 dark:text-slate-200">Payment Status</th> {/* Added Payment Status header */}
+                    <th className="text-left p-4 text-sm font-semibold text-slate-600 dark:text-slate-200">Payment Status</th>
                     <th className="text-left p-4 text-sm font-semibold text-slate-600 dark:text-slate-200">Remarks</th> 
-                    <th className="text-left p-4 text-sm font-semibold text-slate-600 dark:text-slate-200">Actions</th> {/* Header for the icon */}
+                    <th className="text-left p-4 text-sm font-semibold text-slate-600 dark:text-slate-200">Actions</th>
                 </tr>
                 </thead>
                 <tbody>
-                  {PurchasedOrders.map((order, index) => {
+                  {orders.map((order, index) => {
                     return (
                       <tr key={order.PO} className="border-b border-slate-200/50 dark:border-slate-700/50 hover:bg-slate-50/50 dark:hover:bg-slate-800/50 transition-colors">
                         <td className="p-4" key={index}>
@@ -113,41 +78,41 @@ function PurchasedOrdersTable() {
                             {order.transactionDate}
                           </span>
                         </td>
-                        <td className="p-4"> {/* FIX: Was showing deliveryDate, changed to total */}
+                        <td className="p-4">
                           <span className="text-sm text-slate-800 dark:text-white">
                             {order.total} 
                           </span>
                         </td>
                         <td className="p-4">
                           <span className={`font-medium text-xs px-3 py-1 rounded-full ${getApprovalStatusColor(order.approvalStatus)}`}> 
-                            {order.approvalStatus} {/* FIX: Added order.approvalStatus to function call and text display */}
+                            {order.approvalStatus}
                           </span>
                         </td>
                         <td className="p-4">
                           <span className={`font-medium text-xs px-3 py-1 rounded-full ${getDeliveryStatusColor(order.deliveryStatus)}`}>
-                            {order.deliveryStatus} {/* FIX: Added function call and text display */}
+                            {order.deliveryStatus}
                           </span>
                         </td>
                         <td className="p-4">
                           <span className={`font-medium text-xs px-3 py-1 rounded-full ${getPaymentStatusColor(order.paymentStatus)}`}>
-                            {order.paymentStatus} {/* FIX: Added function call and text display */}
+                            {order.paymentStatus}
                           </span>
                         </td>
                         <td className="p-4"> 
                             <span className="text-sm text-slate-800 dark:text-white">
-                                {order.remarks} {/* FIX: Added Remarks column */}
+                                {order.remarks}
                             </span>
                         </td>
                         <td className="p-4"> 
                           <span className="text-sm text-slate-800 dark:text-white">
-                            <MoreHorizontal className="w-4 h-4"/> {/* Actions column for the icon */}
+                            <MoreHorizontal className="w-4 h-4"/>
                           </span>
                         </td>
                       </tr>
                     );
                   })}
                 </tbody>
-          </table>
+            </table>
         </div>
     );
 }

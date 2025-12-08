@@ -6,30 +6,14 @@ import CustomSupplierSelect from '../../components/filter/CustomSupplierSelect';
 import CustomDeliveryStatusSelect from '../../components/filter/CustomDeliveryStatusSelect'; 
 import CustomPaymentStatusSelect from '../../components/filter/CustomPaymentStatusSelect'; 
 
-function PurchasedOrdersTableHeader() {
+function PurchasedOrdersTableHeader({
+    dateRangeOptions, supplierOptions, deliveryOptions, paymentOptions,
+    currentDateRange, currentSupplier, currentDeliveryStatus, currentPaymentStatus,
+    handleDateRangeChange, handleSupplierChange, handleDeliveryChange, handlePaymentChange,
+    iconProps
+}) {
     
-    const iconProps = {
-        className: 'w-4 h-4 text-slate-500 dark:text-slate-500',
-    };
-
-    // --- DATA FOR ALL FILTERS ---
-    const dateRangeOptions = ['Date Range', 'Today', 'Last 7 Days', 'Last 30 Days'];
-    const supplierOptions = ['Supplier', 'Earl Meats', 'Javier Meats', 'Betez Trading'];
-    const deliveryOptions = ['Delivery Status', 'Delivered', 'Out for Delivery', 'Order Placed'];
-    const paymentOptions = ['Payment Status', 'Paid', 'Unpaid', 'N/A'];
-
-    const handleDateRangeChange = (newValue) => {
-        console.log('Date Range Filter Applied:', newValue);
-    };
-    const handleSupplierChange = (newValue) => {
-        console.log('Supplier Filter Applied:', newValue);
-    };
-    const handleDeliveryChange = (newValue) => {
-        console.log('Delivery Status Filter Applied:', newValue);
-    };
-    const handlePaymentChange = (newValue) => {
-        console.log('Payment Status Filter Applied:', newValue);
-    };
+    // NOTE: Handlers and options are now props, removed local definitions.
     
     return (
         <div className="flex items-center justify-between">
@@ -38,34 +22,34 @@ function PurchasedOrdersTableHeader() {
             <div className="flex items-center justify-end gap-12">
                 <div className="flex items-center gap-3 py-2">
                     
-                    {/* 1. Date Range Filter (w-28) */}
+                    {/* 1. Date Range Filter */}
                     <CustomDateRangeSelect
                         options={dateRangeOptions}
-                        initialValue={dateRangeOptions[0]}
+                        initialValue={currentDateRange}
                         onSelect={handleDateRangeChange}
                         iconProps={iconProps}
                     />
                     
-                    {/* 2. Supplier Filter (w-22) */}
+                    {/* 2. Supplier Filter */}
                     <CustomSupplierSelect
                         options={supplierOptions}
-                        initialValue={supplierOptions[0]}
+                        initialValue={currentSupplier}
                         onSelect={handleSupplierChange}
                         iconProps={iconProps}
                     />
 
-                    {/* 3. Delivery Status Filter (w-32) */}
+                    {/* 3. Delivery Status Filter */}
                     <CustomDeliveryStatusSelect
                         options={deliveryOptions}
-                        initialValue={deliveryOptions[0]}
+                        initialValue={currentDeliveryStatus}
                         onSelect={handleDeliveryChange}
                         iconProps={iconProps}
                     />
 
-                    {/* 4. Payment Status Filter (w-32) */}
+                    {/* 4. Payment Status Filter */}
                     <CustomPaymentStatusSelect
                         options={paymentOptions}
-                        initialValue={paymentOptions[0]}
+                        initialValue={currentPaymentStatus}
                         onSelect={handlePaymentChange}
                         iconProps={iconProps}
                     />
