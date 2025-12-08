@@ -1,5 +1,6 @@
 import React, { useState, useMemo } from 'react';
 
+import ReceivedStatsGrid from './ReceivedStatsGrid';
 import ReceivedItemsTableHeader from './ReceivedItemsTableHeader';
 import ReceivedItemsTable from './ReceivedItemsTable';
 import RowLimiter from '../../components/filter/RowLimiter';
@@ -177,38 +178,41 @@ function ReceivedItems() {
 
 
   return (
-    <div className = "bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl rounded-2xl py-2 px-5 border border-slate-200/50 dark:border-slate-700/50">
-        
-      <ReceivedItemsTableHeader
-          dateRangeOptions={dateRangeOptions}
-          supplierOptions={supplierOptions}
-          deliveryOptions={deliveryOptions}
-          
-          currentDateRange={dateRangeFilter}
-          currentSupplier={supplierFilter}
-          currentDeliveryStatus={deliveryStatusFilter}
+    <div>
+      <ReceivedStatsGrid/>
+      <div className = "bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl rounded-2xl py-2 px-5 border border-slate-200/50 dark:border-slate-700/50">
 
-          handleDateRangeChange={handleDateRangeChange}
-          handleSupplierChange={handleSupplierChange}
-          handleDeliveryChange={handleDeliveryChange}
-          
-          iconProps={iconProps}
-      />
+        <ReceivedItemsTableHeader
+            dateRangeOptions={dateRangeOptions}
+            supplierOptions={supplierOptions}
+            deliveryOptions={deliveryOptions}
+            
+            currentDateRange={dateRangeFilter}
+            currentSupplier={supplierFilter}
+            currentDeliveryStatus={deliveryStatusFilter}
 
-      <ReceivedItemsTable orders={paginatedOrders} />
+            handleDateRangeChange={handleDateRangeChange}
+            handleSupplierChange={handleSupplierChange}
+            handleDeliveryChange={handleDeliveryChange}
+            
+            iconProps={iconProps}
+        />
 
-      <div className = "flex items-center justify-between mb-3">
-          <RowLimiter
-              options={rowLimitOptions}
-              initialValue={rowLimit.toString()}
-              onSelect={handleRowLimitChange}
-              iconProps={iconProps}
-          />
-          <TablePagination
-              totalPages={totalPages}
-              currentPage={currentPage}
-              onPageChange={setCurrentPage}
-          />
+        <ReceivedItemsTable orders={paginatedOrders} />
+
+        <div className = "flex items-center justify-between mb-3">
+            <RowLimiter
+                options={rowLimitOptions}
+                initialValue={rowLimit.toString()}
+                onSelect={handleRowLimitChange}
+                iconProps={iconProps}
+            />
+            <TablePagination
+                totalPages={totalPages}
+                currentPage={currentPage}
+                onPageChange={setCurrentPage}
+            />
+        </div>
       </div>
     </div>
   );
