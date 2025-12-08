@@ -1,10 +1,10 @@
 import React from 'react';
 import { ArrowDownWideNarrow, Plus } from 'lucide-react';
-// Import all four custom components
-import CustomDateRangeSelect from './CustomDateRangeSelect'; 
-import CustomSupplierSelect from './CustomSupplierSelect'; 
-import CustomDeliveryStatusSelect from './CustomDeliveryStatusSelect'; 
-import CustomPaymentStatusSelect from './CustomPaymentStatusSelect'; 
+
+import CustomDateRangeSelect from '../../components/filter/CustomDateRangeSelect'; 
+import CustomSupplierSelect from '../../components/filter/CustomSupplierSelect'; 
+import CustomDeliveryStatusSelect from '../../components/filter/CustomDeliveryStatusSelect'; 
+import CustomPaymentStatusSelect from '../../components/filter/CustomPaymentStatusSelect'; 
 
 function PurchasedOrdersTableHeader() {
     

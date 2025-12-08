@@ -1,15 +1,15 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { ArrowDownWideNarrow } from 'lucide-react';
 
-function CustomPaymentStatusSelect({ options, initialValue, onSelect, iconProps }) {
+function CustomDeliveryStatusSelect({ options, initialValue, onSelect, iconProps }) {
     
     const [selectedValue, setSelectedValue] = useState(initialValue);
     const [isOpen, setIsOpen] = useState(false);
     const dropdownRef = useRef(null);
 
     const selectedTextColor = selectedValue === initialValue 
-        ? 'text-slate-600 dark:text-slate-300'
-        : 'text-slate-500 dark:text-white';   
+        ? 'text-slate-700 dark:text-slate-300'
+        : 'text-slate-700 dark:text-white';   
 
     useEffect(() => {
         const handleClickOutside = (event) => {
@@ -39,7 +39,7 @@ function CustomPaymentStatusSelect({ options, initialValue, onSelect, iconProps 
             <button
                 type="button"
                 // Adjusted width to 'w-32' for status names, matching original code structure
-                className={`w-30 bg-transparent focus:outline-none hover:cursor-pointer flex items-center justify-between ${selectedTextColor}`}
+                className={`w-32 bg-transparent focus:outline-none hover:cursor-pointer flex items-center justify-between ${selectedTextColor}`}
                 onClick={() => setIsOpen(!isOpen)}
                 aria-expanded={isOpen}
                 aria-haspopup="listbox"
@@ -72,4 +72,4 @@ function CustomPaymentStatusSelect({ options, initialValue, onSelect, iconProps 
     );
 }
 
-export default CustomPaymentStatusSelect;
+export default CustomDeliveryStatusSelect;

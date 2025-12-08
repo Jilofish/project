@@ -1,15 +1,15 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { ArrowDownWideNarrow } from 'lucide-react';
 
-function CustomSupplierSelect({ options, initialValue, onSelect, iconProps }) {
+function CustomDateRangeSelect({ options, initialValue, onSelect, iconProps }) {
     
     const [selectedValue, setSelectedValue] = useState(initialValue);
     const [isOpen, setIsOpen] = useState(false);
     const dropdownRef = useRef(null);
 
     const selectedTextColor = selectedValue === initialValue 
-        ? 'text-slate-600 dark:text-slate-300'
-        : 'text-slate-500 dark:text-white';   
+        ? 'text-slate-700 dark:text-slate-300' // Placeholder color
+        : 'text-slate-700 dark:text-white';   // Selected value color
 
     useEffect(() => {
         const handleClickOutside = (event) => {
@@ -29,6 +29,7 @@ function CustomSupplierSelect({ options, initialValue, onSelect, iconProps }) {
         setIsOpen(false);
     };
 
+    // Skip the first option (which is the placeholder) for the list of items
     const selectableOptions = options.slice(1);
 
     return (
@@ -36,10 +37,10 @@ function CustomSupplierSelect({ options, initialValue, onSelect, iconProps }) {
             ref={dropdownRef} 
             className="relative py-1 px-3 bg-slate-300/30 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg transition-all"
         >
+            {/* Display Button */}
             <button
                 type="button"
-                // Adjusted width to 'w-22' for supplier name, matching original code structure
-                className={`w-22 bg-transparent focus:outline-none hover:cursor-pointer flex items-center justify-between ${selectedTextColor}`}
+                className={`w-26 bg-transparent focus:outline-none hover:cursor-pointer flex items-center justify-between ${selectedTextColor}`}
                 onClick={() => setIsOpen(!isOpen)}
                 aria-expanded={isOpen}
                 aria-haspopup="listbox"
@@ -47,9 +48,11 @@ function CustomSupplierSelect({ options, initialValue, onSelect, iconProps }) {
                 <span className="text-sm">{selectedValue}</span>
                 <ArrowDownWideNarrow
                     {...iconProps}
-                    className={`${iconProps.className} ml-2 top-[-6] transform -translate-y-[-1px]`}
+                    className={`${iconProps.className} ml-2 top-[-6] transform -translate-y-[-1px]`} 
                 />
             </button>
+
+            {/* Dropdown Options List */}
             {isOpen && (
                 <ul
                     className="absolute z-10 top-full mt-2 w-full left-0 bg-white dark:bg-slate-700 shadow-xl rounded-lg border border-slate-300 dark:border-slate-600 overflow-hidden"
@@ -72,4 +75,4 @@ function CustomSupplierSelect({ options, initialValue, onSelect, iconProps }) {
     );
 }
 
-export default CustomSupplierSelect;
+export default CustomDateRangeSelect;

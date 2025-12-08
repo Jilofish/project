@@ -2,19 +2,19 @@ import React from 'react'
 import SupplierStatsGrid from './SupplierStatsGrid';
 import SupplierListTable from './SupplierListTable';
 import SupplierListTableHeader from './SupplierListTableHeader';
-import TablePagination from '../Purchasing/TablePagination';
-import RowLimiter from '../Purchasing/RowLimiter';
+import TablePagination from '../../components/pagination/TablePagination';
+import RowLimiter from '../../components/filter/RowLimiter';
 
 function supplierList() {
   const iconProps = {
-        className: 'w-4 h-4 text-slate-500 dark:text-slate-500',
-    };
+    className: 'w-4 h-4 text-slate-500 dark:text-slate-500',
+  };
 
     // --- DATA FOR ALL FILTERS ---
-    const RowOptions = ['5', '15', '20'];
-    const HandleRowLimitChange = (newValue) => {
-        console.log('Row limiter value changed:', newValue);
-    };
+  const RowOptions = ['5', '15', '20'];
+  const HandleRowLimitChange = (newValue) => {
+    console.log('Row limiter value changed:', newValue);
+  };
 
   return (
     <div>
@@ -24,7 +24,7 @@ function supplierList() {
         <SupplierListTableHeader/>
         <SupplierListTable/>
 
-        <div class = "flex items-center justify-between mt-4">
+        <div class = "flex items-center justify-between mb-3">
           <RowLimiter
             options={RowOptions}
             initialValue={RowOptions[0]}

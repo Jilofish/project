@@ -2,8 +2,20 @@ import React from 'react'
 import PurchasedStatsGrid from './PurchasedStatsGrid';
 import PurchasedOrdersTableHeader from './PurchasedOrdersTableHeader';
 import PurchasedOrdersTable from './PurchasedOrdersTable';
+import RowLimiter from '../../components/filter/RowLimiter';
+import TablePagination from '../../components/pagination/TablePagination';
 
 function CreatePurchase() {
+  const iconProps = {
+    className: 'w-4 h-4 text-slate-500 dark:text-slate-500',
+  };
+
+    // --- DATA FOR ALL FILTERS ---
+  const RowOptions = ['5', '15', '20'];
+  const HandleRowLimitChange = (newValue) => {
+    console.log('Row limiter value changed:', newValue);
+  };
+  
   return (
     <div>
       {/* Stats Grid */}
@@ -14,6 +26,16 @@ function CreatePurchase() {
         <PurchasedOrdersTableHeader/>
 
         <PurchasedOrdersTable/>
+
+        <div class = "flex items-center justify-between mb-3">
+          <RowLimiter
+            options={RowOptions}
+            initialValue={RowOptions[0]}
+            onSelect={HandleRowLimitChange}
+            iconProps={iconProps}
+          />
+          <TablePagination/>
+        </div>
       </div>
     </div>
   )

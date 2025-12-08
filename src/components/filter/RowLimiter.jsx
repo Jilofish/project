@@ -3,14 +3,11 @@ import { ChevronDown } from 'lucide-react';
 
 function RowLimiter({ initialLimit, onSelect, iconProps = {} }) {
     
-    // 1. Robust Icon Prop Definition: Ensures finalIconProps always has a className
-    //    This prevents the "Cannot read properties of undefined" TypeError.
     const finalIconProps = {
         className: 'w-4 h-4 text-slate-500 dark:text-slate-500', 
         ...iconProps
     };
-    
-    // 2. Updated Options: Removed 'Rows' placeholder. Options are now [5, 10, 15].
+
     const rowLimitOptions = [5, 10, 15]; 
     const initialValue = initialLimit || rowLimitOptions[0]; // Defaults to 5
 
@@ -18,8 +15,6 @@ function RowLimiter({ initialLimit, onSelect, iconProps = {} }) {
     const [isOpen, setIsOpen] = useState(false);
     const dropdownRef = useRef(null);
 
-    // 3. Removed Placeholder Text Logic: The default color is always applied 
-    //    since the selected value is always a number (5, 10, or 15).
     const selectedTextColor = 'text-slate-500 dark:text-white';  
 
     // Effect to close dropdown on outside click
@@ -46,10 +41,9 @@ function RowLimiter({ initialLimit, onSelect, iconProps = {} }) {
         setIsOpen(false);
     };
 
-    const selectableOptions = rowLimitOptions; // Use the full array
+    const selectableOptions = rowLimitOptions;
 
     return (
-        // 4. Outer Flex Wrapper for the "Rows per page" text and the dropdown
         <div className="flex items-center gap-2">
             
             <span className="text-sm font-medium text-slate-600 dark:text-slate-300">
@@ -58,7 +52,7 @@ function RowLimiter({ initialLimit, onSelect, iconProps = {} }) {
 
             <div 
                 ref={dropdownRef} 
-                className="relative py-1 pl-3 pr-2 bg-slate-300/30 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg transition-all"
+                className="relative py-1 pl-3 pr-2 bg-slate-100/10 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg transition-all"
             >
                 <button
                     type="button"
