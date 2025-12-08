@@ -18,18 +18,18 @@ function PurchasedOrdersTableHeader() {
     const deliveryOptions = ['Delivery Status', 'Delivered', 'Out for Delivery', 'Order Placed'];
     const paymentOptions = ['Payment Status', 'Paid', 'Unpaid', 'N/A'];
 
-    // const handleDateRangeChange = (newValue) => {
-    //     console.log('Date Range Filter Applied:', newValue);
-    // };
-    // const handleSupplierChange = (newValue) => {
-    //     console.log('Supplier Filter Applied:', newValue);
-    // };
-    // const handleDeliveryChange = (newValue) => {
-    //     console.log('Delivery Status Filter Applied:', newValue);
-    // };
-    // const handlePaymentChange = (newValue) => {
-    //     console.log('Payment Status Filter Applied:', newValue);
-    // };
+    const handleDateRangeChange = (newValue) => {
+        console.log('Date Range Filter Applied:', newValue);
+    };
+    const handleSupplierChange = (newValue) => {
+        console.log('Supplier Filter Applied:', newValue);
+    };
+    const handleDeliveryChange = (newValue) => {
+        console.log('Delivery Status Filter Applied:', newValue);
+    };
+    const handlePaymentChange = (newValue) => {
+        console.log('Payment Status Filter Applied:', newValue);
+    };
     
     return (
         <div className="flex items-center justify-between">

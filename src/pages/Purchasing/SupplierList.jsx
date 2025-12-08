@@ -3,9 +3,19 @@ import SupplierStatsGrid from './SupplierStatsGrid';
 import SupplierListTable from './SupplierListTable';
 import SupplierListTableHeader from './SupplierListTableHeader';
 import TablePagination from '../Purchasing/TablePagination';
-import Table from 'daisyui/components/table';
+import RowLimiter from '../Purchasing/RowLimiter';
 
 function supplierList() {
+  const iconProps = {
+        className: 'w-4 h-4 text-slate-500 dark:text-slate-500',
+    };
+
+    // --- DATA FOR ALL FILTERS ---
+    const RowOptions = ['5', '15', '20'];
+    const HandleRowLimitChange = (newValue) => {
+        console.log('Row limiter value changed:', newValue);
+    };
+
   return (
     <div>
       {/* flex flex-row gap-12 border border-red-500 */}
@@ -15,7 +25,12 @@ function supplierList() {
         <SupplierListTable/>
 
         <div class = "flex items-center justify-between mt-4">
-          
+          <RowLimiter
+            options={RowOptions}
+            initialValue={RowOptions[0]}
+            onSelect={HandleRowLimitChange}
+            iconProps={iconProps}
+          />
           <TablePagination/>
         </div>
       </div>

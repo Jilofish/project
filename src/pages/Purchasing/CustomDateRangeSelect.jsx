@@ -26,7 +26,7 @@ function CustomDateRangeSelect({ options, initialValue, onSelect, iconProps }) {
 
     const handleOptionClick = (value) => {
         setSelectedValue(value);
-        onSelect(value); // Communicate the selection back to the parent component
+        onSelect(value);
         setIsOpen(false);
     };
 
