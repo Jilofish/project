@@ -49,18 +49,18 @@ function SupplierListTable() {
     };
   return (
     <div className="overflow-x-auto">
-        <table className="w-full">
-        <thead>
-            <tr className = "bg-slate-200/50 dark:bg-slate-700/50">
-                <th className="text-left p-4 text-sm font-semibold text-slate-600 dark:text-slate-200">Supplier Name</th>
-                <th className="text-left p-4 text-sm font-semibold text-slate-600 dark:text-slate-200">Business Name</th>
-                <th className="text-left p-4 text-sm font-semibold text-slate-600 dark:text-slate-200">Address</th>
-                <th className="text-left p-4 text-sm font-semibold text-slate-600 dark:text-slate-200">Contact No.</th>
-                <th className="text-left p-4 text-sm font-semibold text-slate-600 dark:text-slate-200">TIN No.</th>
-                <th className="text-left p-4 text-sm font-semibold text-slate-600 dark:text-slate-200">Bank Account No.</th>
-                <th className="text-left p-4 text-sm font-semibold text-slate-600 dark:text-slate-200">Status</th>
-                <th className="text-left p-4 text-sm font-semibold text-slate-600 dark:text-slate-200">Actions</th>
-            </tr>
+        <table className="w-full mb-2">
+            <thead>
+                <tr className = "bg-slate-200/50 dark:bg-slate-700/50">
+                    <th className="text-left p-4 text-sm font-semibold text-slate-600 dark:text-slate-200">Supplier Name</th>
+                    <th className="text-left p-4 text-sm font-semibold text-slate-600 dark:text-slate-200">Business Name</th>
+                    <th className="text-left p-4 text-sm font-semibold text-slate-600 dark:text-slate-200">Address</th>
+                    <th className="text-left p-4 text-sm font-semibold text-slate-600 dark:text-slate-200">Contact No.</th>
+                    <th className="text-left p-4 text-sm font-semibold text-slate-600 dark:text-slate-200">TIN No.</th>
+                    <th className="text-left p-4 text-sm font-semibold text-slate-600 dark:text-slate-200">Bank Account No.</th>
+                    <th className="text-left p-4 text-sm font-semibold text-slate-600 dark:text-slate-200">Status</th>
+                    <th className="text-left p-4 text-sm font-semibold text-slate-600 dark:text-slate-200">Actions</th>
+                </tr>
             </thead>
             <tbody>
                 {Suppliers.map((order, index) => {
