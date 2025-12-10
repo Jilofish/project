@@ -17,7 +17,7 @@ function PurchasedOrdersTableHeader({
     
     return (
         <div className="flex items-center justify-between">
-            <h1 className="text-[#535353] dark:text-white text-xl font-bold">Purchased Orders</h1>
+            <h1 className="text-[#535353] dark:text-white text-2xl font-bold">Purchased Orders</h1>
             
             <div className="flex items-center justify-end gap-12">
                 <div className="flex items-center gap-3 py-2">

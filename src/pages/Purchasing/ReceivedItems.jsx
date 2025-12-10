@@ -180,7 +180,7 @@ function ReceivedItems() {
   return (
     <div>
       <ReceivedStatsGrid/>
-      <div className = "bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl rounded-2xl py-2 px-5 border border-slate-200/50 dark:border-slate-700/50">
+      <div className = "bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl rounded-2xl py-3 px-5 border border-slate-200/50 dark:border-slate-700/50">
 
         <ReceivedItemsTableHeader
             dateRangeOptions={dateRangeOptions}

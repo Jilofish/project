@@ -14,8 +14,8 @@ function StocksTableHeader(
         iconProps
     }) {
   return (
-    <div className="flex items-center justify-between px-2">
-        <h1 className="text-[#535353] dark:text-white text-xl font-bold">Stock Management</h1>
+    <div className="flex items-center justify-between p-2 rounded-2xl">
+        <h1 className="text-[#535353] dark:text-white text-2xl font-bold">Stock Management</h1>
         
         <div className="flex items-center justify-end gap-12">
             <div className="flex items-center gap-3 py-2">
