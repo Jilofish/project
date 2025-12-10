@@ -158,7 +158,6 @@ function CustomerList() {
         className: 'w-4 h-4 text-slate-500 dark:text-slate-500',
     };
     
-    // 💡 FIX APPLIED HERE: Changed PurchasedOrdersData to CustomersData
     const extractUniqueOptions = (key, placeholder) => {
         const uniqueValues = [...new Set(CustomersData.map(customer => customer[key]))]; 
         return [placeholder, ALL_OPTION, ...uniqueValues.sort()];
@@ -210,23 +209,23 @@ function CustomerList() {
         <div>
             <CustomerListStatsGrid />
             <div className = "space-y-5 bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl rounded-2xl py-4 px-5 border border-slate-200/50 dark:border-slate-700/50">
-                
-                <CustomerListTableHeader /> 
-                <CustomerListTable orders={paginatedOrders} /> 
+              
+              <CustomerListTableHeader /> 
+              <CustomerListTable orders={paginatedOrders} /> 
 
-                <div className = "flex items-center justify-between mb-3">
-                    <RowLimiter
-                        options={rowLimitOptions}
-                        initialValue={rowLimit.toString()}
-                        onSelect={handleRowLimitChange}
-                        iconProps={iconProps}
-                    />
-                    <TablePagination
-                        totalPages={totalPages}
-                        currentPage={currentPage}
-                        onPageChange={setCurrentPage}
-                    />
-                </div>
+              <div className = "flex items-center justify-between mb-3">
+                <RowLimiter
+                  options={rowLimitOptions}
+                  initialValue={rowLimit.toString()}
+                  onSelect={handleRowLimitChange}
+                  iconProps={iconProps}
+                />
+                <TablePagination
+                  totalPages={totalPages}
+                  currentPage={currentPage}
+                  onPageChange={setCurrentPage}
+                />
+              </div>
             </div>
         </div>
     )

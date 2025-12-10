@@ -8,7 +8,7 @@ import TablePagination from '../../components/pagination/TablePagination';
 
 const ALL_OPTION = 'All';
 
-const PurchasedOrdersData = [
+const SalesData = [
   {
     PO: 'PO-123456',
     supplier: 'Earl Meats',
@@ -196,7 +196,7 @@ function CreateSalesInvoice() {
     };
 
     const extractUniqueOptions = (key, placeholder) => {
-        const uniqueValues = [...new Set(PurchasedOrdersData.map(order => order[key]))];
+        const uniqueValues = [...new Set(SalesData.map(order => order[key]))];
         return [placeholder, ALL_OPTION, ...uniqueValues.sort()];
     };
 
@@ -251,7 +251,7 @@ function CreateSalesInvoice() {
 
     // --- FILTERING LOGIC ---
     const filteredOrders = useMemo(() => {
-      let filtered = PurchasedOrdersData;
+      let filtered = SalesData;
       
       // 1. Date Range Filter
       // Only apply if the value is NOT the placeholder AND NOT 'All'
