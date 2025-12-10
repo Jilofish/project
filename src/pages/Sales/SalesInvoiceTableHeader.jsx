@@ -1,4 +1,4 @@
-import React from 'react';
+import React from 'react'
 import { Plus } from 'lucide-react';
 
 import CustomDateRangeSelect from '../../components/filter/CustomDateRangeSelect'; 
@@ -6,7 +6,7 @@ import CustomSupplierSelect from '../../components/filter/CustomSupplierSelect';
 import CustomDeliveryStatusSelect from '../../components/filter/CustomDeliveryStatusSelect'; 
 import CustomPaymentStatusSelect from '../../components/filter/CustomPaymentStatusSelect'; 
 
-function PurchasedOrdersTableHeader({
+function SalesInvoiceTableHeader({
     dateRangeOptions, supplierOptions, deliveryOptions, paymentOptions,
     currentDateRange, currentSupplier, currentDeliveryStatus, currentPaymentStatus,
     handleDateRangeChange, handleSupplierChange, handleDeliveryChange, handlePaymentChange,
@@ -17,7 +17,7 @@ function PurchasedOrdersTableHeader({
     
     return (
         <div className="flex items-center justify-between">
-            <h1 className="text-[#535353] dark:text-white text-xl font-bold">Purchased Orders</h1>
+            <h1 className="text-[#535353] dark:text-white text-xl font-bold">Sales</h1>
             
             <div className="flex items-center justify-end gap-12">
                 <div className="flex items-center gap-3 py-2">
@@ -58,11 +58,11 @@ function PurchasedOrdersTableHeader({
                 
                 <button className="flex items-center space-x-2 py-2 px-4 bg-blue-500 text-white rounded-lg hover:shadow-lg transition-all">
                     <Plus className="w-4 h-4" />
-                    <span className="text-sm font-medium">Add Purchase</span>
+                    <span className="text-sm font-medium">Add Invoice</span>
                 </button>
             </div>
         </div>
     );
 }
 
-export default PurchasedOrdersTableHeader;
+export default SalesInvoiceTableHeader;

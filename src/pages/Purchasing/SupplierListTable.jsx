@@ -97,7 +97,7 @@ function SupplierListTable() {
                         </span>
                     </td>
                     <td className="w-40 p-4 text-left">
-                        <span className={`dark:text-white font-medium text-xs px-3 ml-[-8px] py-1 rounded-full ${getStatusColor(order.Status)}`}>
+                        <span className={`font-medium text-xs px-3 ml-[-8px] py-1 rounded-full ${getStatusColor(order.Status)}`}>
                         {order.Status}
                         </span>
                     </td>
