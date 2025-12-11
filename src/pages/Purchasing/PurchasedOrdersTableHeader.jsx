@@ -60,7 +60,7 @@ function PurchasedOrdersTableHeader({
                 
                 <button 
                     onClick={onAddPurchaseOrderClick}
-                    className="flex items-center space-x-2 py-2 px-4 bg-blue-500 text-white rounded-lg cursor-pointer hover:shadow-lg transition-all">
+                    className="flex items-center cursor-pointer space-x-2 py-2 px-4 bg-blue-500 text-white rounded-lg cursor-pointer hover:shadow-lg transition-all">
                     <Plus className="w-4 h-4" />
                     <span className="text-sm font-medium">Add Purchase</span>
                 </button>

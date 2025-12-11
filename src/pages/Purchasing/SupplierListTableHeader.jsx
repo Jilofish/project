@@ -46,8 +46,8 @@ return (
 
             {/* 4. ADD SUPPLIER BUTTON: Connect the onClick handler */}
             <button 
-                className="flex items-center space-x-2 py-2 px-4 bg-blue-500 text-white rounded-lg hover:shadow-lg transition-all"
-                onClick={onAddSupplierClick} // *** 2. USE THE NEW PROP AS THE CLICK HANDLER ***
+                className="flex items-center cursor-pointer space-x-2 py-2 px-4 bg-blue-500 text-white rounded-lg hover:shadow-lg transition-all"
+                onClick={onAddSupplierClick}
             >
                 <Plus className="w-4 h-4" />
                 <span className="text-sm font-medium">Add Supplier</span>
