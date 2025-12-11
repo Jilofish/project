@@ -10,7 +10,7 @@ function PurchasedOrdersTableHeader({
     dateRangeOptions, supplierOptions, deliveryOptions, paymentOptions,
     currentDateRange, currentSupplier, currentDeliveryStatus, currentPaymentStatus,
     handleDateRangeChange, handleSupplierChange, handleDeliveryChange, handlePaymentChange,
-    iconProps
+    iconProps, onAddPurchaseOrderClick
 }) {
     
     // NOTE: Handlers and options are now props, removed local definitions.
@@ -58,7 +58,9 @@ function PurchasedOrdersTableHeader({
 
                 </div>
                 
-                <button className="flex items-center space-x-2 py-2 px-4 bg-blue-500 text-white rounded-lg hover:shadow-lg transition-all">
+                <button 
+                    onClick={onAddPurchaseOrderClick}
+                    className="flex items-center space-x-2 py-2 px-4 bg-blue-500 text-white rounded-lg cursor-pointer hover:shadow-lg transition-all">
                     <Plus className="w-4 h-4" />
                     <span className="text-sm font-medium">Add Purchase</span>
                 </button>

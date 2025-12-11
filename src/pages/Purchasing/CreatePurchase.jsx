@@ -5,6 +5,7 @@ import PurchasedOrdersTableHeader from './PurchasedOrdersTableHeader';
 import PurchasedOrdersTable from './PurchasedOrdersTable';
 import RowLimiter from '../../components/filter/RowLimiter';
 import TablePagination from '../../components/pagination/TablePagination';
+import AddPurchaseOrderModal from '../../components/modals/AddPurchaseOrderModal';
 
 const ALL_OPTION = 'All';
 
@@ -196,6 +197,10 @@ function CreatePurchase() {
         className: 'w-4 h-4 text-slate-500 dark:text-slate-500',
     };
 
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const openModal = () => setIsModalOpen(true);
+    const closeModal = () => setIsModalOpen(false);
+
     // --- DYNAMIC OPTION GENERATION (Explicitly uses ALL_OPTION) ---
     const extractUniqueOptions = (key, placeholder) => {
         const uniqueValues = [...new Set(PurchasedOrdersData.map(order => order[key]))];
@@ -332,6 +337,7 @@ function CreatePurchase() {
             handlePaymentChange={handlePaymentChange}
             
             iconProps={iconProps}
+            onAddPurchaseOrderClick={openModal}
         />
 
         <PurchasedOrdersTable orders={paginatedOrders} />
@@ -350,6 +356,12 @@ function CreatePurchase() {
             />
         </div>
       </div>
+
+        <AddPurchaseOrderModal 
+            isOpen={isModalOpen} 
+            onClose={closeModal} 
+        />
+
     </div>
   );
 }
