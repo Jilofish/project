@@ -224,6 +224,7 @@ const extractUniqueOptions = (key, placeholder) => {
   const paginatedSuppliers = useMemo(() => {
   const startIndex = (currentPage - 1) * rowLimit;
   const endIndex = startIndex + rowLimit;
+  
   return filteredSuppliers.slice(startIndex, endIndex);
   }, [filteredSuppliers, rowLimit, currentPage]);
 

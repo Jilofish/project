@@ -6,6 +6,8 @@ import CustomerListTable from './CustomerListTable';
 import TablePagination from '../../components/pagination/TablePagination';
 import RowLimiter from '../../components/filter/RowLimiter';
 
+const ALL_OPTION = 'All';
+
 const CustomersData = [
   {
     Name: 'Sarah Jane',
@@ -154,81 +156,145 @@ const CustomersData = [
 ]
 
 function CustomerList() {
-    const iconProps = {
-        className: 'w-4 h-4 text-slate-500 dark:text-slate-500',
+  const iconProps = {
+    className: 'w-4 h-4 text-slate-500 dark:text-slate-500',
+  };
+
+  // --- DYNAMIC OPTION GENERATION ---
+  const extractUniqueOptions = (key, placeholder) => {
+    const uniqueValues = [...new Set(CustomersData.map(customer => customer[key]))]; 
+    return [placeholder, ALL_OPTION, ...uniqueValues.sort()];
+  };
+
+  const rowLimitOptions = [5, 10, 15];
+
+  // New Filter Options
+  const nameOptions = extractUniqueOptions('Name', 'Name');
+  const customerTypeOptions = extractUniqueOptions('CustomerType', 'Customer Type');
+  const statusOptions = extractUniqueOptions('Status', 'Status');
+
+  // Initial Values/Placeholders
+  const initialRowLimit = rowLimitOptions[0];
+  const initialName = nameOptions[0];
+  const initialCustomerType = customerTypeOptions[0];
+  const initialStatus = statusOptions[0];
+
+
+  // --- STATE MANAGEMENT ---
+  const [rowLimit, setRowLimit] = useState(initialRowLimit);
+  const [nameFilter, setNameFilter] = useState(initialName);
+  const [customerTypeFilter, setCustomerTypeFilter] = useState(initialCustomerType);
+  const [statusFilter, setStatusFilter] = useState(initialStatus);
+  const [currentPage, setCurrentPage] = useState(1); 
+
+  // --- HANDLER FUNCTIONS ---
+  const handleRowLimitChange = (newValue) => {
+    setRowLimit(parseInt(newValue));
+    setCurrentPage(1); 
     };
-    
-    const extractUniqueOptions = (key, placeholder) => {
-        const uniqueValues = [...new Set(CustomersData.map(customer => customer[key]))]; 
-        return [placeholder, ALL_OPTION, ...uniqueValues.sort()];
-    };
 
-    const rowLimitOptions = [5, 10, 15];
-    const initialRowLimit = rowLimitOptions[0];
+  const handleNameChange = (newValue) => {
+    setNameFilter(newValue);
+    setCurrentPage(1);
+  };
 
-    const [rowLimit, setRowLimit] = useState(initialRowLimit);
-    const [currentPage, setCurrentPage] = useState(1); 
+  const handleCustomerTypeChange = (newValue) => {
+  setCustomerTypeFilter(newValue);
+  setCurrentPage(1);
+  };
 
-    const handleRowLimitChange = (newValue) => {
-        setRowLimit(parseInt(newValue));
-        setCurrentPage(1); 
-    };
-    
-    const filteredOrders = useMemo(() => {
-        let filtered = CustomersData;
-        
-        /*
-        if (customerTypeFilter !== 'All') {
-            filtered = filtered.filter(customer => customer.CustomerType === customerTypeFilter);
-        }
-        */
-        
-        return filtered;
-    }, []);
-    
-    const totalOrders = filteredOrders.length;
-    const totalPages = Math.ceil(totalOrders / rowLimit);
-    
-    const paginatedOrders = useMemo(() => {
-        const startIndex = (currentPage - 1) * rowLimit;
-        const endIndex = startIndex + rowLimit;
-        
-        if (currentPage > totalPages && totalPages > 0) {
-            setCurrentPage(totalPages);
-        }
-        
-        return filteredOrders.slice(startIndex, endIndex);
-    }, [filteredOrders, rowLimit, currentPage, totalPages]);
+  const handleStatusChange = (newValue) => {
+    setStatusFilter(newValue);
+    setCurrentPage(1);
+  };
 
-    if (totalPages === 0 && currentPage !== 1) {
-        setCurrentPage(1);
+
+  // --- FILTERING LOGIC ---
+  const filteredOrders = useMemo(() => {
+  let filtered = CustomersData;
+
+  // 1. Name Filter
+  if (nameFilter !== initialName && nameFilter !== ALL_OPTION) {
+    filtered = filtered.filter(customer => customer.Name === nameFilter);
     }
 
+  // 2. Customer Type Filter
+  if (customerTypeFilter !== initialCustomerType && customerTypeFilter !== ALL_OPTION) {
+    filtered = filtered.filter(customer => customer.CustomerType === customerTypeFilter);
+    }
 
-    return (
-        <div>
-            <CustomerListStatsGrid />
-            <div className = "space-y-5 bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl rounded-2xl py-4 px-5 border border-slate-200/50 dark:border-slate-700/50">
-              
-              <CustomerListTableHeader /> 
-              <CustomerListTable orders={paginatedOrders} /> 
+  // 3. Status Filter
+  if (statusFilter !== initialStatus && statusFilter !== ALL_OPTION) {
+    filtered = filtered.filter(customer => customer.Status === statusFilter);
+  }
 
-              <div className = "flex items-center justify-between mb-3">
-                <RowLimiter
-                  options={rowLimitOptions}
-                  initialValue={rowLimit.toString()}
-                  onSelect={handleRowLimitChange}
-                  iconProps={iconProps}
-                />
-                <TablePagination
-                  totalPages={totalPages}
-                  currentPage={currentPage}
-                  onPageChange={setCurrentPage}
-                />
-              </div>
-            </div>
-        </div>
-    )
+  return filtered;
+  }, [nameFilter, customerTypeFilter, statusFilter, initialName, initialCustomerType, initialStatus]);
+
+  // --- Pagination Logic ---
+  const totalOrders = filteredOrders.length;
+  const totalPages = Math.ceil(totalOrders / rowLimit);
+
+  const paginatedOrders = useMemo(() => {
+  const startIndex = (currentPage - 1) * rowLimit;
+  const endIndex = startIndex + rowLimit;
+
+  // Ensure current page is valid if filters change
+  if (currentPage > totalPages && totalPages > 0) {
+  // This part should ideally be handled by useEffect or inside the page change handler, 
+  // but keeping the original pattern for minimal change impact:
+  // setCurrentPage(totalPages); // Commented out to prevent infinite loop on render
+  }
+
+  return filteredOrders.slice(startIndex, endIndex);
+  }, [filteredOrders, rowLimit, currentPage, totalPages]);
+
+  // Re-adjust currentPage if it goes out of bounds after filtering
+  if (totalPages === 0 && currentPage !== 1) {
+    setCurrentPage(1);
+  } else if (currentPage > totalPages && totalPages > 0) {
+  setCurrentPage(totalPages);
+}
+
+
+return (
+  <div>
+    <CustomerListStatsGrid />
+    <div className = "space-y-5 bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl rounded-2xl py-4 px-5 border border-slate-200/50 dark:border-slate-700/50">
+
+      <CustomerListTableHeader 
+        nameOptions={nameOptions}
+        customerTypeOptions={customerTypeOptions}
+        statusOptions={statusOptions}
+
+        currentName={nameFilter}
+        currentCustomerType={customerTypeFilter}
+        currentStatus={statusFilter}
+
+        handleNameChange={handleNameChange}
+        handleCustomerTypeChange={handleCustomerTypeChange}
+        handleStatusChange={handleStatusChange}
+        iconProps={iconProps}
+      />
+
+      <CustomerListTable orders={paginatedOrders} /> 
+
+      <div className = "flex items-center justify-between mb-3">
+        <RowLimiter
+          options={rowLimitOptions}
+          initialValue={rowLimit.toString()}
+          onSelect={handleRowLimitChange}
+          iconProps={iconProps}
+        />
+        <TablePagination
+          totalPages={totalPages}
+          currentPage={currentPage}
+          onPageChange={setCurrentPage}
+        />
+      </div>
+    </div>
+  </div>
+)
 }
 
 export default CustomerList;
