@@ -9,177 +9,48 @@ import TablePagination from '../../components/pagination/TablePagination';
 
 const ALL_OPTION = 'All';
 
-    const StocksData = [
-        {
-            PO: 'PO-123456',
-            supplier: 'Earl Meats',
-            transactionDate: 'Sep 21, 2025',
-            deliveryDate: 'Sep 25, 2025',
-            total: '$1,234.56',
-            approvalStatus: 'Pending',
-            deliveryStatus: 'Out for Delivery',
-            paymentStatus: 'N/A',
-            remarks: 'Chicken Restock',
-        },
-        {
-            PO: 'PO-135790',
-            supplier: 'Javier Meats',
-            transactionDate: 'Sep 12, 2025',
-            deliveryDate: 'Sep 20, 2025',
-            total: '$1,900.25',
-            approvalStatus: 'Approved',
-            deliveryStatus: 'Delivered',
-            paymentStatus: 'Paid',
-            remarks: 'Beef Jowls x10',
-        },
-        {
-            PO: 'PO-24681',
-            supplier: 'Betez Trading',
-            transactionDate: 'Sep 11, 2025',
-            deliveryDate: 'Sep 19, 2025',
-            total: '$2,100.15',
-            approvalStatus: 'Rejected',
-            deliveryStatus: 'Order Placed',
-            paymentStatus: 'Unpaid',
-            remarks: 'Supply for Saog',
-        },
-        {
-            PO: "PO-987654",
-            supplier: "Global Foods Inc.",
-            transactionDate: "Dec 05, 2025",
-            deliveryDate: "Dec 10, 2025",
-            total: "$5,432.10",
-            approvalStatus: "Approved",
-            deliveryStatus: "Delivered",
-            paymentStatus: "Paid",
-            remarks: "Urgent shipment of grain"
-        },
-        {
-            PO: "PO-001122",
-            supplier: "Reyes Farms",
-            transactionDate: "Nov 28, 2025",
-            deliveryDate: "Dec 01, 2025",
-            total: "$850.75",
-            approvalStatus: "Pending",
-            deliveryStatus: "Out for Delivery",
-            paymentStatus: "N/A",
-            remarks: "Fruit and vegetable stock"
-        },
-        {
-            PO: "PO-765432",
-            supplier: "Fresh Produce Co.",
-            transactionDate: "Dec 09, 2025",
-            deliveryDate: "Dec 11, 2025",
-            total: "$450.00",
-            approvalStatus: "Pending",
-            deliveryStatus: "Order Placed",
-            paymentStatus: "Unpaid",
-            remarks: "Urgent lettuce and tomato order"
-        },
-        {
-            PO: "PO-981234",
-            supplier: "Betez Trading",
-            transactionDate: "Nov 30, 2025",
-            deliveryDate: "Dec 05, 2025",
-            total: "$1,999.99",
-            approvalStatus: "Approved",
-            deliveryStatus: "Delivered",
-            paymentStatus: "Paid",
-            remarks: "Kitchen equipment maintenance parts"
-        },
-        {
-            PO: "PO-345678",
-            supplier: "Central Dairy Inc.",
-            transactionDate: "Dec 02, 2025",
-            deliveryDate: "Dec 02, 2025",
-            total: "$675.30",
-            approvalStatus: "Approved",
-            deliveryStatus: "Out for Delivery",
-            paymentStatus: "N/A",
-            remarks: "Milk and cheese rush order"
-        },
-        {
-            PO: "PO-210987",
-            supplier: "Earl Meats",
-            transactionDate: "Oct 15, 2025",
-            deliveryDate: "Oct 20, 2025",
-            total: "$5,200.70",
-            approvalStatus: "Rejected",
-            deliveryStatus: "Delivered",
-            paymentStatus: "Unpaid",
-            remarks: "Order rejected due to quality issue"
-        },
-        {
-            PO: "PO-556677",
-            supplier: "Global Foods Inc.",
-            transactionDate: "Nov 18, 2025",
-            deliveryDate: "Nov 23, 2025",
-            total: "$1,250.40",
-            approvalStatus: "Pending",
-            deliveryStatus: "Order Placed",
-            paymentStatus: "Paid",
-            remarks: "Canned goods restock"
-        },
-        {
-            PO: "PO-112233",
-            supplier: "Javier Meats",
-            transactionDate: "Dec 06, 2025",
-            deliveryDate: "Dec 10, 2025",
-            total: "$3,800.10",
-            approvalStatus: "Approved",
-            deliveryStatus: "Out for Delivery",
-            paymentStatus: "N/A",
-            remarks: "Holiday beef tenderloin order"
-        },
-        {
-            PO: "PO-889900",
-            supplier: "Reyes Farms",
-            transactionDate: "Oct 25, 2025",
-            deliveryDate: "Oct 28, 2025",
-            total: "$580.95",
-            approvalStatus: "Approved",
-            deliveryStatus: "Delivered",
-            paymentStatus: "Paid",
-            remarks: "Seasonal squash and pumpkin"
-        },
-        {
-            PO: "PO-404040",
-            supplier: "Fresh Produce Co.",
-            transactionDate: "Nov 01, 2025",
-            deliveryDate: "Nov 03, 2025",
-            total: "$710.25",
-            approvalStatus: "Pending",
-            deliveryStatus: "Out for Delivery",
-            paymentStatus: "Unpaid",
-            remarks: "Weekly fruit basket delivery"
-        },
-        {
-            PO: "PO-606060",
-            supplier: "Central Dairy Inc.",
-            transactionDate: "Sep 05, 2025",
-            deliveryDate: "Sep 07, 2025",
-            total: "$990.00",
-            approvalStatus: "Rejected",
-            deliveryStatus: "Order Placed",
-            paymentStatus: "N/A",
-            remarks: "Cream shortage notification"
-        },
-        {
-            PO: "PO-707070",
-            supplier: "Earl Meats",
-            transactionDate: "Dec 07, 2025",
-            deliveryDate: "Dec 07, 2025",
-            total: "$2,150.00",
-            approvalStatus: "Approved",
-            deliveryStatus: "Delivered",
-            paymentStatus: "Paid",
-            remarks: "Last minute catering order"
-        }
-    ];
+const StocksData = [
+{
+    Warehouse: 'Saog',
+    ItemName: 'Jowls',
+    ItemCode: 'M-JWLS-UNP',
+    Quantity: '50.00',
+    UnitPrice: '220.00',
+    TotalValue: '11,000.00',
+    Status: 'In Stock',
+},
+{
+    Warehouse: 'Saog',
+    ItemName: 'Jowls',
+    ItemCode: 'M-JWLS-VIP',
+    Quantity: '50.00',
+    UnitPrice: '215.00',
+    TotalValue: '10,750.00',
+    Status: 'In Stock',
+},
+{
+    Warehouse: 'Quezon City',
+    ItemName: 'Premium Beef',
+    ItemCode: 'M-PRBF-UNP',
+    Quantity: '10.15',
+    UnitPrice: '465.00',
+    TotalValue: '4719.00',
+    Status: 'Need Restock',
+},
+{
+    Warehouse: 'Meycuayan',
+    ItemName: 'Chicken',
+    ItemCode: 'M-CHCK-VAC',
+    Quantity: '5.17',
+    UnitPrice: '240.00',
+    TotalValue: '1240.80',
+    Status: 'Critical Stock',
+}
+];
 
     // --- DATE HELPER FUNCTIONS ---
     const parseDate = (dateString) => {
-    r   
+        return new Date(dateString);
     };
 
     const isDateInRange = (transactionDateString, startDate, endDate) => {
@@ -195,7 +66,7 @@ const ALL_OPTION = 'All';
 
 function StockManagement() {
     const iconProps = {
-    className: 'w-4 h-4 text-slate-500 dark:text-slate-500',
+        className: 'w-4 h-4 text-slate-500 dark:text-slate-500',
     };
 
 // --- DYNAMIC OPTION GENERATION (Explicitly uses ALL_OPTION) ---
@@ -278,7 +149,7 @@ function StockManagement() {
         }
 
         filtered = filtered.filter(order => 
-        isDateInRange(order.transactionDate, startDate, today)
+            isDateInRange(order.transactionDate, startDate, today)
         );
     }
 
@@ -314,15 +185,15 @@ function StockManagement() {
     const [activeTab, setActiveTab] = useState('profile');
 
     const handleTabClick = (tabId) => {
-        
+        setActiveTab(tabId);
     };
 
 
     // Updated function with hover effects on the active tab
     const getTabClasses = (tabId) => 
-    activeTab === tabId 
-    ? "inline-block p-4 border-b-2 border-blue-500 text-blue-500 font-semibold cursor-pointer hover:text-blue-600 hover:border-blue-600"
-    : "inline-block p-4 border-b-2 border-transparent text-slate-600 dark:text-slate-400 hover:text-blue-500 hover:border-blue-300 cursor-pointer";
+        activeTab === tabId 
+            ? "inline-block p-4 border-b-2 border-blue-500 text-blue-500 font-semibold cursor-pointer hover:text-blue-600 hover:border-blue-600"
+            : "inline-block p-4 border-b-2 border-transparent text-slate-600 dark:text-slate-400 hover:text-blue-500 hover:border-blue-300 cursor-pointer";
 
 
     return (
@@ -355,31 +226,31 @@ function StockManagement() {
                         <ul className="flex flex-wrap -mb-px text-sm font-medium text-center" role="tablist">
 
                         <li className="me-2" role="presentation">
-                        <button 
-                        onClick={() => handleTabClick('profile')} 
-                        className={getTabClasses('profile')} 
-                        id="profile-tab" 
-                        type="button" 
-                        role="tab" 
-                        aria-controls="profile" 
-                        aria-selected={activeTab === 'profile'}
-                        >
-                        Stocks
-                        </button>
+                            <button 
+                                onClick={() => handleTabClick('profile')} 
+                                className={getTabClasses('profile')} 
+                                id="profile-tab" 
+                                type="button" 
+                                role="tab" 
+                                aria-controls="profile" 
+                                aria-selected={activeTab === 'profile'}
+                            >
+                            Stocks
+                            </button>
                         </li>
 
                         <li className="me-2" role="presentation">
-                        <button 
-                        onClick={() => handleTabClick('dashboard')} 
-                        className={getTabClasses('dashboard')} 
-                        id="dashboard-tab" 
-                        type="button" 
-                        role="tab" 
-                        aria-controls="dashboard" 
-                        aria-selected={activeTab === 'dashboard'}
-                        >
-                        Stocks Transfer
-                        </button>
+                            <button 
+                                onClick={() => handleTabClick('dashboard')} 
+                                className={getTabClasses('dashboard')} 
+                                id="dashboard-tab" 
+                                type="button" 
+                                role="tab" 
+                                aria-controls="dashboard" 
+                                aria-selected={activeTab === 'dashboard'}
+                            >
+                            Stocks Transfer
+                            </button>
                         </li>
 
                         </ul>
@@ -387,15 +258,15 @@ function StockManagement() {
 
                     <div id="default-tab-content">
                         {activeTab === 'profile' && (
-                        <div id="profile" role="tabpanel" aria-labelledby="profile-tab">
-                            <StocksTable orders={paginatedOrders}/>
-                        </div>
+                            <div id="profile" role="tabpanel" aria-labelledby="profile-tab">
+                                <StocksTable orders={paginatedOrders}/>
+                            </div>
                         )}
 
                         {activeTab === 'dashboard' && (
                             <div id="dashboard" role="tabpanel" aria-labelledby="dashboard-tab">
-                            <StocksTransferTable orders={paginatedOrders}/>
-                        </div>
+                                <StocksTransferTable orders={paginatedOrders}/>
+                            </div>
                         )}
                     </div>
                 </div>
