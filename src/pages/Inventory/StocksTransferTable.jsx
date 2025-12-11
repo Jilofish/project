@@ -1,7 +1,7 @@
 import React from 'react';
 import { MoreHorizontal } from 'lucide-react'; 
 
-const StocksTranferData = [
+const StocksTransferData = [
   {
     TransferDate: '10/10/2025',
     Sender: "Saog",
@@ -73,7 +73,7 @@ function StocksTransferTable() {
                     </tr>
                 </thead>
                 <tbody>
-                    {StocksTranferData.map((order, index) => {
+                    {StocksTransferData.map((order, index) => {
                     return (
                         <tr className="border-b border-slate-200/50 dark:border-slate-700/50 hover:bg-slate-50/50 dark:hover:bg-slate-800/50 transition-colors">
                         <td className="p-4" key={index}>

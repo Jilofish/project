@@ -89,7 +89,7 @@ function PurchasedOrdersTable({ orders }) {
                           </span>
                         </td>
                         <td className="p-4">
-                          <span className={`font-medium text-xs px-3 py-1 rounded-full ${getDeliveryStatusColor(order.deliveryStatus)}`}>
+                          <span className={`whitespace-nowrap font-medium text-xs px-3 py-1 rounded-full ${getDeliveryStatusColor(order.deliveryStatus)}`}>
                             {order.deliveryStatus}
                           </span>
                         </td>
