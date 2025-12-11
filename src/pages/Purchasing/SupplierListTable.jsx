@@ -1,47 +1,12 @@
 import React from 'react'
-import { MoreHorizontal, TrendingDown, TrendingUp } from 'lucide-react'
+import { MoreHorizontal } from 'lucide-react'
 
-const Suppliers = [
-  {
-    Name: 'Sarah Trinidad',
-    businessName: "Sarah's Karnehan",
-    Address: 'Valenzuela',
-    Email: 'sarah.t@gmail.com',
-    ContactNo: '09123456789',
-    tinNo: '123456789',
-    BankAcc: '123-456-789',
-    Status: 'Active',
-  },
-  {
-    Name: 'Javier Pehipol',
-    businessName: "Pata Slayer",
-    Address: 'BB Paz Street',
-    Email: 'jppehipol@gmail.com',
-    ContactNo: '09123456789',
-    tinNo: '123456789',
-    BankAcc: '123-456-789',
-    Status: 'Active',
-  },
-  {
-    Name: 'John Doe',
-    businessName: "Kimetsu no Karne",
-    Address: '123 Zone A, Cityville',
-    Email: 'muzankibu@gmail.com',
-    ContactNo: '09123456789',
-    tinNo: '123456789',
-    BankAcc: '123-456-789',
-    Status: 'Active',
-  }
-];
-
-function SupplierListTable() {
+function SupplierListTable({ orders }) {
     const getStatusColor = (Status) => {
         switch (Status) {
             case "Active":
                 return "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400";
-            case "pending":
-                return "bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400";
-            case "canceled":
+            case "Inactive":
                 return "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400";
             default:
                 return "bg-slate-100 text-slate-700 dark:bg-slate-900/30 dark:text-slate-400";
@@ -63,9 +28,9 @@ function SupplierListTable() {
                 </tr>
             </thead>
             <tbody>
-                {Suppliers.map((order, index) => {
+                {orders.map((order, index) => {
                 return (
-                    <tr className="border-b border-slate-200/50 dark:border-slate-700/50 hover:bg-slate-50/50 dark:hover:bg-slate-800/50 transition-colors">
+                    <tr key={order.Name} className="border-b border-slate-200/50 dark:border-slate-700/50 hover:bg-slate-50/50 dark:hover:bg-slate-800/50 transition-colors">
                     <td className="p-4" key={index}>
                         <span className="text-sm font-medium text-blue-500">
                             {order.Name}

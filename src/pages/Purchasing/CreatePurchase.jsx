@@ -190,7 +190,6 @@ const isDateInRange = (transactionDateString, startDate, endDate) => {
 
   return transactionDate >= startDate && transactionDate <= endDate;
 };
-// ------------------------------
 
 function CreatePurchase() {
     const iconProps = {
