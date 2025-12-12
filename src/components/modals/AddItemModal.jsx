@@ -1,6 +1,7 @@
 // AddItemModal.jsx - CORRECTED
 
 import React, { useState, useEffect } from 'react';
+import { Plus, X } from 'lucide-react'; 
 
 // You will need to import your CustomFormSelect and any other icons/components here
 // import CustomFormSelect from '../filter/CustomFormSelect'; 
@@ -51,8 +52,7 @@ function AddItemModal({ isOpen, onClose, onAddItem }) {
 
     const handleSave = (e) => {
         e.preventDefault();
-        
-        // Basic validation and type conversion before saving
+
         const finalItem = {
             ...itemForm,
             quantity: parseFloat(itemForm.quantity) || 0,
@@ -66,7 +66,6 @@ function AddItemModal({ isOpen, onClose, onAddItem }) {
         }
 
         onAddItem(finalItem);
-        // Reset form after successful submission
         setItemForm({
             brand: '',
             type: '',
@@ -83,9 +82,15 @@ function AddItemModal({ isOpen, onClose, onAddItem }) {
             <div className="bg-white dark:bg-slate-800 p-6 rounded-lg shadow-2xl w-full max-w-lg mx-4" 
                 onClick={e => e.stopPropagation()}>
 
-                <h3 className="text-xl font-bold text-slate-800 dark:text-white mb-4 pb-4 border-b border-slate-300 dark:border-slate-700">
-                    Add Product Item
-                </h3>
+                <div className = "w-full flex items-center justify-between mb-6 pb-6 border-b border-slate-300 dark:border-slate-700">
+                        <h2 className="text-2xl font-bold text-slate-800 dark:text-white">
+                            Add Product Item
+                        </h2>
+
+                        <button onClick={onClose}>
+                            <X className="w-7 h-7 text-slate-600 dark:text-slate-300 cursor-pointer"/>
+                        </button>
+                    </div>
 
                 <form onSubmit={handleSave} className="space-y-4">
                     {/* Brand Input */}

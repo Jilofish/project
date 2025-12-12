@@ -1,6 +1,7 @@
 // AddSupplierModal.jsx
 
 import React, { useState } from 'react';
+import { X } from 'lucide-react'; 
 
 function AddSupplierModal({ isOpen, onClose }) {
     if (!isOpen) return null;
@@ -39,9 +40,15 @@ function AddSupplierModal({ isOpen, onClose }) {
             <div className="bg-white dark:bg-slate-800 p-8 rounded-lg shadow-2xl w-full max-w-2xl mx-4" 
                 onClick={e => e.stopPropagation()}>
 
-                <h2 className="text-2xl font-bold text-slate-800 dark:text-white mb-6 pb-4 border-b border-slate-300 dark:border-slate-700">
-                    Add New Supplier
-                </h2>
+                <div className = "w-full flex items-center justify-between mb-6 pb-6 border-b border-slate-300 dark:border-slate-700">
+                        <h2 className="text-2xl font-bold text-slate-800 dark:text-white">
+                            Add New Supplier
+                        </h2>
+
+                        <button onClick={onClose}>
+                            <X className="w-7 h-7 text-slate-600 dark:text-slate-300 cursor-pointer"/>
+                        </button>
+                    </div>
 
                 <form onSubmit={handleSubmit} className="space-y-4">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

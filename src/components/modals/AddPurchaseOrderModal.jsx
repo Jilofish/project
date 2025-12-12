@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Plus, Trash2 } from 'lucide-react'; // Added Trash2 for action column
+import { Plus, Trash2, X } from 'lucide-react'; // Added Trash2 for action column
 import CustomFormSelect from '../filter/CustomFormSelect'; 
 // *** NEW IMPORT: You must create this file ***
 import AddItemModal from './AddItemModal'; 
@@ -104,12 +104,19 @@ function AddPurchaseOrderModal({ isOpen, onClose }) {
                 {/* Modal Content Box */}
                 <div className="bg-white dark:bg-slate-800 p-8 rounded-lg shadow-2xl w-full max-w-4xl mx-4" 
                     onClick={e => e.stopPropagation()}>
+                    
+                    <div className = "w-full flex items-center justify-between mb-6 pb-6 border-b border-slate-300 dark:border-slate-700">
+                        <h2 className="text-2xl font-bold text-slate-800 dark:text-white">
+                            Create New Purchase (PO)
+                        </h2>
 
-                    <h2 className="text-2xl font-bold text-slate-800 dark:text-white mb-6 pb-6 border-b border-slate-300 dark:border-slate-700">
-                        Create New Purchase (PO)
-                    </h2>
+                        <button onClick={onClose}>
+                            <X className="w-7 h-7 text-slate-600 dark:text-slate-300 cursor-pointer"/>
+                        </button>
+                    </div>
+                    
 
-                    <form onSubmit={handleFormSubmit} className="space-y-4">
+                    <form onSubmit={handleFormSubmit} className="space-y-8">
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                             
                             <div>
@@ -119,10 +126,10 @@ function AddPurchaseOrderModal({ isOpen, onClose }) {
                                 <input 
                                     type="text" 
                                     id="PONumber" 
-                                    className="w-full text-slate-700 dark:text-slate-200 mt-1 px-3 py-1.5 rounded-md border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 shadow-xs focus:outline-none focus:border-blue-500 dark:focus:border-blue-500 focus:caret-slate-500 dark:focus:caret-white"
+                                    className="w-full text-slate-700 dark:text-slate-200 mt-1 px-3 py-1.5 h-9 rounded-md border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 shadow-xs focus:outline-none focus:border-blue-500 dark:focus:border-blue-500 focus:caret-slate-500 dark:focus:caret-white"
                                 />
                             </div>
-
+                            
                             {/* SUPPLIER FIELD */}
                             <CustomFormSelect
                                 label="Supplier"
@@ -132,7 +139,7 @@ function AddPurchaseOrderModal({ isOpen, onClose }) {
                                 onSelect={handleInputChange}
                                 placeholder="" 
                             />
-                            
+
                             <div>
                                 <label htmlFor="transactionDate" className="block text-sm font-medium text-slate-700 dark:text-slate-300">
                                     Transaction Date
@@ -140,9 +147,10 @@ function AddPurchaseOrderModal({ isOpen, onClose }) {
                                 <input 
                                     type="text" 
                                     id="transactionDate" 
-                                    className="w-full text-slate-700 dark:text-slate-200 mt-1 px-3 py-1.5 rounded-md border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 shadow-xs focus:outline-none focus:border-blue-500 dark:focus:border-blue-500 focus:caret-slate-500 dark:focus:caret-white"
+                                    className="w-full text-slate-700 dark:text-slate-200 mt-1 px-3 py-1.5 h-9 rounded-md border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 shadow-xs focus:outline-none focus:border-blue-500 dark:focus:border-blue-500 focus:caret-slate-500 dark:focus:caret-white"
                                 />
                             </div>
+                            
 
                             {/* WAREHOUSE FIELD */}
                             <CustomFormSelect
@@ -186,7 +194,7 @@ function AddPurchaseOrderModal({ isOpen, onClose }) {
                                         purchaseItems.map((item, index) => (
                                             <tr 
                                                 key={item.id} 
-                                                className = "border-b border-slate-200/50 dark:border-slate-700/50 hover:bg-slate-50/50 dark:hover:bg-slate-800/50 transition-colors"
+                                                className = "border-b border-slate-300 dark:border-slate-600 hover:bg-slate-50/50 dark:hover:bg-slate-800/50 transition-colors"
                                             >
                                                 <td className="p-4 text-sm text-slate-700 dark:text-slate-200">{item.brand}</td>
                                                 <td className="p-4 text-sm text-slate-700 dark:text-slate-200">{item.type}</td>

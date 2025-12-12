@@ -42,7 +42,7 @@ function CustomFormSelect({ label, name, options, initialValue, onSelect, placeh
     const isPlaceholder = selectedValue === '';
     
     return (
-        <div className="relative w-full" ref={selectRef}>
+        <div className="relative w-full " ref={selectRef}>
             
             {/* Label */}
             <label htmlFor={name} className="block text-sm font-medium text-slate-700 dark:text-slate-300">
@@ -54,12 +54,12 @@ function CustomFormSelect({ label, name, options, initialValue, onSelect, placeh
                 type="button"
                 id={name}
                 className={`
-                    w-full mt-1 px-3 py-2 cursor-pointer text-left rounded-md border 
+                    w-full mt-1 px-3 py-1.5 h-9 cursor-pointer text-left rounded-md border 
                     ${isOpen 
                         ? 'border-blue-500 ring-2 ring-blue-500' // Focus/Open style
                         : 'border-slate-300 dark:border-slate-600' // Default border
                     }
-                    bg-white dark:bg-slate-700 shadow-xs 
+                    bg-white dark:bg-slate-700 shadow-xs
                     text-sm flex justify-between items-center transition-colors
                     ${isPlaceholder 
                         ? 'text-slate-400 dark:text-slate-500' // Placeholder color

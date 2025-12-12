@@ -6,7 +6,6 @@ import SupplierListTableHeader from './SupplierListTableHeader';
 import TablePagination from '../../components/pagination/TablePagination';
 import RowLimiter from '../../components/filter/RowLimiter';
 
-// *** NEW IMPORT ***
 import AddSupplierModal from '../../components/modals/AddSupplierModal'; 
 
 const ALL_OPTION = 'All';
@@ -42,7 +41,6 @@ const SuppliersData = [
     BankAcc: '123-456-789',
     Status: 'Active',
   },
-  // ... (Remaining data truncated for brevity)
   {
     Name: 'Richard Dela Cruz',
     businessName: "DC Meat Supply",
