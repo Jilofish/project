@@ -5,6 +5,7 @@ import CustomerListTableHeader from './CustomerListTableHeader';
 import CustomerListTable from './CustomerListTable';
 import TablePagination from '../../components/pagination/TablePagination';
 import RowLimiter from '../../components/filter/RowLimiter';
+import AddCustomerModal from '../../components/modals/AddCustomerModal';
 
 const ALL_OPTION = 'All';
 
@@ -187,6 +188,8 @@ function CustomerList() {
   const [statusFilter, setStatusFilter] = useState(initialStatus);
   const [currentPage, setCurrentPage] = useState(1); 
 
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
   // --- HANDLER FUNCTIONS ---
   const handleRowLimitChange = (newValue) => {
     setRowLimit(parseInt(newValue));
@@ -207,6 +210,9 @@ function CustomerList() {
     setStatusFilter(newValue);
     setCurrentPage(1);
   };
+
+  const handleOpenModal = () => setIsModalOpen(true);
+  const handleCloseModal = () => setIsModalOpen(false);
 
 
   // --- FILTERING LOGIC ---
@@ -275,6 +281,8 @@ return (
         handleCustomerTypeChange={handleCustomerTypeChange}
         handleStatusChange={handleStatusChange}
         iconProps={iconProps}
+
+        onAddCustomerClick={handleOpenModal}
       />
 
       <CustomerListTable orders={paginatedOrders} /> 
@@ -293,6 +301,11 @@ return (
         />
       </div>
     </div>
+
+    <AddCustomerModal
+      isOpen={isModalOpen} 
+      onClose={handleCloseModal} 
+    />
   </div>
 )
 }

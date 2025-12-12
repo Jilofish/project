@@ -7,7 +7,7 @@ function CustomerListTableHeader({
     nameOptions, customerTypeOptions, statusOptions,
     currentName, currentCustomerType, currentStatus,
     handleNameChange, handleCustomerTypeChange, handleStatusChange,
-    iconProps
+    iconProps, onAddCustomerClick
 }) {
   return (
     <div className="flex items-center justify-between">
@@ -36,7 +36,9 @@ function CustomerListTableHeader({
                 iconProps={iconProps}
             />
 
-            <button className="flex items-center space-x-2 py-2 px-4 bg-blue-500 text-white rounded-lg hover:shadow-lg transition-all">
+            <button className="cursor-pointer flex items-center space-x-2 py-2 px-4 bg-blue-500 text-white rounded-lg hover:shadow-lg transition-all"
+                onClick={onAddCustomerClick}
+            >
                 <Plus className="w-4 h-4" />
                 <span className="text-sm font-medium">Add Customer</span>
             </button>

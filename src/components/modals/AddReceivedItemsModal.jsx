@@ -1,9 +1,7 @@
-// AddSupplierModal.jsx
-
 import React, { useState } from 'react';
 import { X } from 'lucide-react'; 
 
-function AddSupplierModal({ isOpen, onClose }) {
+function AddReceivedItemsModal({ isOpen, onClose }) {
     if (!isOpen) return null;
 
     const [formValues, setFormValues] = useState({
@@ -114,4 +112,4 @@ function AddSupplierModal({ isOpen, onClose }) {
     );
 }
 
-export default AddSupplierModal;
+export default AddReceivedItemsModal;

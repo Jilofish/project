@@ -10,7 +10,7 @@ function SupplierListTableHeader({
     handleNameChange, handleBusinessNameChange, handleStatusChange,
     iconProps,
     // *** 1. ACCEPT THE NEW PROP ***
-    onAddSupplierClick 
+    onAddSupplierClick
 }) {
 return (
     <div className="flex items-center justify-between">

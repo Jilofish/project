@@ -5,6 +5,7 @@ import ReceivedItemsTableHeader from './ReceivedItemsTableHeader';
 import ReceivedItemsTable from './ReceivedItemsTable';
 import RowLimiter from '../../components/filter/RowLimiter';
 import TablePagination from '../../components/pagination/TablePagination';
+import AddReceivedItemsModal from '../../components/modals/AddReceivedItemsModal'; 
 
 const ALL_OPTION = 'All';
 
@@ -102,6 +103,8 @@ function ReceivedItems() {
     const [deliveryStatusFilter, setDeliveryStatusFilter] = useState(initialDeliveryStatus);
     const [currentPage, setCurrentPage] = useState(1);
 
+    const [isModalOpen, setIsModalOpen] = useState(false);
+
     // --- HANDLER FUNCTIONS ---
     const handleRowLimitChange = (newValue) => {
         setRowLimit(parseInt(newValue));
@@ -123,6 +126,8 @@ function ReceivedItems() {
         setCurrentPage(1);
     };
 
+    const handleOpenModal = () => setIsModalOpen(true);
+    const handleCloseModal = () => setIsModalOpen(false);
 
     // --- FILTERING LOGIC ---
     const filteredOrders = useMemo(() => {
@@ -183,37 +188,44 @@ function ReceivedItems() {
       <div className = "bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl rounded-2xl py-3 px-5 border border-slate-200/50 dark:border-slate-700/50">
 
         <ReceivedItemsTableHeader
-            dateRangeOptions={dateRangeOptions}
-            supplierOptions={supplierOptions}
-            deliveryOptions={deliveryOptions}
-            
-            currentDateRange={dateRangeFilter}
-            currentSupplier={supplierFilter}
-            currentDeliveryStatus={deliveryStatusFilter}
+          dateRangeOptions={dateRangeOptions}
+          supplierOptions={supplierOptions}
+          deliveryOptions={deliveryOptions}
+          
+          currentDateRange={dateRangeFilter}
+          currentSupplier={supplierFilter}
+          currentDeliveryStatus={deliveryStatusFilter}
 
-            handleDateRangeChange={handleDateRangeChange}
-            handleSupplierChange={handleSupplierChange}
-            handleDeliveryChange={handleDeliveryChange}
-            
-            iconProps={iconProps}
+          handleDateRangeChange={handleDateRangeChange}
+          handleSupplierChange={handleSupplierChange}
+          handleDeliveryChange={handleDeliveryChange}
+
+          onAddReceivedItemClick={handleOpenModal}
+          
+          iconProps={iconProps}
         />
 
         <ReceivedItemsTable orders={paginatedOrders} />
 
         <div className = "flex items-center justify-between mb-3">
-            <RowLimiter
-                options={rowLimitOptions}
-                initialValue={rowLimit.toString()}
-                onSelect={handleRowLimitChange}
-                iconProps={iconProps}
-            />
-            <TablePagination
-                totalPages={totalPages}
-                currentPage={currentPage}
-                onPageChange={setCurrentPage}
-            />
+          <RowLimiter
+            options={rowLimitOptions}
+            initialValue={rowLimit.toString()}
+            onSelect={handleRowLimitChange}
+            iconProps={iconProps}
+          />
+          <TablePagination
+            totalPages={totalPages}
+            currentPage={currentPage}
+            onPageChange={setCurrentPage}
+          />
         </div>
       </div>
+
+      <AddReceivedItemsModal
+        isOpen={isModalOpen} 
+        onClose={handleCloseModal} 
+      />
     </div>
   );
 }

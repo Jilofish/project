@@ -9,7 +9,7 @@ function ReceivedItemsTableHeader({
     dateRangeOptions, supplierOptions, deliveryOptions,
     currentDateRange, currentSupplier, currentDeliveryStatus,
     handleDateRangeChange, handleSupplierChange, handleDeliveryChange,
-    iconProps
+    iconProps, onAddReceivedItemClick
 }) {
     
     // NOTE: Handlers and options are now props, removed local definitions.
@@ -47,7 +47,7 @@ function ReceivedItemsTableHeader({
 
                 </div>
                 
-                <button className="flex items-center space-x-2 py-2 px-4 bg-blue-500 text-white rounded-lg hover:shadow-lg transition-all">
+                <button className="cursor-pointer flex items-center space-x-2 py-2 px-4 bg-blue-500 text-white rounded-lg hover:shadow-lg transition-all" onClick={onAddReceivedItemClick}>
                     <Plus className="w-4 h-4" />
                     <span className="text-sm font-medium">Add Purchase</span>
                 </button>
