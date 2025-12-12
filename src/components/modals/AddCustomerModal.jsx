@@ -93,8 +93,8 @@ function AddCustomerModal({ isOpen, onClose }) {
                         </div>
                         
                         <CustomFormSelect
-                            label="Supplier"
-                            name="supplier"
+                            label="Customer Type"
+                            name="CustomerType"
                             options={CustomerTypes}
                             initialValue={formValues.CustomerType}
                             onSelect={handleInputChange}

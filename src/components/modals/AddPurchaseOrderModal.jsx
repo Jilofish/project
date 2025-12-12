@@ -94,8 +94,6 @@ function AddPurchaseOrderModal({ isOpen, onClose }) {
     const merchandiseSubtotal = purchaseItems.reduce((sum, item) => sum + item.total, 0);
     const totalPayment = merchandiseSubtotal; // For simplicity, only using subtotal
 
-    // ----------------------------------------------------------------------------------
-
     return (
         <>
             <div 
