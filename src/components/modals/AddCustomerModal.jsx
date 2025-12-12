@@ -1,5 +1,13 @@
 import React, { useState } from 'react';
-import { X } from 'lucide-react'; 
+import { X } from 'lucide-react';
+import CustomFormSelect from '../filter/CustomFormSelect'; 
+
+const CustomerTypeOptions = [
+    { customerType: 'Regular' },
+    { customerType: 'VIP' },
+    { customerType: 'Vacuum' },
+    { customerType: 'Unpack' }
+];
 
 function AddCustomerModal({ isOpen, onClose }) {
     if (!isOpen) return null;
@@ -10,8 +18,8 @@ function AddCustomerModal({ isOpen, onClose }) {
         Address: '',
         Email: '',
         ContactNo: '',
-        tinNo: '',
-        BankAcc: '',
+        FBName: '',
+        CustomerType: '',
     });
 
     const handleInputChange = (e) => {
@@ -27,9 +35,11 @@ function AddCustomerModal({ isOpen, onClose }) {
         console.log("New Supplier Data:", formValues);
         
         // Reset and close
-        setFormValues({ Name: '', businessName: '', Address: '', Email: '', ContactNo: '', tinNo: '', BankAcc: '' });
+        setFormValues({ Name: '', businessName: '', FBName: '', Address: '', Email: '', ContactNo: '', CustomerType: '' });
         onClose();
     };
+
+    const CustomerTypes = CustomerTypeOptions.map(d => ({ value: d.customerType, label: d.customerType }));
 
     return (
         <div className="fixed inset-0 bg-black/50 dark:bg-black/70 z-[60] flex items-center justify-center">
@@ -38,7 +48,7 @@ function AddCustomerModal({ isOpen, onClose }) {
 
                 <div className = "w-full flex items-center justify-between mb-6 pb-6 border-b border-slate-300 dark:border-slate-700">
                         <h2 className="text-2xl font-bold text-slate-800 dark:text-white">
-                            Add New Supplier
+                            Add New Customer
                         </h2>
 
                         <button onClick={onClose}>
@@ -50,21 +60,21 @@ function AddCustomerModal({ isOpen, onClose }) {
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         
                         <div>
-                            <label htmlFor="Name" className="block text-sm font-medium text-slate-700 dark:text-slate-300">Supplier Name</label>
+                            <label htmlFor="Name" className="block text-sm font-medium text-slate-700 dark:text-slate-300">Full Name</label>
                             <input type="text" id="Name" name="Name" value={formValues.Name} onChange={handleInputChange} placeholder="Jane Dela Cruz"
                                 className="w-full mt-1 px-3 py-1.5 rounded-md border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 shadow-xs focus:outline-none focus:border-blue-500 dark:focus:border-blue-500 text-slate-700 dark:text-slate-200" required />
                         </div>
 
                         <div>
-                            <label htmlFor="businessName" className="block text-sm font-medium text-slate-700 dark:text-slate-300">Business Name</label>
-                            <input type="text" id="businessName" name="businessName" value={formValues.businessName} onChange={handleInputChange} placeholder="DC Meat Supply"
+                            <label htmlFor="FBName" className="block text-sm font-medium text-slate-700 dark:text-slate-300">FB Name</label>
+                            <input type="text" id="FBName" name="FBName" value={formValues.FBName} onChange={handleInputChange} placeholder="Sarah Ganda"
                                 className="w-full mt-1 px-3 py-1.5 rounded-md border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 shadow-xs focus:outline-none focus:border-blue-500 dark:focus:border-blue-500 text-slate-700 dark:text-slate-200" required />
                         </div>
 
                         {/* Contact No */}
                         <div>
-                            <label htmlFor="ContactNo" className="block text-sm font-medium text-slate-700 dark:text-slate-300">Contact No.</label>
-                            <input type="text" id="ContactNo" name="ContactNo" value={formValues.ContactNo} onChange={handleInputChange} placeholder="0917xxxxxxx"
+                            <label htmlFor="businessName" className="block text-sm font-medium text-slate-700 dark:text-slate-300">Business Name</label>
+                            <input type="text" id="businessName" name="businessName" value={formValues.businessName} onChange={handleInputChange} placeholder="ABC Company Inc."
                                 className="w-full mt-1 px-3 py-1.5 rounded-md border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 shadow-xs focus:outline-none focus:border-blue-500 dark:focus:border-blue-500 text-slate-700 dark:text-slate-200" />
                         </div>
                         
@@ -77,17 +87,19 @@ function AddCustomerModal({ isOpen, onClose }) {
 
                         {/* TIN No */}
                         <div>
-                            <label htmlFor="tinNo" className="block text-sm font-medium text-slate-700 dark:text-slate-300">TIN No.</label>
-                            <input type="text" id="tinNo" name="tinNo" value={formValues.tinNo} onChange={handleInputChange} placeholder="123-456-789-000"
+                            <label htmlFor="ContactNo" className="block text-sm font-medium text-slate-700 dark:text-slate-300">Contact No.</label>
+                            <input type="number" id="ContactNo" name="ContactNo" value={formValues.ContactNo} onChange={handleInputChange} placeholder="0917xxxxxxx"
                                 className="w-full mt-1 px-3 py-1.5 rounded-md border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 shadow-xs focus:outline-none focus:border-blue-500 dark:focus:border-blue-500 text-slate-700 dark:text-slate-200" />
                         </div>
                         
-                        {/* Bank Account */}
-                        <div>
-                            <label htmlFor="BankAcc" className="block text-sm font-medium text-slate-700 dark:text-slate-300">Bank Account No.</label>
-                            <input type="text" id="BankAcc" name="BankAcc" value={formValues.BankAcc} onChange={handleInputChange} placeholder="9876543210 (BDO)"
-                                className="w-full mt-1 px-3 py-1.5 rounded-md border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 shadow-xs focus:outline-none focus:border-blue-500 dark:focus:border-blue-500 text-slate-700 dark:text-slate-200" />
-                        </div>
+                        <CustomFormSelect
+                            label="Supplier"
+                            name="supplier"
+                            options={CustomerTypes}
+                            initialValue={formValues.CustomerType}
+                            onSelect={handleInputChange}
+                            placeholder="" 
+                        />
                     </div>
                     
                     {/* Address (Full width) */}
@@ -103,7 +115,7 @@ function AddCustomerModal({ isOpen, onClose }) {
                             Cancel
                         </button>
                         <button type="submit" className="cursor-pointer px-4 py-2 text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 transition-colors shadow-md">
-                            Add Supplier
+                            Add Customer
                         </button>
                     </div>
                 </form>

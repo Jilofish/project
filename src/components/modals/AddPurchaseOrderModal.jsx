@@ -4,7 +4,7 @@ import CustomFormSelect from '../filter/CustomFormSelect';
 // *** NEW IMPORT: You must create this file ***
 import AddItemModal from './AddItemModal'; 
 
-// === DATA DEFINED INSIDE THE FILE ===
+
 const SupplierData = [
     { supplier: 'Earl Meats Inc.' },
     { supplier: 'Javier Meats' },
@@ -16,7 +16,7 @@ const warehouseData = [
     { warehouse: 'Meycuayan' },
     { warehouse: 'Quezon City' }
 ];
-// ===================================
+
 
 function AddPurchaseOrderModal({ isOpen, onClose }) {
     if (!isOpen) return null;
