@@ -6,9 +6,12 @@ import PurchasedOrdersTable from './PurchasedOrdersTable';
 import RowLimiter from '../../components/filter/RowLimiter';
 import TablePagination from '../../components/pagination/TablePagination';
 import AddPurchaseOrderModal from '../../components/modals/AddPurchaseOrderModal';
+// Import the new Edit Modal component
+import EditPurchaseOrderModal from '../../components/modals/EditPurchaseOrderModal'; 
 
 const ALL_OPTION = 'All';
 
+// --- DATA SOURCE ---
 const PurchasedOrdersData = [
     {
         PO: 'PO-123456',
@@ -84,7 +87,7 @@ const PurchasedOrdersData = [
         total: "$1,999.99",
         approvalStatus: "Approved",
         deliveryStatus: "Delivered",
-        paymentStatus: "Paid",
+        paymentStatus: 'Paid',
         remarks: "Kitchen equipment maintenance parts"
     },
     {
@@ -95,7 +98,7 @@ const PurchasedOrdersData = [
         total: "$675.30",
         approvalStatus: "Approved",
         deliveryStatus: "Out for Delivery",
-        paymentStatus: "N/A",
+        paymentStatus: 'N/A',
         remarks: "Milk and cheese rush order"
     },
     {
@@ -128,7 +131,7 @@ const PurchasedOrdersData = [
         total: "$3,800.10",
         approvalStatus: "Approved",
         deliveryStatus: "Out for Delivery",
-        paymentStatus: "N/A",
+        paymentStatus: 'N/A',
         remarks: "Holiday beef tenderloin order"
     },
     {
@@ -161,7 +164,7 @@ const PurchasedOrdersData = [
         total: "$990.00",
         approvalStatus: "Rejected",
         deliveryStatus: "Order Placed",
-        paymentStatus: "N/A",
+        paymentStatus: 'N/A',
         remarks: "Cream shortage notification"
     },
     {
@@ -179,17 +182,17 @@ const PurchasedOrdersData = [
 
 // --- DATE HELPER FUNCTIONS ---
 const parseDate = (dateString) => {
-  return new Date(dateString); 
+    return new Date(dateString); 
 };
 
 const isDateInRange = (transactionDateString, startDate, endDate) => {
-  const transactionDate = parseDate(transactionDateString);
-  
-  transactionDate.setHours(0, 0, 0, 0); 
-  startDate.setHours(0, 0, 0, 0); 
-  endDate.setHours(23, 59, 59, 999); 
+    const transactionDate = parseDate(transactionDateString);
 
-  return transactionDate >= startDate && transactionDate <= endDate;
+    transactionDate.setHours(0, 0, 0, 0); 
+    startDate.setHours(0, 0, 0, 0); 
+    endDate.setHours(23, 59, 59, 999); 
+
+    return transactionDate >= startDate && transactionDate <= endDate;
 };
 
 function CreatePurchase() {
@@ -197,9 +200,14 @@ function CreatePurchase() {
         className: 'w-4 h-4 text-slate-500 dark:text-slate-500',
     };
 
+    // --- ADD MODAL STATE ---
     const [isModalOpen, setIsModalOpen] = useState(false);
     const openModal = () => setIsModalOpen(true);
     const closeModal = () => setIsModalOpen(false);
+
+    // --- EDIT MODAL STATE ---
+    const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+    const [orderToEdit, setOrderToEdit] = useState(null); // Holds the selected row's data
 
     // --- DYNAMIC OPTION GENERATION (Explicitly uses ALL_OPTION) ---
     const extractUniqueOptions = (key, placeholder) => {
@@ -208,21 +216,20 @@ function CreatePurchase() {
     };
 
     const rowLimitOptions = [5, 10, 15]; 
-    
     const dateRangeOptions = ['Date Range', ALL_OPTION, 'Today', 'Last 7 Days', 'Last 30 Days'];
-    
+
     const supplierOptions = extractUniqueOptions('supplier', 'Supplier');
     const deliveryOptions = extractUniqueOptions('deliveryStatus', 'Delivery Status');
     const paymentOptions = extractUniqueOptions('paymentStatus', 'Payment Status');
 
-    //the placeholder
+    // Initial Placeholders
     const initialRowLimit = rowLimitOptions[0];
     const initialDateRange = dateRangeOptions[0];
     const initialSupplier = supplierOptions[0];
     const initialDeliveryStatus = deliveryOptions[0];
     const initialPaymentStatus = paymentOptions[0];
 
-    // --- STATE MANAGEMENT ---
+    // --- FILTER STATE MANAGEMENT ---
     const [rowLimit, setRowLimit] = useState(initialRowLimit);
     const [dateRangeFilter, setDateRangeFilter] = useState(initialDateRange);
     const [supplierFilter, setSupplierFilter] = useState(initialSupplier);
@@ -256,114 +263,142 @@ function CreatePurchase() {
         setCurrentPage(1);
     };
 
+    // --- EDIT HANDLER ---
+    const handleEdit = (orderData) => {
+        setOrderToEdit(orderData); // Set the selected row data
+        setIsEditModalOpen(true);  // Open the edit modal
+    };
+
+    const handleCloseEditModal = () => {
+        setIsEditModalOpen(false);
+        setOrderToEdit(null); // Clear the data when closing
+    };
+
+    const handleSaveEdit = (updatedOrder) => {
+        console.log("Saving updated order:", updatedOrder);
+        handleCloseEditModal();
+    };
+
     // --- FILTERING LOGIC ---
     const filteredOrders = useMemo(() => {
-      let filtered = PurchasedOrdersData;
-      
-      // 1. Date Range Filter
-      // Only apply if the value is NOT the placeholder AND NOT 'All'
-      if (dateRangeFilter !== initialDateRange && dateRangeFilter !== ALL_OPTION) {
+    let filtered = PurchasedOrdersData;
+
+    // 1. Date Range Filter
+    if (dateRangeFilter !== initialDateRange && dateRangeFilter !== ALL_OPTION) {
         const today = new Date();
         let startDate = new Date(0); 
 
         switch (dateRangeFilter) {
-          case 'Today':
-              startDate = today; 
-              break;
-          case 'Last 7 Days':
-              startDate = new Date(today);
-              startDate.setDate(today.getDate() - 7);
-              break;
-          case 'Last 30 Days':
-              startDate = new Date(today);
-              startDate.setDate(today.getDate() - 30);
-              break;
+            case 'Today':
+            startDate = today; 
+        break;
+        case 'Last 7 Days':
+            startDate = new Date(today);
+            startDate.setDate(today.getDate() - 7);
+        break;
+        case 'Last 30 Days':
+            startDate = new Date(today);
+            startDate.setDate(today.getDate() - 30);
+            break;
         }
 
         filtered = filtered.filter(order => 
             isDateInRange(order.transactionDate, startDate, today)
         );
-      }
+    }
 
-      // Supplier Filter
-      if (supplierFilter !== initialSupplier && supplierFilter !== ALL_OPTION) {
-          filtered = filtered.filter(order => order.supplier === supplierFilter);
-      }
+    // Supplier Filter
+    if (supplierFilter !== initialSupplier && supplierFilter !== ALL_OPTION) {
+        filtered = filtered.filter(order => order.supplier === supplierFilter);
+    }
 
-      // Delivery Status Filter
-      if (deliveryStatusFilter !== initialDeliveryStatus && deliveryStatusFilter !== ALL_OPTION) {
-          filtered = filtered.filter(order => order.deliveryStatus === deliveryStatusFilter);
-      }
+    // Delivery Status Filter
+    if (deliveryStatusFilter !== initialDeliveryStatus && deliveryStatusFilter !== ALL_OPTION) {
+        filtered = filtered.filter(order => order.deliveryStatus === deliveryStatusFilter);
+    }
 
-      // Payment Status Filter
-      if (paymentStatusFilter !== initialPaymentStatus && paymentStatusFilter !== ALL_OPTION) {
-          filtered = filtered.filter(order => order.paymentStatus === paymentStatusFilter);
-      }
-        
-        return filtered;
+    // Payment Status Filter
+    if (paymentStatusFilter !== initialPaymentStatus && paymentStatusFilter !== ALL_OPTION) {
+        filtered = filtered.filter(order => order.paymentStatus === paymentStatusFilter);
+    }
+
+    return filtered;
     }, [dateRangeFilter, supplierFilter, deliveryStatusFilter, paymentStatusFilter, initialDateRange, initialSupplier, initialDeliveryStatus, initialPaymentStatus]); 
 
-    // --- Pagination Logic ---
-    const totalOrders = filteredOrders.length;
-    const totalPages = Math.ceil(totalOrders / rowLimit);
-    
-    const paginatedOrders = useMemo(() => {
-        const startIndex = (currentPage - 1) * rowLimit;
-        const endIndex = startIndex + rowLimit;
-        return filteredOrders.slice(startIndex, endIndex);
-    }, [filteredOrders, rowLimit, currentPage]);
+// --- Pagination Logic ---
+const totalOrders = filteredOrders.length;
+const totalPages = Math.ceil(totalOrders / rowLimit);
+
+const paginatedOrders = useMemo(() => {
+const startIndex = (currentPage - 1) * rowLimit;
+const endIndex = startIndex + rowLimit;
+return filteredOrders.slice(startIndex, endIndex);
+}, [filteredOrders, rowLimit, currentPage]);
 
 
-  return (
+return (
     <div>
-      <PurchasedStatsGrid/>
+        <PurchasedStatsGrid/>
 
-      <div className = "bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl rounded-2xl py-5 px-5 border border-slate-200/50 dark:border-slate-700/50">
-          
-        <PurchasedOrdersTableHeader
-            dateRangeOptions={dateRangeOptions}
-            supplierOptions={supplierOptions}
-            deliveryOptions={deliveryOptions}
-            paymentOptions={paymentOptions}
-            
-            currentDateRange={dateRangeFilter}
-            currentSupplier={supplierFilter}
-            currentDeliveryStatus={deliveryStatusFilter}
-            currentPaymentStatus={paymentStatusFilter}
+        <div className = "bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl rounded-2xl py-5 px-5 border border-slate-200/50 dark:border-slate-700/50">
 
-            handleDateRangeChange={handleDateRangeChange}
-            handleSupplierChange={handleSupplierChange}
-            handleDeliveryChange={handleDeliveryChange}
-            handlePaymentChange={handlePaymentChange}
-            
-            iconProps={iconProps}
-            onAddPurchaseOrderClick={openModal}
-        />
+            <PurchasedOrdersTableHeader
+                dateRangeOptions={dateRangeOptions}
+                supplierOptions={supplierOptions}
+                deliveryOptions={deliveryOptions}
+                paymentOptions={paymentOptions}
 
-        <PurchasedOrdersTable orders={paginatedOrders} />
+                currentDateRange={dateRangeFilter}
+                currentSupplier={supplierFilter}
+                currentDeliveryStatus={deliveryStatusFilter}
+                currentPaymentStatus={paymentStatusFilter}
 
-        <div className = "flex items-center justify-between mb-3">
-            <RowLimiter
-                options={rowLimitOptions}
-                initialValue={rowLimit.toString()}
-                onSelect={handleRowLimitChange}
+                handleDateRangeChange={handleDateRangeChange}
+                handleSupplierChange={handleSupplierChange}
+                handleDeliveryChange={handleDeliveryChange}
+                handlePaymentChange={handlePaymentChange}
+
                 iconProps={iconProps}
+                onAddPurchaseOrderClick={openModal}
             />
-            <TablePagination
-                totalPages={totalPages}
-                currentPage={currentPage}
-                onPageChange={setCurrentPage}
-            />
-        </div>
-      </div>
 
+            {/* Pass the new onEdit handler to the table */}
+            <PurchasedOrdersTable 
+                orders={paginatedOrders} 
+                onEdit={handleEdit} 
+            />
+
+            <div className = "flex items-center justify-between mb-3">
+                <RowLimiter
+                    options={rowLimitOptions}
+                    initialValue={rowLimit.toString()}
+                    onSelect={handleRowLimitChange}
+                    iconProps={iconProps}
+                />
+                <TablePagination
+                    totalPages={totalPages}
+                    currentPage={currentPage}
+                    onPageChange={setCurrentPage}
+                />
+            </div>
+        </div>
+
+        {/* Add Purchase Order Modal */}
         <AddPurchaseOrderModal 
             isOpen={isModalOpen} 
             onClose={closeModal} 
         />
 
+        {/* Edit Purchase Order Modal (New) */}
+        <EditPurchaseOrderModal 
+            isOpen={isEditModalOpen}
+            onClose={handleCloseEditModal}
+            orderData={orderToEdit} // Data of the selected row
+            onSave={handleSaveEdit}
+        />
+
     </div>
-  );
+);
 }
 
 export default CreatePurchase;

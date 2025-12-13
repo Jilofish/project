@@ -1,7 +1,7 @@
 import React from 'react';
-import { MoreHorizontal } from 'lucide-react'; 
+import { MoreHorizontal, Pencil, Trash2 } from 'lucide-react'; 
 
-function PurchasedOrdersTable({ orders }) {
+function PurchasedOrdersTable({ orders, onEdit }) {
     // NOTE: The static PurchasedOrders data is removed and now received via the 'orders' prop.
     
     const getApprovalStatusColor = (approvalStatus) => {
@@ -103,9 +103,14 @@ function PurchasedOrdersTable({ orders }) {
                                 {order.remarks}
                             </span>
                         </td>
-                        <td className="p-4"> 
-                          <span className="text-sm text-slate-800 dark:text-white">
-                            <MoreHorizontal className="w-4 h-4"/>
+                        <td className="p-4 flex items-center gap-3"> 
+                          <span className="text-sm text-blue-800 dark:text-blue-400 cursor-pointer"
+                            onClick={() => onEdit(order)}
+                          >
+                            <Pencil className="w-4 h-4"/>
+                          </span>
+                          <span className="text-sm text-red-800 dark:text-red-400 cursor-pointer">
+                            <Trash2 className="w-4 h-4"/>
                           </span>
                         </td>
                       </tr>
