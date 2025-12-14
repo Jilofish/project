@@ -6,12 +6,11 @@ import PurchasedOrdersTable from './PurchasedOrdersTable';
 import RowLimiter from '../../components/filter/RowLimiter';
 import TablePagination from '../../components/pagination/TablePagination';
 import AddPurchaseOrderModal from '../../components/modals/AddPurchaseOrderModal';
-// Import the new Edit Modal component
 import EditPurchaseOrderModal from '../../components/modals/EditPurchaseOrderModal'; 
 
 const ALL_OPTION = 'All';
 
-// --- DATA SOURCE ---
+// --- DATA SOURCE (Keeping your original data) ---
 const PurchasedOrdersData = [
     {
         PO: 'PO-123456',
@@ -207,9 +206,9 @@ function CreatePurchase() {
 
     // --- EDIT MODAL STATE ---
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-    const [orderToEdit, setOrderToEdit] = useState(null); // Holds the selected row's data
+    const [orderToEdit, setOrderToEdit] = useState(null); 
 
-    // --- DYNAMIC OPTION GENERATION (Explicitly uses ALL_OPTION) ---
+    // --- DYNAMIC OPTION GENERATION ---
     const extractUniqueOptions = (key, placeholder) => {
         const uniqueValues = [...new Set(PurchasedOrdersData.map(order => order[key]))];
         return [placeholder, ALL_OPTION, ...uniqueValues.sort()];
@@ -221,6 +220,7 @@ function CreatePurchase() {
     const supplierOptions = extractUniqueOptions('supplier', 'Supplier');
     const deliveryOptions = extractUniqueOptions('deliveryStatus', 'Delivery Status');
     const paymentOptions = extractUniqueOptions('paymentStatus', 'Payment Status');
+    const approvalOptions = extractUniqueOptions('approvalStatus', 'Approval Status'); // NEW OPTIONS
 
     // Initial Placeholders
     const initialRowLimit = rowLimitOptions[0];
@@ -228,6 +228,7 @@ function CreatePurchase() {
     const initialSupplier = supplierOptions[0];
     const initialDeliveryStatus = deliveryOptions[0];
     const initialPaymentStatus = paymentOptions[0];
+    const initialApprovalStatus = approvalOptions[0]; // NEW INITIAL STATE
 
     // --- FILTER STATE MANAGEMENT ---
     const [rowLimit, setRowLimit] = useState(initialRowLimit);
@@ -235,6 +236,7 @@ function CreatePurchase() {
     const [supplierFilter, setSupplierFilter] = useState(initialSupplier);
     const [deliveryStatusFilter, setDeliveryStatusFilter] = useState(initialDeliveryStatus);
     const [paymentStatusFilter, setPaymentStatusFilter] = useState(initialPaymentStatus);
+    const [approvalStatusFilter, setApprovalStatusFilter] = useState(initialApprovalStatus); // NEW STATE
     const [currentPage, setCurrentPage] = useState(1);
 
     // --- HANDLER FUNCTIONS ---
@@ -263,15 +265,20 @@ function CreatePurchase() {
         setCurrentPage(1);
     };
 
+    const handleApprovalChange = (newValue) => { // NEW HANDLER
+        setApprovalStatusFilter(newValue);
+        setCurrentPage(1);
+    };
+
     // --- EDIT HANDLER ---
     const handleEdit = (orderData) => {
-        setOrderToEdit(orderData); // Set the selected row data
-        setIsEditModalOpen(true);  // Open the edit modal
+        setOrderToEdit(orderData); 
+        setIsEditModalOpen(true); 
     };
 
     const handleCloseEditModal = () => {
         setIsEditModalOpen(false);
-        setOrderToEdit(null); // Clear the data when closing
+        setOrderToEdit(null); 
     };
 
     const handleSaveEdit = (updatedOrder) => {
@@ -291,12 +298,12 @@ function CreatePurchase() {
         switch (dateRangeFilter) {
             case 'Today':
             startDate = today; 
-        break;
-        case 'Last 7 Days':
+            break;
+            case 'Last 7 Days':
             startDate = new Date(today);
             startDate.setDate(today.getDate() - 7);
-        break;
-        case 'Last 30 Days':
+            break;
+            case 'Last 30 Days':
             startDate = new Date(today);
             startDate.setDate(today.getDate() - 30);
             break;
@@ -307,98 +314,105 @@ function CreatePurchase() {
         );
     }
 
-    // Supplier Filter
+    // 2. Supplier Filter
     if (supplierFilter !== initialSupplier && supplierFilter !== ALL_OPTION) {
         filtered = filtered.filter(order => order.supplier === supplierFilter);
     }
 
-    // Delivery Status Filter
+    // 3. Approval Status Filter (NEW FILTER LOGIC)
+    if (approvalStatusFilter !== initialApprovalStatus && approvalStatusFilter !== ALL_OPTION) {
+        filtered = filtered.filter(order => order.approvalStatus === approvalStatusFilter);
+    }
+
+    // 4. Delivery Status Filter
     if (deliveryStatusFilter !== initialDeliveryStatus && deliveryStatusFilter !== ALL_OPTION) {
         filtered = filtered.filter(order => order.deliveryStatus === deliveryStatusFilter);
     }
 
-    // Payment Status Filter
+    // 5. Payment Status Filter
     if (paymentStatusFilter !== initialPaymentStatus && paymentStatusFilter !== ALL_OPTION) {
         filtered = filtered.filter(order => order.paymentStatus === paymentStatusFilter);
     }
 
     return filtered;
-    }, [dateRangeFilter, supplierFilter, deliveryStatusFilter, paymentStatusFilter, initialDateRange, initialSupplier, initialDeliveryStatus, initialPaymentStatus]); 
+    }, [dateRangeFilter, supplierFilter, approvalStatusFilter, deliveryStatusFilter, paymentStatusFilter, initialDateRange, initialSupplier, initialApprovalStatus, initialDeliveryStatus, initialPaymentStatus]); 
 
-// --- Pagination Logic ---
-const totalOrders = filteredOrders.length;
-const totalPages = Math.ceil(totalOrders / rowLimit);
+    // --- Pagination Logic ---
+    const totalOrders = filteredOrders.length;
+    const totalPages = Math.ceil(totalOrders / rowLimit);
 
-const paginatedOrders = useMemo(() => {
-const startIndex = (currentPage - 1) * rowLimit;
-const endIndex = startIndex + rowLimit;
-return filteredOrders.slice(startIndex, endIndex);
-}, [filteredOrders, rowLimit, currentPage]);
+    const paginatedOrders = useMemo(() => {
+        const startIndex = (currentPage - 1) * rowLimit;
+        const endIndex = startIndex + rowLimit;
+        return filteredOrders.slice(startIndex, endIndex);
+    }, [filteredOrders, rowLimit, currentPage]);
 
 
-return (
-    <div>
-        <PurchasedStatsGrid/>
+    return (
+        <div>
+            <PurchasedStatsGrid/>
 
-        <div className = "bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl rounded-2xl py-5 px-5 border border-slate-200/50 dark:border-slate-700/50">
+            <div className = "bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl rounded-2xl py-5 px-5 border border-slate-200/50 dark:border-slate-700/50">
 
-            <PurchasedOrdersTableHeader
-                dateRangeOptions={dateRangeOptions}
-                supplierOptions={supplierOptions}
-                deliveryOptions={deliveryOptions}
-                paymentOptions={paymentOptions}
+                <PurchasedOrdersTableHeader
+                    dateRangeOptions={dateRangeOptions}
+                    supplierOptions={supplierOptions}
+                    deliveryOptions={deliveryOptions}
+                    paymentOptions={paymentOptions}
+                    approvalOptions={approvalOptions} // PASS NEW OPTIONS
 
-                currentDateRange={dateRangeFilter}
-                currentSupplier={supplierFilter}
-                currentDeliveryStatus={deliveryStatusFilter}
-                currentPaymentStatus={paymentStatusFilter}
+                    currentDateRange={dateRangeFilter}
+                    currentSupplier={supplierFilter}
+                    currentDeliveryStatus={deliveryStatusFilter}
+                    currentPaymentStatus={paymentStatusFilter}
+                    currentApprovalStatus={approvalStatusFilter} // PASS NEW STATE
 
-                handleDateRangeChange={handleDateRangeChange}
-                handleSupplierChange={handleSupplierChange}
-                handleDeliveryChange={handleDeliveryChange}
-                handlePaymentChange={handlePaymentChange}
+                    handleDateRangeChange={handleDateRangeChange}
+                    handleSupplierChange={handleSupplierChange}
+                    handleDeliveryChange={handleDeliveryChange}
+                    handlePaymentChange={handlePaymentChange}
+                    handleApprovalChange={handleApprovalChange} // PASS NEW HANDLER
 
-                iconProps={iconProps}
-                onAddPurchaseOrderClick={openModal}
-            />
-
-            {/* Pass the new onEdit handler to the table */}
-            <PurchasedOrdersTable 
-                orders={paginatedOrders} 
-                onEdit={handleEdit} 
-            />
-
-            <div className = "flex items-center justify-between mb-3">
-                <RowLimiter
-                    options={rowLimitOptions}
-                    initialValue={rowLimit.toString()}
-                    onSelect={handleRowLimitChange}
                     iconProps={iconProps}
+                    onAddPurchaseOrderClick={openModal}
                 />
-                <TablePagination
-                    totalPages={totalPages}
-                    currentPage={currentPage}
-                    onPageChange={setCurrentPage}
+
+                <PurchasedOrdersTable 
+                    orders={paginatedOrders} 
+                    onEdit={handleEdit} 
                 />
+
+                <div className = "flex items-center justify-between mb-3">
+                    <RowLimiter
+                        options={rowLimitOptions}
+                        initialValue={rowLimit.toString()}
+                        onSelect={handleRowLimitChange}
+                        iconProps={iconProps}
+                    />
+                    <TablePagination
+                        totalPages={totalPages}
+                        currentPage={currentPage}
+                        onPageChange={setCurrentPage}
+                    />
+                </div>
             </div>
+
+            {/* Add Purchase Order Modal */}
+            <AddPurchaseOrderModal 
+                isOpen={isModalOpen} 
+                onClose={closeModal} 
+            />
+
+            {/* Edit Purchase Order Modal */}
+            <EditPurchaseOrderModal 
+                isOpen={isEditModalOpen}
+                onClose={handleCloseEditModal}
+                orderData={orderToEdit} 
+                onSave={handleSaveEdit}
+            />
+
         </div>
-
-        {/* Add Purchase Order Modal */}
-        <AddPurchaseOrderModal 
-            isOpen={isModalOpen} 
-            onClose={closeModal} 
-        />
-
-        {/* Edit Purchase Order Modal (New) */}
-        <EditPurchaseOrderModal 
-            isOpen={isEditModalOpen}
-            onClose={handleCloseEditModal}
-            orderData={orderToEdit} // Data of the selected row
-            onSave={handleSaveEdit}
-        />
-
-    </div>
-);
+    );
 }
 
 export default CreatePurchase;
