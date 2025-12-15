@@ -54,13 +54,47 @@ function AddCountingModal({ isOpen, onClose }) {
                         </button>
                     </div>
 
-                <form onSubmit={handleSubmit} className="space-y-4">
+                <form onSubmit={handleSubmit} className="space-y-5">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         
-                        <div>
-                            <label htmlFor="CountDate" className="block text-sm font-medium text-slate-700 dark:text-slate-300">Count Date</label>
-                            <input type="text" id="CountDate" name="CountDate" value={formValues.CountDate} onChange={handleInputChange}
-                                className="w-full mt-1 px-3 py-1.5 rounded-md border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 shadow-xs focus:outline-none focus:border-blue-500 dark:focus:border-blue-500 text-slate-700 dark:text-slate-200" required />
+                        <div class="w-full max-w-sm">
+                            <label for="date" class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
+                                Count Date
+                            </label>
+
+                            <div class="relative"> 
+                                <input
+                                    type="date"
+                                    id="date"
+                                    // The input must include the custom class and appearance-none to hide the native icon
+                                    // pr-10 creates space for the custom icon on the right
+                                    className="w-full px-3 py-2 text-sm rounded-md border border-slate-300
+                                            bg-white text-slate-700
+                                            dark:bg-slate-700 dark:border-slate-600 dark:text-slate-200 
+                                            focus:outline-none focus:border-blue-500 transition 
+                                            appearance-none date-input-no-icon pr-10" 
+                                />
+                                
+                                <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                                    <svg 
+                                        xmlns="http://www.w3.org/2000/svg" 
+                                        viewBox="0 0 24 24" 
+                                        fill="none" 
+                                        stroke="currentColor" 
+                                        stroke-width="2" 
+                                        stroke-linecap="round" 
+                                        stroke-linejoin="round" 
+                                        // *** THIS CLASS SETS THE ICON COLOR TO WHITE ***
+                                        class="w-5 h-5 text-slate-800 dark:text-slate-300"> 
+                                        
+                                        <rect width="18" height="18" x="3" y="4" rx="2" ry="2"/>
+                                        <line x1="16" x2="16" y1="2" y2="6"/>
+                                        <line x1="8" x2="8" y1="2" y2="6"/>
+                                        <line x1="3" x2="21" y1="10" y2="10"/>
+                                    </svg>
+                                </div>
+                                
+                            </div>
                         </div>
 
                         {/* Warehouse Select */}
@@ -87,17 +121,41 @@ function AddCountingModal({ isOpen, onClose }) {
                         />
                     </div>
 
-                    <div>
-                        <label for="quantity-input" class="block mb-2.5 text-sm font-medium text-slate-700 dark:text-slate-300">Choose quantity:</label>
 
-                        <div class="relative flex items-center max-w-[8rem] border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 rounded-md">
-                            <button type="button" id="decrement-button" data-input-counter-decrement="quantity-input" class="hover:bg-slate-100/50 dark:hover:bg-slate-500/30 rounded-l-md cursor-pointer border-r border-slate-300 dark:border-slate-600 box-border font-medium text-slate-800 dark:text-slate-300 leading-5 rounded-s-base text-sm px-3 focus:outline-none h-10">
-                                <Minus className="w-4 h-4" />
-                            </button>
-                            <input type="text" id="quantity-input" data-input-counter data-input-counter-min="1" data-input-counter-max="999" aria-describedby="helper-text-explanation" class=" border-x-0 h-10 text-center w-full py-2.5 text-slate-800 dark:text-slate-300 focus:outline-none" />
-                            <button type="button" id="increment-button" data-input-counter-increment="quantity-input" class="hover:bg-slate-100/50 dark:hover:bg-slate-500/30 rounded-r-md cursor-pointer border-l border-slate-300 dark:border-slate-600 box-border font-medium text-slate-800 dark:text-slate-300 leading-5 rounded-s-base text-sm px-3 focus:outline-none h-10">
-                               <Plus className="w-4 h-4"/>
-                            </button>
+                    <div className="overflow-x-auto pb-3">
+                        <div className="flex items-center justify-between pb-4 mb-1 border-b border-slate-300 dark:border-slate-600">
+                            <h1 className="text-[#535353] dark:text-white text-xl font-bold">Items to Count</h1>
+                        </div>
+
+                        <table className = "w-full">
+                            
+                            <tr className = "hover:bg-slate-50/50 dark:hover:bg-slate-800/50 transition-colors">
+                                
+                                <td className="p-4 py-5 text-sm text-slate-700 dark:text-slate-200">
+                                    <div className = "flex items-center space-x-4">
+                                        <span className = "text-md font-medium">Item:</span>
+                                        <input type = "text" className="w-full mt-1 px-3 py-1.5 rounded-md border border-slate-300 dark:border-slate-600 bg-slate-100 dark:bg-slate-700 shadow-xs text-slate-500 dark:text-slate-400" />
+                                    </div>
+                                </td>
+                                <td className="p-4 py-5 text-sm text-slate-700 dark:text-slate-200">
+                                    <div className = "flex items-center space-x-4">
+                                        <span className = "text-md font-medium">Quantity: </span>
+                                        <input type = "text" className="w-full mt-1 px-3 py-1.5 rounded-md border border-slate-300 dark:border-slate-600 bg-slate-100 dark:bg-slate-700 shadow-xs text-slate-500 dark:text-slate-400" />
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+
+                        <div className = "flex items-center justify-center ">
+                            <div className = "flex items-center justify-center mt-3 w-80 rounded-md hover:bg-slate-100/50 border border-slate-300 dark:border-slate-600/50 dark:bg-slate-800/50 dark:hover:bg-slate-700/50 cursor-pointer transition-all">
+                                <button
+                                    type="button"
+                                    // onClick={handleOpenItemModal}
+                                    className="flex items-center space-x-2 py-2 px-4 text-slate-600 dark:text-white rounded-lg cursor-pointer transition-all">
+                                    <Plus className="w-4 h-4" />
+                                    <span className="text-sm font-medium">New Item</span>
+                                </button>
+                            </div>
                         </div>
                     </div>
 
@@ -107,7 +165,7 @@ function AddCountingModal({ isOpen, onClose }) {
                             Cancel
                         </button>
                         <button type="submit" className="cursor-pointer px-4 py-2 text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 transition-colors shadow-md">
-                            Add Supplier
+                            Save Counting
                         </button>
                     </div>
                 </form>

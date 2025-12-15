@@ -41,7 +41,7 @@ const ReceivedItemsData = [
         ]
     }
 ];
-// --- END DUMMY DATA ---
+
 
 // Helper function to generate a unique ID for new items
 let nextItemId = Date.now();
@@ -105,7 +105,7 @@ function AddReceivedItemsModal({ isOpen, onClose }) {
                 id: generateId(),
                 ItemName: item.ItemName,
                 ExpectedQuantity: parseFloat(item.ExpectedQuantity) || 0,
-                ActualQuantity: '', // Default to empty string for manual input
+                ActualQuantity: '',
             }));
             setReceivedItems(initialItems);
         } else {
@@ -311,9 +311,8 @@ function AddReceivedItemsModal({ isOpen, onClose }) {
                                                 <td className="p-4 text-sm text-slate-700 dark:text-slate-200">{item.ItemName}</td>
                                                 <td className="p-4 text-sm text-center text-slate-700 dark:text-slate-200">{item.ExpectedQuantity}</td>
                                                 <td className="p-3 text-center text-sm text-slate-700 dark:text-slate-200 w-[150px]">
-                                                    <div className="relative flex items-center max-w-[8rem] border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 rounded-md mx-auto">
+                                                    {/* <div className="relative flex items-center max-w-[8rem] border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 rounded-md mx-auto">
                                                         
-                                                        {/* DECREMENT BUTTON */}
                                                         <button 
                                                             type="button" 
                                                             id="decrement-button" 
@@ -322,24 +321,19 @@ function AddReceivedItemsModal({ isOpen, onClose }) {
                                                         >
                                                             <Minus className="w-4 h-4" />
                                                         </button>
-                                                        
-                                                        {/* INPUT FIELD (TYPE TEXT) */}
                                                         <input 
                                                             type="text" 
-                                                            id={`quantity-input-${item.id}`} // Unique ID for each row
+                                                            id={`quantity-input-${item.id}`}
                                                             step="1" 
                                                             data-input-counter-min="1" 
                                                             data-input-counter-max="999" 
                                                             value={item.ActualQuantity} 
-                                                            // Update state immediately as user types
                                                             onChange={(e) => handleActualQuantityChange(item.id, e.target.value)} 
-                                                            // Validate and clamp when user leaves the field
                                                             onBlur={(e) => handleQuantityBlur(item.id, e.target.value)}
                                                             className=" border-x-0 h-10 text-center w-full py-2.5 text-slate-800 dark:text-slate-300 focus:outline-none" 
                                                             required
                                                         />
                                                         
-                                                        {/* INCREMENT BUTTON */}
                                                         <button 
                                                             type="button" 
                                                             id="increment-button" 
@@ -348,7 +342,17 @@ function AddReceivedItemsModal({ isOpen, onClose }) {
                                                         >
                                                             <Plus className="w-4 h-4"/>
                                                         </button>
-                                                    </div>
+                                                    </div> */}
+
+                                                    <input 
+                                                        type="number"
+                                                        step="0.01"
+                                                        min="0"
+                                                        value={item.ActualQuantity}
+                                                        onChange={(e) => handleActualQuantityChange(item.id, e.target.value)}
+                                                        className="w-full px-2 py-1 rounded-md border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 shadow-xs focus:outline-none focus:border-blue-500 dark:focus:border-blue-500 text-center"
+                                                        required
+                                                    />
                                                 </td>
                                                 <td className="p-4 text-center">
                                                     <button 
