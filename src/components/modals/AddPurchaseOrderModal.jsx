@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
-import { Plus, Trash2, X } from 'lucide-react'; // Added Trash2 for action column
+import { Plus, Trash2, X } from 'lucide-react';
 import CustomFormSelect from '../filter/CustomFormSelect'; 
-// *** NEW IMPORT: You must create this file ***
 import AddItemModal from './AddItemModal'; 
 
 
@@ -34,8 +33,7 @@ function AddPurchaseOrderModal({ isOpen, onClose }) {
     const [isItemModalOpen, setIsItemModalOpen] = useState(false);
     // Structure: { id, brand, type, quantity, unitPrice, total }
     const [purchaseItems, setPurchaseItems] = useState([
-        // Initial dummy data row removed to show dynamic render
-        // You can add it back if needed, e.g., { id: 1, brand: 'Brand 1', type: 'Type 1', quantity: 100, unitPrice: 1000, total: 10000 }
+        
     ]);
 
     // --- Handlers ---
@@ -116,7 +114,6 @@ function AddPurchaseOrderModal({ isOpen, onClose }) {
 
                     <form onSubmit={handleFormSubmit} className="space-y-8">
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                            
                             <div>
                                 <label htmlFor="PONumber" className="block text-sm font-medium text-slate-700 dark:text-slate-300">
                                     PO No.
