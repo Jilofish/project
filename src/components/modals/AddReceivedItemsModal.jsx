@@ -1,17 +1,14 @@
 import React, { useState } from 'react';
-import { X } from 'lucide-react'; 
+import { Plus, X } from 'lucide-react'; 
 
 function AddReceivedItemsModal({ isOpen, onClose }) {
     if (!isOpen) return null;
 
     const [formValues, setFormValues] = useState({
-        Name: '',
-        businessName: '',
-        Address: '',
-        Email: '',
-        ContactNo: '',
-        tinNo: '',
-        BankAcc: '',
+        POnumber: '',
+        TransactionDate: '',
+        SupplierName: '',
+        ContactNumber: ''
     });
 
     const handleInputChange = (e) => {
@@ -24,10 +21,10 @@ function AddReceivedItemsModal({ isOpen, onClose }) {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        console.log("New Supplier Data:", formValues);
+        console.log("New Received Item Data:", formValues);
         
         // Reset and close
-        setFormValues({ Name: '', businessName: '', Address: '', Email: '', ContactNo: '', tinNo: '', BankAcc: '' });
+        setFormValues({ POnumber: '', TransactionDate: '', SupplierName: '', ContactNumber: '' });
         onClose();
     };
 
@@ -38,7 +35,7 @@ function AddReceivedItemsModal({ isOpen, onClose }) {
 
                 <div className = "w-full flex items-center justify-between mb-6 pb-6 border-b border-slate-300 dark:border-slate-700">
                         <h2 className="text-2xl font-bold text-slate-800 dark:text-white">
-                            Add New Supplier
+                            Add Received Items
                         </h2>
 
                         <button onClick={onClose}>
@@ -50,47 +47,32 @@ function AddReceivedItemsModal({ isOpen, onClose }) {
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         
                         <div>
-                            <label htmlFor="Name" className="block text-sm font-medium text-slate-700 dark:text-slate-300">Supplier Name</label>
-                            <input type="text" id="Name" name="Name" value={formValues.Name} onChange={handleInputChange} placeholder="Jane Dela Cruz"
+                            <label htmlFor="PONum" className="block text-sm font-medium text-slate-700 dark:text-slate-300">PO Number</label>
+                            <input type="text" id="PONum" name="PONum" value={formValues.POnumber} onChange={handleInputChange}
                                 className="w-full mt-1 px-3 py-1.5 rounded-md border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 shadow-xs focus:outline-none focus:border-blue-500 dark:focus:border-blue-500 text-slate-700 dark:text-slate-200" required />
                         </div>
 
                         <div>
-                            <label htmlFor="businessName" className="block text-sm font-medium text-slate-700 dark:text-slate-300">Business Name</label>
-                            <input type="text" id="businessName" name="businessName" value={formValues.businessName} onChange={handleInputChange} placeholder="DC Meat Supply"
+                            <label htmlFor="TransactionDate" className="block text-sm font-medium text-slate-700 dark:text-slate-300">Transaction Date</label>
+                            <input type="text" id="TransactionDate" name="TransactionDate" value={formValues.TransactionDate} onChange={handleInputChange}
                                 className="w-full mt-1 px-3 py-1.5 rounded-md border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 shadow-xs focus:outline-none focus:border-blue-500 dark:focus:border-blue-500 text-slate-700 dark:text-slate-200" required />
                         </div>
 
                         {/* Contact No */}
                         <div>
-                            <label htmlFor="ContactNo" className="block text-sm font-medium text-slate-700 dark:text-slate-300">Contact No.</label>
-                            <input type="text" id="ContactNo" name="ContactNo" value={formValues.ContactNo} onChange={handleInputChange} placeholder="0917xxxxxxx"
+                            <label htmlFor="SupplierName" className="block text-sm font-medium text-slate-700 dark:text-slate-300">Supplier Name</label>
+                            <input type="text" id="SupplierName" name="SupplierName" value={formValues.SupplierName} onChange={handleInputChange}
                                 className="w-full mt-1 px-3 py-1.5 rounded-md border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 shadow-xs focus:outline-none focus:border-blue-500 dark:focus:border-blue-500 text-slate-700 dark:text-slate-200" />
                         </div>
                         
                         {/* Email */}
                         <div>
-                            <label htmlFor="Email" className="block text-sm font-medium text-slate-700 dark:text-slate-300">Email</label>
-                            <input type="email" id="Email" name="Email" value={formValues.Email} onChange={handleInputChange} placeholder="jane.dcruz@email.com"
-                                className="w-full mt-1 px-3 py-1.5 rounded-md border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 shadow-xs focus:outline-none focus:border-blue-500 dark:focus:border-blue-500 text-slate-700 dark:text-slate-200" />
-                        </div>
-
-                        {/* TIN No */}
-                        <div>
-                            <label htmlFor="tinNo" className="block text-sm font-medium text-slate-700 dark:text-slate-300">TIN No.</label>
-                            <input type="text" id="tinNo" name="tinNo" value={formValues.tinNo} onChange={handleInputChange} placeholder="123-456-789-000"
-                                className="w-full mt-1 px-3 py-1.5 rounded-md border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 shadow-xs focus:outline-none focus:border-blue-500 dark:focus:border-blue-500 text-slate-700 dark:text-slate-200" />
-                        </div>
-                        
-                        {/* Bank Account */}
-                        <div>
-                            <label htmlFor="BankAcc" className="block text-sm font-medium text-slate-700 dark:text-slate-300">Bank Account No.</label>
-                            <input type="text" id="BankAcc" name="BankAcc" value={formValues.BankAcc} onChange={handleInputChange} placeholder="9876543210 (BDO)"
+                            <label htmlFor="ContactNumber" className="block text-sm font-medium text-slate-700 dark:text-slate-300">Contact Number</label>
+                            <input type="email" id="ContactNumber" name="ContactNumber" value={formValues.ContactNumber} onChange={handleInputChange} placeholder="0917xxxxxxxx"
                                 className="w-full mt-1 px-3 py-1.5 rounded-md border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 shadow-xs focus:outline-none focus:border-blue-500 dark:focus:border-blue-500 text-slate-700 dark:text-slate-200" />
                         </div>
                     </div>
                     
-                    {/* Address (Full width) */}
                     <div>
                         <label htmlFor="Address" className="block text-sm font-medium text-slate-700 dark:text-slate-300">Address</label>
                         <input type = "text" id="Address" name="Address" rows="2" value={formValues.Address} onChange={handleInputChange} placeholder="123 Main Street, Quezon City"
@@ -103,7 +85,7 @@ function AddReceivedItemsModal({ isOpen, onClose }) {
                             Cancel
                         </button>
                         <button type="submit" className="cursor-pointer px-4 py-2 text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 transition-colors shadow-md">
-                            Add Supplier
+                            Add Item
                         </button>
                     </div>
                 </form>
