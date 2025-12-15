@@ -1,10 +1,9 @@
 import React, { useState } from 'react';
-import { Plus, Trash2, X } from 'lucide-react'; 
+import { Plus, Trash2, X, Minus } from 'lucide-react'; 
 import CustomFormSelect from '../filter/CustomFormSelect'; 
 import AddItemQuantityModal from './AddItemQuantityModal'; // Renamed modal
 
 // --- DUMMY DATA ---
-// SupplierData is now only for reference if needed elsewhere, not used for the form selection
 const SupplierData = [
     { supplier: 'Earl Meats Inc.' },
     { supplier: 'Javier Meats' },
@@ -48,25 +47,43 @@ const ReceivedItemsData = [
 let nextItemId = Date.now();
 const generateId = () => nextItemId++;
 
+// --- QUANTITY VALIDATION AND CLAMPING FUNCTION ---
+// This function enforces the min/max limits for manual input and numeric consistency.
+const clampQuantity = (value, min, max) => {
+    // 1. Handle empty string or non-numeric input
+    if (value === '' || isNaN(parseFloat(value))) {
+        return min; // Default to the minimum valid quantity
+    }
+    
+    let numericValue = parseFloat(value);
+    
+    // 2. Clamp the value
+    if (numericValue < min) {
+        return min;
+    } else if (numericValue > max) {
+        return max;
+    }
+    
+    return numericValue;
+};
+
+
 function AddReceivedItemsModal({ isOpen, onClose }) {
     if (!isOpen) return null;
 
-    // --- State for Main Form Values ---
+    // --- STATE MANAGEMENT ---
     const [formValues, setFormValues] = useState({
         POnumber: '',
         TransactionDate: '',
-        SupplierName: '', // This will be autofilled
-        ContactNumber: '', // This will be autofilled
+        SupplierName: '', 
+        ContactNumber: '', 
     });
     
-    // --- STATE FOR RECEIVED ITEMS ---
     const [receivedItems, setReceivedItems] = useState([]);
 
-    // --- State & Handlers for Item Modal ---
     const [isItemModalOpen, setIsItemModalOpen] = useState(false);
     
     const handleOpenItemModal = () => setIsItemModalOpen(true);
-    
     const handleCloseItemModal = () => setIsItemModalOpen(false);
 
 
@@ -76,16 +93,14 @@ function AddReceivedItemsModal({ isOpen, onClose }) {
         const poData = ReceivedItemsData.find(d => d.POnumber === poNumber);
 
         if (poData) {
-            // 1. Update Form Values
             setFormValues(prev => ({
                 ...prev,
                 POnumber: poNumber,
                 TransactionDate: poData.TransactionDate,
-                SupplierName: poData.SupplierName, // AUTOFILL: Supplier Name is set here
+                SupplierName: poData.SupplierName,
                 ContactNumber: poData.ContactNumber,
             }));
 
-            // 2. Auto-fill Items with Expected Quantity (Actual Quantity is initially empty)
             const initialItems = poData.Items.map(item => ({
                 id: generateId(),
                 ItemName: item.ItemName,
@@ -94,7 +109,6 @@ function AddReceivedItemsModal({ isOpen, onClose }) {
             }));
             setReceivedItems(initialItems);
         } else {
-             // Reset fields if PO number is cleared or not found
              setFormValues(prev => ({
                 ...prev,
                 POnumber: poNumber,
@@ -107,14 +121,12 @@ function AddReceivedItemsModal({ isOpen, onClose }) {
     };
 
 
-    // --- Item Handlers ---
+    // --- ITEM HANDLERS ---
     
     const handleManualAddItem = (newItem) => {
-        // Structure from AddItemQuantityModal: { ItemName, ExpectedQuantity, ActualQuantity }
         const itemWithId = {
             ...newItem,
             id: generateId(),
-            // Ensure ExpectedQuantity is used from the manual input
             ExpectedQuantity: parseFloat(newItem.ExpectedQuantity) || '', 
             ActualQuantity: parseFloat(newItem.ActualQuantity) || '',
         };
@@ -123,13 +135,46 @@ function AddReceivedItemsModal({ isOpen, onClose }) {
     };
 
 
-    // Handler for updating Actual Quantity directly in the table
+    // Handler for updating Actual Quantity directly in the table (Manual Input/Typing)
     const handleActualQuantityChange = (id, value) => {
-        // Ensure value is treated as a number or an empty string
-        const numericValue = value === '' ? '' : parseFloat(value);
+        // This handler updates the state as the user types
+        setReceivedItems(prev => prev.map(item => 
+            item.id === id ? { ...item, ActualQuantity: value } : item
+        ));
+    };
+
+    // Handler to apply validation when the user leaves the input field (onBlur)
+    const handleQuantityBlur = (id, value) => {
+        const min = 1; 
+        const max = 999;
+        
+        // Clamp the final input value
+        const validatedValue = clampQuantity(value, min, max);
 
         setReceivedItems(prev => prev.map(item => 
-            item.id === id ? { ...item, ActualQuantity: numericValue } : item
+            item.id === id ? { ...item, ActualQuantity: validatedValue } : item
+        ));
+    };
+
+
+    // Handler for increment/decrement button clicks
+    const handleQuantityButtonClick = (itemId, currentQuantity, direction) => {
+        const min = 1;
+        const max = 999;
+        const step = 1;
+        
+        // Use the clamped value of the current quantity for calculation base
+        let baseQuantity = clampQuantity(currentQuantity, min, max);
+
+        // Apply the change
+        let newQuantity = baseQuantity + (direction * step);
+
+        // Re-clamp the final value
+        const finalQuantity = clampQuantity(newQuantity, min, max);
+
+        // Update the state
+        setReceivedItems(prev => prev.map(item => 
+            item.id === itemId ? { ...item, ActualQuantity: finalQuantity } : item
         ));
     };
 
@@ -141,15 +186,12 @@ function AddReceivedItemsModal({ isOpen, onClose }) {
     // --- END ITEM HANDLERS ---
 
 
-    // Universal Input Change Handler
+    // Universal Form Input Change Handler
     const handleInputChange = (value, name) => {
-        
-        // Special logic for PO Number: trigger auto-fill
         if (name === 'POnumber') {
             handlePOSelect(value);
         }
         
-        // Update form values for all fields
         setFormValues(prev => ({
             ...prev,
             [name]: value
@@ -160,23 +202,19 @@ function AddReceivedItemsModal({ isOpen, onClose }) {
     const handleSubmit = (e) => {
         e.preventDefault();
         
-        // Validation check for PO selection (basic check)
         if (!formValues.POnumber) {
             alert("Please select a valid PO Number.");
             return;
         }
 
-        // Log all collected data: main form values PLUS the list of items
         console.log("New Received Item Data:", { ...formValues, receivedItems });
         
-        // Reset state and close modal
         setFormValues({ POnumber: '', TransactionDate: '', SupplierName: '', ContactNumber: '' });
         setReceivedItems([]); 
         onClose();
     };
 
 
-    // --- Options for PO Select ---
     const poOptions = ReceivedItemsData.map(d => ({ value: d.POnumber, label: d.POnumber }));
 
 
@@ -199,7 +237,7 @@ function AddReceivedItemsModal({ isOpen, onClose }) {
                     <form onSubmit={handleSubmit} className="space-y-5">
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             
-                            {/* PO Number Select (The trigger for autofill) */}
+                            {/* PO Number Select */}
                             <CustomFormSelect
                                 label="PO Number"
                                 name="POnumber"
@@ -214,17 +252,17 @@ function AddReceivedItemsModal({ isOpen, onClose }) {
                             <div>
                                 <label htmlFor="TransactionDate" className="block text-sm font-medium text-slate-700 dark:text-slate-300">Transaction Date</label>
                                 <input type="text" id="TransactionDate" name="TransactionDate" value={formValues.TransactionDate} 
-                                    readOnly // Read-only
+                                    readOnly 
                                     className="w-full mt-1 px-3 py-1.5 rounded-md border border-slate-300 dark:border-slate-600 bg-slate-100 dark:bg-slate-700/70 shadow-xs text-slate-700 dark:text-slate-200 cursor-not-allowed" 
                                     required 
                                 />
                             </div>
 
-                            {/* SUPPLIER NAME (Autofilled Text Field - Corrected) */}
+                            {/* SUPPLIER NAME (Autofilled Text Field) */}
                             <div>
                                 <label htmlFor="SupplierName" className="block text-sm font-medium text-slate-700 dark:text-slate-300">Supplier Name</label>
                                 <input type="text" id="SupplierName" name="SupplierName" value={formValues.SupplierName} 
-                                    readOnly // Read-only
+                                    readOnly 
                                     className="w-full mt-1 px-3 py-1.5 rounded-md border border-slate-300 dark:border-slate-600 bg-slate-100 dark:bg-slate-700/70 shadow-xs text-slate-700 dark:text-slate-200 cursor-not-allowed" 
                                     required 
                                 />
@@ -234,7 +272,7 @@ function AddReceivedItemsModal({ isOpen, onClose }) {
                             <div>
                                 <label htmlFor="ContactNumber" className="block text-sm font-medium text-slate-700 dark:text-slate-300">Contact Number</label>
                                 <input type="text" id="ContactNumber" name="ContactNumber" value={formValues.ContactNumber} 
-                                    readOnly // Read-only
+                                    readOnly 
                                     className="w-full mt-1 px-3 py-1.5 rounded-md border border-slate-300 dark:border-slate-600 bg-slate-100 dark:bg-slate-700/70 shadow-xs text-slate-700 dark:text-slate-200 cursor-not-allowed" 
                                 />
                             </div>
@@ -257,8 +295,8 @@ function AddReceivedItemsModal({ isOpen, onClose }) {
                                 <thead>
                                     <tr className = "bg-slate-200/50 dark:bg-slate-700/50">
                                         <th className="text-left p-4 text-sm font-semibold text-slate-600 dark:text-slate-200">Item Name</th>
-                                        <th className="text-left p-4 text-sm font-semibold text-slate-600 dark:text-slate-200">Expected Quantity</th>
-                                        <th className="text-left p-4 text-sm font-semibold text-slate-600 dark:text-slate-200">Actual Quantity</th>
+                                        <th className="text-center p-4 text-sm font-semibold text-slate-600 dark:text-slate-200">Expected Quantity</th>
+                                        <th className="text-center p-4 text-sm font-semibold text-slate-600 dark:text-slate-200">Actual Quantity</th>
                                         <th className="text-center p-4 text-sm font-semibold text-slate-600 dark:text-slate-200">Action</th>
                                     </tr>
                                 </thead>
@@ -271,17 +309,46 @@ function AddReceivedItemsModal({ isOpen, onClose }) {
                                                 className = "border-b border-slate-300 dark:border-slate-600 hover:bg-slate-50/50 dark:hover:bg-slate-800/50 transition-colors"
                                             >
                                                 <td className="p-4 text-sm text-slate-700 dark:text-slate-200">{item.ItemName}</td>
-                                                <td className="p-4 text-sm text-slate-700 dark:text-slate-200">{item.ExpectedQuantity}</td>
-                                                <td className="p-2 text-sm text-slate-700 dark:text-slate-200 w-[150px]">
-                                                    <input 
-                                                        type="number"
-                                                        step="0.01"
-                                                        min="0"
-                                                        value={item.ActualQuantity}
-                                                        onChange={(e) => handleActualQuantityChange(item.id, e.target.value)}
-                                                        className="w-full px-2 py-1 rounded-md border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 shadow-xs focus:outline-none focus:border-blue-500 dark:focus:border-blue-500 text-center"
-                                                        required
-                                                    />
+                                                <td className="p-4 text-sm text-center text-slate-700 dark:text-slate-200">{item.ExpectedQuantity}</td>
+                                                <td className="p-3 text-center text-sm text-slate-700 dark:text-slate-200 w-[150px]">
+                                                    <div className="relative flex items-center max-w-[8rem] border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 rounded-md mx-auto">
+                                                        
+                                                        {/* DECREMENT BUTTON */}
+                                                        <button 
+                                                            type="button" 
+                                                            id="decrement-button" 
+                                                            onClick={() => handleQuantityButtonClick(item.id, item.ActualQuantity, -1)}
+                                                            className="hover:bg-slate-100/50 dark:hover:bg-slate-500/30 rounded-l-md cursor-pointer border-r border-slate-300 dark:border-slate-600 box-border font-medium text-slate-800 dark:text-slate-300 leading-5 rounded-s-base text-sm px-3 focus:outline-none h-10"
+                                                        >
+                                                            <Minus className="w-4 h-4" />
+                                                        </button>
+                                                        
+                                                        {/* INPUT FIELD (TYPE TEXT) */}
+                                                        <input 
+                                                            type="text" 
+                                                            id={`quantity-input-${item.id}`} // Unique ID for each row
+                                                            step="1" 
+                                                            data-input-counter-min="1" 
+                                                            data-input-counter-max="999" 
+                                                            value={item.ActualQuantity} 
+                                                            // Update state immediately as user types
+                                                            onChange={(e) => handleActualQuantityChange(item.id, e.target.value)} 
+                                                            // Validate and clamp when user leaves the field
+                                                            onBlur={(e) => handleQuantityBlur(item.id, e.target.value)}
+                                                            className=" border-x-0 h-10 text-center w-full py-2.5 text-slate-800 dark:text-slate-300 focus:outline-none" 
+                                                            required
+                                                        />
+                                                        
+                                                        {/* INCREMENT BUTTON */}
+                                                        <button 
+                                                            type="button" 
+                                                            id="increment-button" 
+                                                            onClick={() => handleQuantityButtonClick(item.id, item.ActualQuantity, 1)}
+                                                            className="hover:bg-slate-100/50 dark:hover:bg-slate-500/30 rounded-r-md cursor-pointer border-l border-slate-300 dark:border-slate-600 box-border font-medium text-slate-800 dark:text-slate-300 leading-5 rounded-s-base text-sm px-3 focus:outline-none h-10"
+                                                        >
+                                                            <Plus className="w-4 h-4"/>
+                                                        </button>
+                                                    </div>
                                                 </td>
                                                 <td className="p-4 text-center">
                                                     <button 

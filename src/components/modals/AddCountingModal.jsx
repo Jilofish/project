@@ -1,7 +1,7 @@
 // AddSupplierModal.jsx
 
 import React, { useState } from 'react';
-import { X } from 'lucide-react';
+import { X, Plus, Minus } from 'lucide-react';
 import CustomFormSelect from '../filter/CustomFormSelect';
 
 const WarehouseOptions = [
@@ -86,8 +86,20 @@ function AddCountingModal({ isOpen, onClose }) {
                             className="mt-1 p-2 block w-full rounded-md border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 shadow-xs focus:outline-none focus:border-blue-500 dark:focus:border-blue-500 focus:caret-slate-500 dark:focus:caret-white resize-none text-slate-700 dark:text-slate-200"
                         />
                     </div>
-                    
-                    
+
+                    <div>
+                        <label for="quantity-input" class="block mb-2.5 text-sm font-medium text-slate-700 dark:text-slate-300">Choose quantity:</label>
+
+                        <div class="relative flex items-center max-w-[8rem] border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 rounded-md">
+                            <button type="button" id="decrement-button" data-input-counter-decrement="quantity-input" class="hover:bg-slate-100/50 dark:hover:bg-slate-500/30 rounded-l-md cursor-pointer border-r border-slate-300 dark:border-slate-600 box-border font-medium text-slate-800 dark:text-slate-300 leading-5 rounded-s-base text-sm px-3 focus:outline-none h-10">
+                                <Minus className="w-4 h-4" />
+                            </button>
+                            <input type="text" id="quantity-input" data-input-counter data-input-counter-min="1" data-input-counter-max="999" aria-describedby="helper-text-explanation" class=" border-x-0 h-10 text-center w-full py-2.5 text-slate-800 dark:text-slate-300 focus:outline-none" />
+                            <button type="button" id="increment-button" data-input-counter-increment="quantity-input" class="hover:bg-slate-100/50 dark:hover:bg-slate-500/30 rounded-r-md cursor-pointer border-l border-slate-300 dark:border-slate-600 box-border font-medium text-slate-800 dark:text-slate-300 leading-5 rounded-s-base text-sm px-3 focus:outline-none h-10">
+                               <Plus className="w-4 h-4"/>
+                            </button>
+                        </div>
+                    </div>
 
                     {/* Action Buttons */}
                     <div className="pt-4 flex justify-end space-x-3">
