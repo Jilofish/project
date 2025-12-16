@@ -6,7 +6,7 @@ import SalesInvoiceTable from './SalesInvoiceTable';
 import RowLimiter from '../../components/filter/RowLimiter';
 import TablePagination from '../../components/pagination/TablePagination';
 
-import AddPurchaseOrderModal from '../../components/modals/AddPurchaseOrderModal';
+import CreateInvoiceModal from '../../components/modals/CreateInvoiceModal';
 import EditPurchaseOrderModal from '../../components/modals/EditPurchaseOrderModal';
 
 const ALL_OPTION = 'All';
@@ -397,7 +397,7 @@ function CreateSalesInvoice() {
         </div>
       </div>
       {/* Add Purchase Order Modal */}
-      <AddPurchaseOrderModal 
+      <CreateInvoiceModal
           isOpen={isModalOpen} 
           onClose={closeModal} 
       />
