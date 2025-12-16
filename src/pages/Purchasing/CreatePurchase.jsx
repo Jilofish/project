@@ -6,7 +6,7 @@ import PurchasedOrdersTable from './PurchasedOrdersTable';
 import RowLimiter from '../../components/filter/RowLimiter';
 import TablePagination from '../../components/pagination/TablePagination';
 import AddPurchaseOrderModal from '../../components/modals/AddPurchaseOrderModal';
-import EditPurchaseOrderModal from '../../components/modals/EditPurchaseOrderModal'; 
+import EditPurchaseOrderModal from '../../components/modals/EditPurchaseOrderModal';
 
 const ALL_OPTION = 'All';
 
