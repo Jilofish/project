@@ -1,7 +1,7 @@
 // AddSupplierModal.jsx
 
 import React, { useState } from 'react';
-import { X, Plus, Minus } from 'lucide-react';
+import { X, Plus, Trash2 } from 'lucide-react'; 
 import CustomFormSelect from '../filter/CustomFormSelect';
 
 const WarehouseOptions = [
@@ -14,12 +14,46 @@ const WarehouseOptions = [
 function AddCountingModal({ isOpen, onClose }) {
     if (!isOpen) return null;
 
+    // --- 1. STATE FOR MAIN FORM FIELDS ---
     const [formValues, setFormValues] = useState({
         CountDate: '',
         Warehouse: '',
         remarks: '',
     });
 
+    // --- 2. STATE FOR DYNAMIC ITEM ROWS ---
+    const [items, setItems] = useState([
+        // Initialize with one empty row
+        { id: Date.now(), item: '', quantity: '' } 
+    ]);
+    
+    // --- 3. HANDLERS FOR ITEM ROWS ---
+
+    // Handler to Add a New Row
+    const handleAddItem = () => {
+        const newItem = {
+            id: Date.now(), // Unique ID
+            item: '',
+            quantity: ''
+        };
+        setItems(prevItems => [...prevItems, newItem]);
+    };
+
+    // Handler to Update Input Fields within a row
+    const handleItemInputChange = (id, field, value) => {
+        setItems(prevItems => 
+            prevItems.map(item => 
+                item.id === id ? { ...item, [field]: value } : item
+            )
+        );
+    };
+
+    // Handler to Remove a Row
+    const handleRemoveItem = (id) => {
+        setItems(prevItems => prevItems.filter(item => item.id !== id));
+    };
+
+    // --- 4. HANDLERS FOR MAIN FORM FIELDS ---
     const handleInputChange = (e) => {
         const { name, value } = e.target;
         setFormValues(prev => ({
@@ -30,10 +64,18 @@ function AddCountingModal({ isOpen, onClose }) {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        console.log("New Counting Data:", formValues);
+        
+        // Final structure to send: main form data + item list
+        const finalData = {
+            ...formValues,
+            itemsToCount: items.filter(item => item.item.trim() !== '' || item.quantity.trim() !== '')
+        };
+        
+        console.log("New Counting Data:", finalData);
         
         // Reset and close
         setFormValues({ CountDate: '', Warehouse: '', remarks: '' });
+        setItems([{ id: Date.now(), item: '', quantity: '' }]); // Reset items list
         onClose();
     };
 
@@ -41,71 +83,69 @@ function AddCountingModal({ isOpen, onClose }) {
 
     return (
         <div className="fixed inset-0 bg-black/50 dark:bg-black/70 z-[60] flex items-center justify-center">
-            <div className="bg-white dark:bg-slate-800 p-8 rounded-lg shadow-2xl w-full max-w-2xl mx-4" 
-                onClick={e => e.stopPropagation()}>
+            <div 
+                // CONTAINER: Set max height and enable flex-col layout
+                className="bg-white dark:bg-slate-800 p-8 rounded-lg shadow-2xl w-full max-w-3xl mx-4 max-h-[90vh] flex flex-col" // <--- KEY CHANGES
+                onClick={e => e.stopPropagation()}
+            >
 
-                <div className = "w-full flex items-center justify-between mb-6 pb-6 border-b border-slate-300 dark:border-slate-700">
-                        <h2 className="text-2xl font-bold text-slate-800 dark:text-white">
-                            Add Counting
-                        </h2>
+                {/* HEADER: Fixed (flex-shrink-0 is default for non-flex children) */}
+                <div className="w-full flex items-center justify-between mb-6 pb-6 border-b border-slate-300 dark:border-slate-700 flex-shrink-0">
+                    <h2 className="text-2xl font-bold text-slate-800 dark:text-white">
+                        Add Counting
+                    </h2>
+                    <button onClick={onClose}>
+                        <X className="w-7 h-7 text-slate-600 dark:text-slate-300 cursor-pointer"/>
+                    </button>
+                </div>
 
-                        <button onClick={onClose}>
-                            <X className="w-7 h-7 text-slate-600 dark:text-slate-300 cursor-pointer"/>
-                        </button>
-                    </div>
-
-                <form onSubmit={handleSubmit} className="space-y-5">
+                {/* FORM CONTENT: The scrollable area (overflow-y-auto and flex-grow) */}
+                <form onSubmit={handleSubmit} className="space-y-5 overflow-y-auto flex-grow pr-2 custom-scrollbar"> 
+                    
+                    {/* Main form fields */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        
-                        <div class="w-full max-w-sm">
-                            <label for="date" class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
+                        <div className="w-full">
+                            <label htmlFor="date" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
                                 Count Date
                             </label>
-
-                            <div class="relative"> 
+                            <div className="relative"> 
                                 <input
                                     type="date"
                                     id="date"
-                                    // The input must include the custom class and appearance-none to hide the native icon
-                                    // pr-10 creates space for the custom icon on the right
+                                    name="CountDate" 
+                                    value={formValues.CountDate} 
+                                    onChange={handleInputChange} 
                                     className="w-full px-3 py-2 text-sm rounded-md border border-slate-300
-                                            bg-white text-slate-700
-                                            dark:bg-slate-700 dark:border-slate-600 dark:text-slate-200 
-                                            focus:outline-none focus:border-blue-500 transition 
-                                            appearance-none date-input-no-icon pr-10" 
+                                                bg-white text-slate-700
+                                                dark:bg-slate-700 dark:border-slate-600 dark:text-slate-200 
+                                                focus:outline-none focus:border-blue-500 transition 
+                                                appearance-none date-input-no-icon pr-10" 
                                 />
-                                
-                                <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                                <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
                                     <svg 
                                         xmlns="http://www.w3.org/2000/svg" 
-                                        viewBox="0 0 24 24" 
-                                        fill="none" 
-                                        stroke="currentColor" 
-                                        stroke-width="2" 
-                                        stroke-linecap="round" 
-                                        stroke-linejoin="round" 
-                                        // *** THIS CLASS SETS THE ICON COLOR TO WHITE ***
-                                        class="w-5 h-5 text-slate-800 dark:text-slate-300"> 
-                                        
+                                        viewBox="0 0 24 24" fill="none" 
+                                        stroke="currentColor" strokeWidth="2" 
+                                        strokeLinecap="round" strokeLinejoin="round" 
+                                        className="w-5 h-5 text-slate-800 dark:text-slate-300"> 
                                         <rect width="18" height="18" x="3" y="4" rx="2" ry="2"/>
                                         <line x1="16" x2="16" y1="2" y2="6"/>
                                         <line x1="8" x2="8" y1="2" y2="6"/>
                                         <line x1="3" x2="21" y1="10" y2="10"/>
                                     </svg>
                                 </div>
-                                
                             </div>
                         </div>
 
                         {/* Warehouse Select */}
                         <CustomFormSelect
                             label="Warehouse"
-                            name="WarehouseSelect"
+                            name="Warehouse" 
                             options={WarehouseOption}
                             initialValue={formValues.Warehouse}
-                            onSelect={handleInputChange}
+                            onSelect={(selected) => handleInputChange({ target: { name: 'Warehouse', value: selected.value } })}
                             placeholder="" 
-                        />                 
+                        />                 
                     </div>
 
                     <div>
@@ -117,40 +157,89 @@ function AddCountingModal({ isOpen, onClose }) {
                             name="remarks"
                             rows="3"
                             value={formValues.remarks}
+                            onChange={handleInputChange} 
                             className="mt-1 p-2 block w-full rounded-md border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 shadow-xs focus:outline-none focus:border-blue-500 dark:focus:border-blue-500 focus:caret-slate-500 dark:focus:caret-white resize-none text-slate-700 dark:text-slate-200"
                         />
                     </div>
 
 
-                    <div className="overflow-x-auto pb-3">
+                    {/* ======================================= */}
+                    {/* ITEMS TO COUNT SECTION (DYNAMIC TABLE)  */}
+                    {/* ======================================= */}
+                    <div className="pb-3">
                         <div className="flex items-center justify-between pb-4 mb-1 border-b border-slate-300 dark:border-slate-600">
                             <h1 className="text-[#535353] dark:text-white text-xl font-bold">Items to Count</h1>
                         </div>
 
-                        <table className = "w-full">
-                            
-                            <tr className = "hover:bg-slate-50/50 dark:hover:bg-slate-800/50 transition-colors">
+                        <table className="w-full">
+                            <tbody>
+                                {/* DYNAMIC ROWS */}
+                                {items.map((row, index) => (
+                                    <tr 
+                                        key={row.id} 
+                                        className="border-b border-slate-200/50 dark:border-slate-700/50 hover:bg-slate-50/50 dark:hover:bg-slate-800/50 transition-colors"
+                                    >
+                                        {/* ITEM INPUT FIELD */}
+                                        <td className="p-2 py-3 text-sm text-slate-700 dark:text-slate-200 w-1/2">
+                                            <div className="flex items-center space-x-4">
+                                                <span className="text-md font-medium min-w-[50px]">Item:</span>
+                                                <input 
+                                                    type="text" 
+                                                    value={row.item}
+                                                    onChange={(e) => handleItemInputChange(row.id, 'item', e.target.value)}
+                                                    placeholder={`Item ${index + 1}`}
+                                                    className="w-full px-3 py-1.5 rounded-md border border-slate-300 dark:border-slate-600 bg-slate-100 dark:bg-slate-700 shadow-xs text-slate-700 dark:text-slate-200 focus:border-blue-500" 
+                                                />
+                                            </div>
+                                        </td>
+                                        
+                                        {/* QUANTITY INPUT FIELD */}
+                                        <td className="p-2 py-3 text-sm text-slate-700 dark:text-slate-200 w-1/3">
+                                            <div className="flex items-center space-x-4">
+                                                <span className="text-md font-medium min-w-[80px]">Quantity: </span>
+                                                <input 
+                                                    type="number" 
+                                                    value={row.quantity}
+                                                    onChange={(e) => handleItemInputChange(row.id, 'quantity', e.target.value)}
+                                                    className="w-full px-3 py-1.5 rounded-md border border-slate-300 dark:border-slate-600 bg-slate-100 dark:bg-slate-700 shadow-xs text-slate-700 dark:text-slate-200 focus:border-blue-500" 
+                                                />
+                                            </div>
+                                        </td>
+                                        
+                                        {/* REMOVE BUTTON */}
+                                        <td className="p-2 py-3 text-center text-sm text-slate-700 dark:text-slate-200 w-auto">
+                                            {items.length > 1 && (
+                                                <button 
+                                                    type="button"
+                                                    onClick={() => handleRemoveItem(row.id)}
+                                                    className="text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-500 p-1 rounded transition-colors cursor-pointer"
+                                                    aria-label="Remove item"
+                                                >
+                                                    <Trash2 className="w-4 h-4" />
+                                                </button>
+                                            )}
+                                        </td>
+                                    </tr>
+                                ))}
                                 
-                                <td className="p-4 py-5 text-sm text-slate-700 dark:text-slate-200">
-                                    <div className = "flex items-center space-x-4">
-                                        <span className = "text-md font-medium">Item:</span>
-                                        <input type = "text" className="w-full mt-1 px-3 py-1.5 rounded-md border border-slate-300 dark:border-slate-600 bg-slate-100 dark:bg-slate-700 shadow-xs text-slate-500 dark:text-slate-400" />
-                                    </div>
-                                </td>
-                                <td className="p-4 py-5 text-sm text-slate-700 dark:text-slate-200">
-                                    <div className = "flex items-center space-x-4">
-                                        <span className = "text-md font-medium">Quantity: </span>
-                                        <input type = "text" className="w-full mt-1 px-3 py-1.5 rounded-md border border-slate-300 dark:border-slate-600 bg-slate-100 dark:bg-slate-700 shadow-xs text-slate-500 dark:text-slate-400" />
-                                    </div>
-                                </td>
-                            </tr>
+                                {/* Placeholder for empty state */}
+                                {items.length === 0 && (
+                                    <tr>
+                                        <td colSpan="3" className="p-4 text-center text-slate-500 dark:text-slate-400 italic">
+                                            Click "New Item" to start adding items.
+                                        </td>
+                                    </tr>
+                                )}
+                                
+                            </tbody>
                         </table>
 
-                        <div className = "flex items-center justify-center ">
-                            <div className = "flex items-center justify-center mt-3 w-80 rounded-md hover:bg-slate-100/50 border border-slate-300 dark:border-slate-600/50 dark:bg-slate-800/50 dark:hover:bg-slate-700/50 cursor-pointer transition-all">
+                        {/* NEW ITEM BUTTON - Calls handleAddItem */}
+                        <div className="flex items-center justify-center ">
+                            <div className="flex items-center justify-center mt-3 w-80 rounded-md hover:bg-slate-100/50 border border-slate-300 dark:border-slate-600/50 dark:bg-slate-800/50 dark:hover:bg-slate-700/50 cursor-pointer transition-all">
                                 <button
                                     type="button"
-                                    // onClick={handleOpenItemModal}
+                                    onClick={handleAddItem} 
                                     className="flex items-center space-x-2 py-2 px-4 text-slate-600 dark:text-white rounded-lg cursor-pointer transition-all">
                                     <Plus className="w-4 h-4" />
                                     <span className="text-sm font-medium">New Item</span>
@@ -158,17 +247,17 @@ function AddCountingModal({ isOpen, onClose }) {
                             </div>
                         </div>
                     </div>
-
-                    {/* Action Buttons */}
-                    <div className="pt-4 flex justify-end space-x-3">
-                        <button type="button" onClick={onClose} className="cursor-pointer px-4 py-2 text-sm font-medium rounded-md text-slate-700 dark:text-slate-300 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors">
-                            Cancel
-                        </button>
-                        <button type="submit" className="cursor-pointer px-4 py-2 text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 transition-colors shadow-md">
-                            Save Counting
-                        </button>
-                    </div>
                 </form>
+
+                {/* FOOTER: Fixed (flex-shrink-0) */}
+                <div className="pt-4 flex justify-end space-x-3 flex-shrink-0 mt-auto border-t border-slate-300 dark:border-slate-700">
+                    <button type="button" onClick={onClose} className="cursor-pointer px-4 py-2 text-sm font-medium rounded-md text-slate-700 dark:text-slate-300 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors">
+                        Cancel
+                    </button>
+                    <button type="submit" onClick={handleSubmit} className="cursor-pointer px-4 py-2 text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 transition-colors shadow-md">
+                        Save Counting
+                    </button>
+                </div>
             </div>
         </div>
     );
