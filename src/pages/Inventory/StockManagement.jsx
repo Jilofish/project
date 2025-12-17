@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import StockStatsGrid from './StockStatsGrid';
-import StocksTableHeader from './StocksTableHeader';
+// import StocksTableHeader from './StocksTableHeader';
 import StocksTable from './StocksTable';
 import StocksTransferTable from './StocksTransferTable';
 import RowLimiter from '../../components/filter/RowLimiter';
@@ -10,74 +10,154 @@ import TablePagination from '../../components/pagination/TablePagination';
 const ALL_OPTION = 'All';
 
 const StocksData = [
-{
-    Warehouse: 'Saog',
-    ItemName: 'Jowls',
-    ItemCode: 'M-JWLS-UNP',
-    Quantity: '50.00',
-    UnitPrice: '220.00',
-    TotalValue: '11,000.00',
-    Status: 'In Stock',
-},
-{
-    Warehouse: 'Saog',
-    ItemName: 'Jowls',
-    ItemCode: 'M-JWLS-VIP',
-    Quantity: '50.00',
-    UnitPrice: '215.00',
-    TotalValue: '10,750.00',
-    Status: 'In Stock',
-},
-{
-    Warehouse: 'Quezon City',
-    ItemName: 'Premium Beef',
-    ItemCode: 'M-PRBF-UNP',
-    Quantity: '10.15',
-    UnitPrice: '465.00',
-    TotalValue: '4719.00',
-    Status: 'Need Restock',
-},
-{
-    Warehouse: 'Meycuayan',
-    ItemName: 'Chicken',
-    ItemCode: 'M-CHCK-VAC',
-    Quantity: '5.17',
-    UnitPrice: '240.00',
-    TotalValue: '1240.80',
-    Status: 'Critical Stock',
-}
+    {
+        Warehouse: 'Saog',
+        ItemName: 'Jowls',
+        ItemCode: 'M-JWLS-UNP',
+        Quantity: '50.00',
+        UnitPrice: '220.00',
+        TotalValue: '11,000.00',
+        Status: 'In Stock',
+    },
+    {
+        Warehouse: 'Saog',
+        ItemName: 'Jowls',
+        ItemCode: 'M-JWLS-VIP',
+        Quantity: '50.00',
+        UnitPrice: '215.00',
+        TotalValue: '10,750.00',
+        Status: 'In Stock',
+    },
+    {
+        Warehouse: 'Quezon City',
+        ItemName: 'Premium Beef',
+        ItemCode: 'M-PRBF-UNP',
+        Quantity: '10.15',
+        UnitPrice: '465.00',
+        TotalValue: '4719.00',
+        Status: 'Need Restock',
+    },
+    {
+        Warehouse: 'Meycuayan',
+        ItemName: 'Chicken',
+        ItemCode: 'M-CHCK-VAC',
+        Quantity: '5.17',
+        UnitPrice: '240.00',
+        TotalValue: '1240.80',
+        Status: 'Critical Stock',
+    },
+    {
+        "Warehouse": "Makati",
+        "ItemName": "Salmon Fillet",
+        "ItemCode": "S-SF-SKN",
+        "Quantity": "63.41",
+        "UnitPrice": "692.51",
+        "TotalValue": "43,912.06",
+        "Status": "Need Restock"
+    },
+    {
+        "Warehouse": "Makati",
+        "ItemName": "Tenderloin",
+        "ItemCode": "B-TL-VAC",
+        "Quantity": "147.55",
+        "UnitPrice": "349.90",
+        "TotalValue": "51,627.75",
+        "Status": "Need Restock"
+    },
+    {
+        "Warehouse": "Makati",
+        "ItemName": "Shrimp",
+        "ItemCode": "SE-SHR-FRO",
+        "Quantity": "75.40",
+        "UnitPrice": "416.33",
+        "TotalValue": "31,391.28",
+        "Status": "In Stock"
+    },
+    {
+        "Warehouse": "Bocaue",
+        "ItemName": "Ground Beef",
+        "ItemCode": "B-GB-STD",
+        "Quantity": "38.80",
+        "UnitPrice": "877.37",
+        "TotalValue": "34,041.96",
+        "Status": "Need Restock"
+    },
+    {
+        "Warehouse": "Quezon City",
+        "ItemName": "Ground Beef",
+        "ItemCode": "B-GB-STD",
+        "Quantity": "58.51",
+        "UnitPrice": "755.91",
+        "TotalValue": "44,228.29",
+        "Status": "Need Restock"
+    },
+    {
+        "Warehouse": "Meycuayan",
+        "ItemName": "Lamb Leg",
+        "ItemCode": "L-LL-WHL",
+        "Quantity": "31.07",
+        "UnitPrice": "664.63",
+        "TotalValue": "20,650.05",
+        "Status": "In Stock"
+    },
+    {
+        "Warehouse": "Bocaue",
+        "ItemName": "Lamb Leg",
+        "ItemCode": "L-LL-WHL",
+        "Quantity": "97.54",
+        "UnitPrice": "420.47",
+        "TotalValue": "41,012.64",
+        "Status": "Need Restock"
+    },
+    {
+        "Warehouse": "Saog",
+        "ItemName": "Salmon Fillet",
+        "ItemCode": "S-SF-SKN",
+        "Quantity": "124.68",
+        "UnitPrice": "899.12",
+        "TotalValue": "112,102.28",
+        "Status": "In Stock"
+    },
+    {
+        "Warehouse": "Bocaue",
+        "ItemName": "Salmon Fillet",
+        "ItemCode": "S-SF-SKN",
+        "Quantity": "97.09",
+        "UnitPrice": "875.57",
+        "TotalValue": "85,009.09",
+        "Status": "Need Restock"
+    },
+    {
+        "Warehouse": "Saog",
+        "ItemName": "Ground Beef",
+        "ItemCode": "B-GB-STD",
+        "Quantity": "94.94",
+        "UnitPrice": "467.28",
+        "TotalValue": "44,363.56",
+        "Status": "In Stock"
+    },
+    {
+        "Warehouse": "Meycuayan",
+        "ItemName": "Ground Beef",
+        "ItemCode": "B-GB-STD",
+        "Quantity": "139.57",
+        "UnitPrice": "802.06",
+        "TotalValue": "111,943.51",
+        "Status": "Need Restock"
+    }
 ];
-
-    // --- DATE HELPER FUNCTIONS ---
-    const parseDate = (dateString) => {
-        return new Date(dateString);
-    };
-
-    const isDateInRange = (transactionDateString, startDate, endDate) => {
-        const transactionDate = parseDate(transactionDateString);
-        
-        transactionDate.setHours(0, 0, 0, 0); 
-        startDate.setHours(0, 0, 0, 0); 
-        endDate.setHours(23, 59, 59, 999); 
-
-        return transactionDate >= startDate && transactionDate <= endDate;
-    };
-
 
 function StockManagement() {
     const iconProps = {
         className: 'w-4 h-4 text-slate-500 dark:text-slate-500',
     };
 
-// --- DYNAMIC OPTION GENERATION (Explicitly uses ALL_OPTION) ---
     const extractUniqueOptions = (key, placeholder) => {
         const uniqueValues = [...new Set(StocksData.map(order => order[key]))];
-        return [placeholder, ALL_OPTION, ...uniqueValues.sort()];
+        return [placeholder, ALL_OPTION, ...uniqueValues.sort().filter(v => v !== undefined)];
     };
 
-    const rowLimitOptions = [5, 10, 15]; 
-
-    const dateRangeOptions = ['Date Range', ALL_OPTION, 'Today', 'Last 7 Days', 'Last 30 Days'];
+    const rowLimitOptions = [5, 10, 15];
 
     const supplierOptions = extractUniqueOptions('supplier', 'Supplier');
     const deliveryOptions = extractUniqueOptions('deliveryStatus', 'Delivery Status');
@@ -85,14 +165,12 @@ function StockManagement() {
 
     //the placeholder
     const initialRowLimit = rowLimitOptions[0];
-    const initialDateRange = dateRangeOptions[0];
     const initialSupplier = supplierOptions[0];
     const initialDeliveryStatus = deliveryOptions[0];
     const initialPaymentStatus = paymentOptions[0];
 
     // --- STATE MANAGEMENT ---
     const [rowLimit, setRowLimit] = useState(initialRowLimit);
-    const [dateRangeFilter, setDateRangeFilter] = useState(initialDateRange);
     const [supplierFilter, setSupplierFilter] = useState(initialSupplier);
     const [deliveryStatusFilter, setDeliveryStatusFilter] = useState(initialDeliveryStatus);
     const [paymentStatusFilter, setPaymentStatusFilter] = useState(initialPaymentStatus);
@@ -102,11 +180,6 @@ function StockManagement() {
     const handleRowLimitChange = (newValue) => {
         setRowLimit(parseInt(newValue));
         setCurrentPage(1); 
-    };
-
-    const handleDateRangeChange = (newValue) => {
-        setDateRangeFilter(newValue);
-        setCurrentPage(1);
     };
 
     const handleSupplierChange = (newValue) => {
@@ -128,31 +201,6 @@ function StockManagement() {
     const filteredOrders = useMemo(() => {
     let filtered = StocksData;
 
-    // 1. Date Range Filter
-    // Only apply if the value is NOT the placeholder AND NOT 'All'
-    if (dateRangeFilter !== initialDateRange && dateRangeFilter !== ALL_OPTION) {
-        const today = new Date();
-        let startDate = new Date(0); 
-
-        switch (dateRangeFilter) {
-            case 'Today':
-                startDate = today; 
-            break;
-            case 'Last 7 Days':
-                startDate = new Date(today);
-                startDate.setDate(today.getDate() - 7);
-            break;
-            case 'Last 30 Days':
-                startDate = new Date(today);
-                startDate.setDate(today.getDate() - 30);
-            break;
-        }
-
-        filtered = filtered.filter(order => 
-            isDateInRange(order.transactionDate, startDate, today)
-        );
-    }
-
     // Supplier Filter
     if (supplierFilter !== initialSupplier && supplierFilter !== ALL_OPTION) {
         filtered = filtered.filter(order => order.supplier === supplierFilter);
@@ -169,7 +217,7 @@ function StockManagement() {
     }
 
     return filtered;
-    }, [dateRangeFilter, supplierFilter, deliveryStatusFilter, paymentStatusFilter, initialDateRange, initialSupplier, initialDeliveryStatus, initialPaymentStatus]); 
+    }, [supplierFilter, deliveryStatusFilter, paymentStatusFilter, initialSupplier, initialDeliveryStatus, initialPaymentStatus]); 
 
     // --- Pagination Logic ---
     const totalOrders = filteredOrders.length;
@@ -196,30 +244,22 @@ function StockManagement() {
             : "inline-block p-4 border-b-2 border-transparent text-slate-600 dark:text-slate-400 hover:text-blue-500 hover:border-blue-300 cursor-pointer";
 
 
+    const filterProps = {
+        supplierOptions, deliveryOptions, paymentOptions,
+        currentSupplier: supplierFilter,
+        currentDeliveryStatus: deliveryStatusFilter,
+        currentPaymentStatus: paymentStatusFilter,
+        handleSupplierChange, handleDeliveryChange, handlePaymentChange,
+        iconProps,
+    };
+
     return (
         <div>
             <StockStatsGrid />
 
-            <div className = "bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl rounded-2xl py-2 px-5 border border-slate-200/50 dark:border-slate-700/50">
+            <div className = "bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl rounded-2xl py-4 px-5 border border-slate-200/50 dark:border-slate-700/50">
 
-                <StocksTableHeader
-                    dateRangeOptions={dateRangeOptions}
-                    supplierOptions={supplierOptions}
-                    deliveryOptions={deliveryOptions}
-                    paymentOptions={paymentOptions}
-
-                    currentDateRange={dateRangeFilter}
-                    currentSupplier={supplierFilter}
-                    currentDeliveryStatus={deliveryStatusFilter}
-                    currentPaymentStatus={paymentStatusFilter}
-
-                    handleDateRangeChange={handleDateRangeChange}
-                    handleSupplierChange={handleSupplierChange}
-                    handleDeliveryChange={handleDeliveryChange}
-                    handlePaymentChange={handlePaymentChange}
-
-                    iconProps={iconProps}
-                />
+                <h1 className="p-2 text-[#535353] dark:text-white text-2xl font-bold">Stock Management</h1>
 
                 <div>
                     <div className="mb-4 border-b border-gray-200 dark:border-gray-700">
@@ -259,13 +299,19 @@ function StockManagement() {
                     <div id="default-tab-content">
                         {activeTab === 'profile' && (
                             <div id="profile" role="tabpanel" aria-labelledby="profile-tab">
-                                <StocksTable orders={paginatedOrders}/>
+                                <StocksTable 
+                                    orders={paginatedOrders}
+                                    {...filterProps}
+                                />
                             </div>
                         )}
 
                         {activeTab === 'dashboard' && (
                             <div id="dashboard" role="tabpanel" aria-labelledby="dashboard-tab">
-                                <StocksTransferTable orders={paginatedOrders}/>
+                                <StocksTransferTable 
+                                    orders={paginatedOrders}
+                                    {...filterProps}
+                                />
                             </div>
                         )}
                     </div>

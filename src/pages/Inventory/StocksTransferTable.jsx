@@ -1,5 +1,9 @@
 import React from 'react';
-import { MoreHorizontal } from 'lucide-react'; 
+import { MoreHorizontal, Plus } from 'lucide-react'; 
+
+import CustomSupplierSelect from '../../components/filter/CustomSupplierSelect'; 
+import CustomDeliveryStatusSelect from '../../components/filter/CustomDeliveryStatusSelect'; 
+import CustomPaymentStatusSelect from '../../components/filter/CustomPaymentStatusSelect'; 
 
 const StocksTransferData = [
   {
@@ -41,7 +45,15 @@ const StocksTransferData = [
   }
 ];
 
-function StocksTransferTable() {
+function StocksTransferTable(
+    {
+        orders, 
+        supplierOptions, deliveryOptions, paymentOptions,
+        currentSupplier, currentDeliveryStatus, currentPaymentStatus,
+        handleSupplierChange, handleDeliveryChange, handlePaymentChange,
+        iconProps
+    }
+) {
     const getStatusColor = (Status) => {
         switch (Status) {
             case "Delivered":
@@ -59,6 +71,39 @@ function StocksTransferTable() {
 
     return (
         <div className="overflow-x-auto">
+            <div className="flex items-center justify-between gap-3 py-2 mb-3">
+            <div className = "flex items-center gap-3">
+                {/* 2. Supplier Filter */}
+                <CustomSupplierSelect
+                  options={supplierOptions}
+                  initialValue={currentSupplier}
+                  onSelect={handleSupplierChange}
+                  iconProps={iconProps}
+                />
+
+                {/* 3. Delivery Status Filter */}
+                <CustomDeliveryStatusSelect
+                  options={deliveryOptions}
+                  initialValue={currentDeliveryStatus}
+                  onSelect={handleDeliveryChange}
+                  iconProps={iconProps}
+                />
+
+                {/* 4. Payment Status Filter */}
+                <CustomPaymentStatusSelect
+                  options={paymentOptions}
+                  initialValue={currentPaymentStatus}
+                  onSelect={handlePaymentChange}
+                  iconProps={iconProps}
+                />
+            </div>
+
+            <button className="flex items-center space-x-2 py-2 px-4 bg-blue-500 text-white rounded-lg hover:shadow-lg transition-all">
+                <Plus className="w-4 h-4" />
+                <span className="text-sm font-medium">Add Transfer</span>
+            </button>
+
+          </div>
             <table className="w-full mb-2">
                 <thead>
                     <tr className = "bg-slate-200/50 dark:bg-slate-700/50">
