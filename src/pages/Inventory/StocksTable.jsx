@@ -11,7 +11,7 @@ function StocksTable(
     supplierOptions, deliveryOptions, paymentOptions,
     currentSupplier, currentDeliveryStatus, currentPaymentStatus,
     handleSupplierChange, handleDeliveryChange, handlePaymentChange,
-    iconProps
+    iconProps, onAddProductClick
   }
 ) {
     // NOTE: The static PurchasedOrders data is removed and now received via the 'orders' prop.
@@ -58,9 +58,10 @@ function StocksTable(
                 />
             </div>
 
-            <button className="flex items-center space-x-2 py-2 px-4 bg-blue-500 text-white rounded-lg hover:shadow-lg transition-all">
-                <Plus className="w-4 h-4" />
-                <span className="text-sm font-medium">Add Product</span>
+            <button 
+              onClick={onAddProductClick} className="flex items-center space-x-2 py-2 px-4 bg-blue-500 text-white rounded-lg hover:shadow-lg transition-all">
+              <Plus className="w-4 h-4" />
+              <span className="text-sm font-medium">Add Product</span>
             </button>
 
           </div>

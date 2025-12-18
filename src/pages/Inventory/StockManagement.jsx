@@ -5,6 +5,7 @@ import StocksTable from './StocksTable';
 import StocksTransferTable from './StocksTransferTable';
 import RowLimiter from '../../components/filter/RowLimiter';
 import TablePagination from '../../components/pagination/TablePagination';
+import AddProductModal from '../../components/modals/AddProductModal';
 
 
 const ALL_OPTION = 'All';
@@ -47,103 +48,103 @@ const StocksData = [
         Status: 'Critical Stock',
     },
     {
-        "Warehouse": "Makati",
-        "ItemName": "Salmon Fillet",
-        "ItemCode": "S-SF-SKN",
-        "Quantity": "63.41",
-        "UnitPrice": "692.51",
-        "TotalValue": "43,912.06",
-        "Status": "Need Restock"
+        Warehouse: "Makati",
+        ItemName: "Salmon Fillet",
+        ItemCode: "S-SF-SKN",
+        Quantity: "63.41",
+        UnitPrice: "692.51",
+        TotalValue: "43,912.06",
+        Status: "Need Restock"
     },
     {
-        "Warehouse": "Makati",
-        "ItemName": "Tenderloin",
-        "ItemCode": "B-TL-VAC",
-        "Quantity": "147.55",
-        "UnitPrice": "349.90",
-        "TotalValue": "51,627.75",
-        "Status": "Need Restock"
+        Warehouse: "Makati",
+        ItemName: "Tenderloin",
+        ItemCode: "B-TL-VAC",
+        Quantity: "147.55",
+        UnitPrice: "349.90",
+        TotalValue: "51,627.75",
+        Status: "Need Restock"
     },
     {
-        "Warehouse": "Makati",
-        "ItemName": "Shrimp",
-        "ItemCode": "SE-SHR-FRO",
-        "Quantity": "75.40",
-        "UnitPrice": "416.33",
-        "TotalValue": "31,391.28",
-        "Status": "In Stock"
+        Warehouse: "Makati",
+        ItemName: "Shrimp",
+        ItemCode: "SE-SHR-FRO",
+        Quantity: "75.40",
+        UnitPrice: "416.33",
+        TotalValue: "31,391.28",
+        Status: "In Stock"
     },
     {
-        "Warehouse": "Bocaue",
-        "ItemName": "Ground Beef",
-        "ItemCode": "B-GB-STD",
-        "Quantity": "38.80",
-        "UnitPrice": "877.37",
-        "TotalValue": "34,041.96",
-        "Status": "Need Restock"
+        Warehouse: "Bocaue",
+        ItemName: "Ground Beef",
+        ItemCode: "B-GB-STD",
+        Quantity: "38.80",
+        UnitPrice: "877.37",
+        TotalValue: "34,041.96",
+        Status: "Need Restock"
     },
     {
-        "Warehouse": "Quezon City",
-        "ItemName": "Ground Beef",
-        "ItemCode": "B-GB-STD",
-        "Quantity": "58.51",
-        "UnitPrice": "755.91",
-        "TotalValue": "44,228.29",
-        "Status": "Need Restock"
+        Warehouse: "Quezon City",
+        ItemName: "Ground Beef",
+        ItemCode: "B-GB-STD",
+        Quantity: "58.51",
+        UnitPrice: "755.91",
+        TotalValue: "44,228.29",
+        Status: "Need Restock"
     },
     {
-        "Warehouse": "Meycuayan",
-        "ItemName": "Lamb Leg",
-        "ItemCode": "L-LL-WHL",
-        "Quantity": "31.07",
-        "UnitPrice": "664.63",
-        "TotalValue": "20,650.05",
-        "Status": "In Stock"
+        Warehouse: "Meycuayan",
+        ItemName: "Lamb Leg",
+        ItemCode: "L-LL-WHL",
+        Quantity: "31.07",
+        UnitPrice: "664.63",
+        TotalValue: "20,650.05",
+        Status: "In Stock"
     },
     {
-        "Warehouse": "Bocaue",
-        "ItemName": "Lamb Leg",
-        "ItemCode": "L-LL-WHL",
-        "Quantity": "97.54",
-        "UnitPrice": "420.47",
-        "TotalValue": "41,012.64",
-        "Status": "Need Restock"
+        Warehouse: "Bocaue",
+        ItemName: "Lamb Leg",
+        ItemCode: "L-LL-WHL",
+        Quantity: "97.54",
+        UnitPrice: "420.47",
+        TotalValue: "41,012.64",
+        Status: "Need Restock"
     },
     {
-        "Warehouse": "Saog",
-        "ItemName": "Salmon Fillet",
-        "ItemCode": "S-SF-SKN",
-        "Quantity": "124.68",
-        "UnitPrice": "899.12",
-        "TotalValue": "112,102.28",
-        "Status": "In Stock"
+        Warehouse: "Saog",
+        ItemName: "Salmon Fillet",
+        ItemCode: "S-SF-SKN",
+        Quantity: "124.68",
+        UnitPrice: "899.12",
+        TotalValue: "112,102.28",
+        Status: "In Stock"
     },
     {
-        "Warehouse": "Bocaue",
-        "ItemName": "Salmon Fillet",
-        "ItemCode": "S-SF-SKN",
-        "Quantity": "97.09",
-        "UnitPrice": "875.57",
-        "TotalValue": "85,009.09",
-        "Status": "Need Restock"
+        Warehouse: "Bocaue",
+        ItemName: "Salmon Fillet",
+        ItemCode: "S-SF-SKN",
+        Quantity: "97.09",
+        UnitPrice: "875.57",
+        TotalValue: "85,009.09",
+        Status: "Need Restock"
     },
     {
-        "Warehouse": "Saog",
-        "ItemName": "Ground Beef",
-        "ItemCode": "B-GB-STD",
-        "Quantity": "94.94",
-        "UnitPrice": "467.28",
-        "TotalValue": "44,363.56",
-        "Status": "In Stock"
+        Warehouse: "Saog",
+        ItemName: "Ground Beef",
+        ItemCode: "B-GB-STD",
+        Quantity: "94.94",
+        UnitPrice: "467.28",
+        TotalValue: "44,363.56",
+        Status: "In Stock"
     },
     {
-        "Warehouse": "Meycuayan",
-        "ItemName": "Ground Beef",
-        "ItemCode": "B-GB-STD",
-        "Quantity": "139.57",
-        "UnitPrice": "802.06",
-        "TotalValue": "111,943.51",
-        "Status": "Need Restock"
+        Warehouse: "Meycuayan",
+        ItemName: "Ground Beef",
+        ItemCode: "B-GB-STD",
+        Quantity: "139.57",
+        UnitPrice: "802.06",
+        TotalValue: "111,943.51",
+        Status: "Need Restock"
     }
 ];
 
@@ -162,6 +163,11 @@ function StockManagement() {
     const supplierOptions = extractUniqueOptions('supplier', 'Supplier');
     const deliveryOptions = extractUniqueOptions('deliveryStatus', 'Delivery Status');
     const paymentOptions = extractUniqueOptions('paymentStatus', 'Payment Status');
+
+    const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+
+    const handleOpenModal = () => setIsAddModalOpen(true);
+    const handleCloseModal = () => setIsAddModalOpen(false);
 
     //the placeholder
     const initialRowLimit = rowLimitOptions[0];
@@ -302,6 +308,7 @@ function StockManagement() {
                                 <StocksTable 
                                     orders={paginatedOrders}
                                     {...filterProps}
+                                    onAddProductClick={handleOpenModal}
                                 />
                             </div>
                         )}
@@ -331,6 +338,11 @@ function StockManagement() {
                     />
                 </div>
             </div>
+
+            <AddProductModal 
+                isOpen={isAddModalOpen} 
+                onClose={handleCloseModal} 
+            />
         </div>
     )
 }

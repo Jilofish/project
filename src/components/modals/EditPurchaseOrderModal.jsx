@@ -75,7 +75,7 @@ function EditPurchaseOrderModal({ isOpen, onClose, orderData, onSave }) {
                     <h2 className="text-2xl font-bold text-slate-800 dark:text-white">
                         Edit Purchase Order: {orderData.PO}
                     </h2>
-                    <button onClick={onClose}>
+                    <button onClick={onClose} className="p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-full transition-colors">
                         <X className="w-7 h-7 text-slate-600 dark:text-slate-300 cursor-pointer"/>
                     </button>
                 </div>
