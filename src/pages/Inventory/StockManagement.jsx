@@ -5,12 +5,16 @@ import StocksTransferTable from './StocksTransferTable';
 import RowLimiter from '../../components/filter/RowLimiter';
 import TablePagination from '../../components/pagination/TablePagination';
 import AddProductModal from '../../components/modals/AddProductModal';
+import AddStockTransferModal from '../../components/modals/AddStockTransferModal';
 
 function StockManagement() {
-    const [activeTab, setActiveTab] = useState('profile'); // Kept your 'profile' ID
-    const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+    const [activeTab, setActiveTab] = useState('profile');
     
-    // Pagination & Shared State
+    // --- MODAL STATES ---
+    const [isAddProductModalOpen, setIsAddProductModalOpen] = useState(false);
+    const [isAddTransferModalOpen, setIsAddTransferModalOpen] = useState(false);
+    
+    // --- PAGINATION & SHARED STATE ---
     const [rowLimit, setRowLimit] = useState(5);
     const [currentPage, setCurrentPage] = useState(1);
     const [totalItems, setTotalItems] = useState(0);
@@ -18,7 +22,6 @@ function StockManagement() {
     const totalPages = Math.ceil(totalItems / rowLimit);
     const iconProps = { className: 'w-4 h-4 text-slate-500 dark:text-slate-500' };
 
-    // Updates page count when Table filters data
     const handleDataChange = useCallback((count) => {
         setTotalItems(count);
         setCurrentPage(1); 
@@ -29,7 +32,6 @@ function StockManagement() {
         setCurrentPage(1);
     };
 
-    // RESTORED: Your original tab styling with hover effects
     const getTabClasses = (tabId) => 
         activeTab === tabId 
             ? "inline-block p-4 border-b-2 border-blue-500 text-blue-500 font-semibold cursor-pointer hover:text-blue-600 hover:border-blue-600"
@@ -39,9 +41,7 @@ function StockManagement() {
         <div>
             <StockStatsGrid />
 
-            {/* RESTORED: Your original Glassmorphism container */}
             <div className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl rounded-2xl py-4 px-5 border border-slate-200/50 dark:border-slate-700/50 shadow-sm">
-
                 <h1 className="p-2 text-[#535353] dark:text-white text-2xl font-bold">Stock Management</h1>
 
                 <div>
@@ -77,7 +77,8 @@ function StockManagement() {
                                     rowLimit={rowLimit}
                                     currentPage={currentPage}
                                     onTotalDataChange={handleDataChange}
-                                    onAddProductClick={() => setIsAddModalOpen(true)}
+                                    // Trigger Product Modal
+                                    onAddProductClick={() => setIsAddProductModalOpen(true)}
                                     iconProps={iconProps}
                                 />
                             </div>
@@ -89,6 +90,8 @@ function StockManagement() {
                                     rowLimit={rowLimit}
                                     currentPage={currentPage}
                                     onTotalDataChange={handleDataChange}
+                                    // Trigger Transfer Modal
+                                    onAddStockTransferClick={() => setIsAddTransferModalOpen(true)}
                                     iconProps={iconProps}
                                 />
                             </div>
@@ -96,7 +99,6 @@ function StockManagement() {
                     </div>
                 </div>
 
-                {/* Shared Pagination Controls */}
                 <div className="flex items-center justify-between mt-3">
                     <RowLimiter
                         options={[5, 10, 15]}
@@ -112,9 +114,16 @@ function StockManagement() {
                 </div>
             </div>
 
+            {/* PRODUCT MODAL */}
             <AddProductModal 
-                isOpen={isAddModalOpen} 
-                onClose={() => setIsAddModalOpen(false)} 
+                isOpen={isAddProductModalOpen} 
+                onClose={() => setIsAddProductModalOpen(false)} 
+            />
+
+            {/* TRANSFER MODAL */}
+            <AddStockTransferModal 
+                isOpen={isAddTransferModalOpen} 
+                onClose={() => setIsAddTransferModalOpen(false)} 
             />
         </div>
     );

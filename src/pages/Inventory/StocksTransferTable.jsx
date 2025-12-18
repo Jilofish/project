@@ -13,7 +13,7 @@ const StocksTransferData = [
 
 const ALL_OPTION = 'All';
 
-function StocksTransferTable({ rowLimit, currentPage, onTotalDataChange, iconProps }) {
+function StocksTransferTable({ rowLimit, currentPage, onTotalDataChange, onAddStockTransferClick, iconProps }) {
     // --- 1. INITIAL STATES (Recalibrated to match placeholders) ---
     const [dateFilter, setDateFilter] = useState('Transfer Date');
     const [senderFilter, setSenderFilter] = useState('Sender');
@@ -107,7 +107,9 @@ function StocksTransferTable({ rowLimit, currentPage, onTotalDataChange, iconPro
                         iconProps={iconProps}
                     />
                 </div>
-                <button className="flex items-center space-x-2 py-2 px-4 bg-blue-500 text-white rounded-lg hover:shadow-lg transition-all active:scale-95">
+                <button 
+                    onClick={onAddStockTransferClick}
+                    type="button" className="cursor-pointer flex items-center space-x-2 py-2 px-4 bg-blue-500 text-white rounded-lg hover:shadow-lg transition-all active:scale-95">
                     <Plus className="w-4 h-4" />
                     <span className="text-sm font-medium">Add Transfer</span>
                 </button>
