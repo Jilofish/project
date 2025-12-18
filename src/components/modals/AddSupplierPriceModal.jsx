@@ -62,7 +62,7 @@ function AddSupplierPriceModal({ isOpen, onClose, onAdd }) {
                     </div>
 
                     <div className="flex justify-end space-x-3 mt-6">
-                        <button type="button" onClick={onClose} className="px-4 py-2 text-sm text-slate-600 dark:text-slate-400 cursor-pointer">
+                        <button type="button" onClick={onClose} className="px-4 py-2 text-sm text-slate-700 dark:text-slate-400 rounded-md hover:bg-slate-400/10 cursor-pointer transition-colors">
                             Cancel
                         </button>
                         <button type="submit" className="px-6 py-2 text-sm bg-blue-600 text-white rounded-md hover:bg-blue-700 cursor-pointer transition-colors">
