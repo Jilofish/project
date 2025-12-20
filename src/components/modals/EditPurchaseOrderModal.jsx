@@ -121,7 +121,7 @@ function EditPurchaseOrderModal({ isOpen, onClose, orderData, onSave }) {
                                 name="approvalStatus"
                                 options={approvalStatusOptions}
                                 currentValue={formValues.approvalStatus} 
-                                onSelect={handleInputChange} 
+                                onSelect={handleInputChange}
                             />
                         </div>
                     </div>

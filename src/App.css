@@ -15,3 +15,8 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   height: 100%;
   cursor: pointer;
 }
+
+button
+{
+  cursor: pointer;
+}

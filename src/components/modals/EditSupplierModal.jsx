@@ -43,7 +43,7 @@ function EditSupplierModal({ isOpen, onClose, onUpdate, initialData }) {
             <div className="bg-white dark:bg-slate-800 rounded-xl shadow-xl w-full max-w-md overflow-hidden" onClick={e => e.stopPropagation()}>
                 <div className="flex items-center justify-between p-4 border-b dark:border-slate-700">
                     <h3 className="font-bold text-slate-800 dark:text-white">Edit Supplier Pricing</h3>
-                    <button onClick={onClose} className="cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-700 rounded-full p-1 transition-colors">
+                    <button onClick={onClose} className="hover:bg-slate-100 dark:hover:bg-slate-700 rounded-full p-1 transition-colors">
                         <X className="w-5 h-5 text-slate-500" />
                     </button>
                 </div>
@@ -73,8 +73,8 @@ function EditSupplierModal({ isOpen, onClose, onUpdate, initialData }) {
                     </div>
 
                     <div className="flex justify-end space-x-3 mt-6">
-                        <button type="button" onClick={onClose} className="px-4 py-2 text-sm text-slate-600 dark:text-slate-400 cursor-pointer hover:underline">Cancel</button>
-                        <button type="submit" className="px-6 py-2 text-sm bg-blue-600 text-white rounded-md hover:bg-blue-700 cursor-pointer transition-all shadow-md active:scale-95">
+                        <button type="button" onClick={onClose} className="px-4 py-2 text-sm text-slate-600 dark:text-slate-400 hover:underline">Cancel</button>
+                        <button type="submit" className="px-6 py-2 text-sm bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-all shadow-md active:scale-95">
                             Update Row
                         </button>
                     </div>

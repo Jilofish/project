@@ -68,14 +68,13 @@ function SupplierListTable({ orders, onEdit }) {
                             </td>
                             <td className="p-4 flex items-center gap-3"> 
                                 <button 
-                                    className="text-sm text-blue-800 dark:text-blue-400 hover:scale-110 transition-transform cursor-pointer"
+                                    className="text-sm text-blue-800 dark:text-blue-400 hover:scale-110 transition-transform"
                                     onClick={() => onEdit(order)}
-                                    title="Edit Supplier"
                                 >
                                     <Pencil className="w-4 h-4"/>
                                 </button>
                                 <button 
-                                    className="text-sm text-red-800 dark:text-red-400 hover:scale-110 transition-transform cursor-pointer"
+                                    className="text-sm text-red-800 dark:text-red-400 hover:scale-110 transition-transform"
                                     title="Delete Supplier"
                                 >
                                     <Trash2 className="w-4 h-4"/>
