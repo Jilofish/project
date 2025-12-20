@@ -58,7 +58,7 @@ function EditReceivedItemsModal({ isOpen, onClose, itemData, onSave }) {
                     <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-5">
                         <div className="space-y-1">
                             <label className="text-sm font-medium text-slate-700 dark:text-slate-300">PO Number</label>
-                            <input name="Name" value={formData.PO || ''} onChange={handleInputChange} className="w-full mt-1 px-3 py-1.5 rounded-md border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 shadow-xs focus:outline-none focus:border-blue-500 dark:focus:border-blue-500 text-slate-700 dark:text-slate-200" readOnly/>
+                            <input name="Name" value={formData.PO || ''} onChange={handleInputChange} className="w-full mt-1 px-3 py-1.5 rounded-md border border-slate-300 dark:border-slate-600 bg-slate-100 dark:bg-slate-700/50 shadow-xs text-slate-500 dark:text-slate-400" readOnly disabled/>
                         </div>
                         <div className="space-y-1">
                             <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Item Name</label>
@@ -71,16 +71,6 @@ function EditReceivedItemsModal({ isOpen, onClose, itemData, onSave }) {
                         <div className="space-y-1">
                             <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Transaction Date</label>
                             <input name="Name" value={formData.transactionDate || ''} onChange={handleInputChange} className="w-full mt-1 px-3 py-1.5 rounded-md border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 shadow-xs focus:outline-none focus:border-blue-500 dark:focus:border-blue-500 text-slate-700 dark:text-slate-200" />
-                        </div>
-                        
-                        <div className = "mt-1">
-                            <ModalCustomFormSelect
-                                label="Delivery Status"
-                                name="deliveryStatus"
-                                options={deliveryStatusOptions}
-                                currentValue={formData.deliveryStatus}
-                                onSelect={handleInputChange}
-                            />
                         </div>
                         
                         <div className="space-y-1">
@@ -96,6 +86,16 @@ function EditReceivedItemsModal({ isOpen, onClose, itemData, onSave }) {
                             <input name="Name" value={formData.totalKilo || ''} onChange={handleInputChange} className="w-full mt-1 px-3 py-1.5 rounded-md border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 shadow-xs focus:outline-none focus:border-blue-500 dark:focus:border-blue-500 text-slate-700 dark:text-slate-200" />
                         </div>
 
+                        <div className = "mt-1">
+                            <ModalCustomFormSelect
+                                label="Delivery Status"
+                                name="deliveryStatus"
+                                options={deliveryStatusOptions}
+                                currentValue={formData.deliveryStatus}
+                                onSelect={handleInputChange}
+                            />
+                        </div>
+
                         <div className="md:col-span-2 space-y-1">
                             <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Remarks</label>
                             <textarea name="remarks" rows="3" value={formData.remarks || ''} onChange={handleInputChange} className="w-full mt-1 px-3 py-1.5 rounded-md border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 shadow-xs focus:outline-none focus:border-blue-500 dark:focus:border-blue-500 text-slate-700 dark:text-slate-200 resize-none" />
@@ -103,7 +103,7 @@ function EditReceivedItemsModal({ isOpen, onClose, itemData, onSave }) {
                     </div>
 
                     <div className="p-6 flex justify-end gap-3">
-                        <button onClick={onClose} className="px-4 py-2 text-sm text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg">Cancel</button>
+                        <button onClick={onClose} className="px-4 py-2 text-sm text-slate-600 dark:text-slate-400 hover:underline">Cancel</button>
                         <button onClick={() => onSave(formData)} className="px-4 py-2 text-sm bg-blue-600 hover:bg-blue-700 text-white rounded-lg shadow-lg shadow-blue-500/30">Update Item</button>
                     </div>
                 </form>

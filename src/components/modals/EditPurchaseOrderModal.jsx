@@ -70,7 +70,7 @@ function EditPurchaseOrderModal({ isOpen, onClose, orderData, onSave }) {
             <div className="bg-white dark:bg-slate-800 p-8 rounded-lg shadow-2xl w-full max-w-3xl mx-4">
                 <div className="w-full flex items-center justify-between mb-6 pb-6 border-b border-slate-300 dark:border-slate-700">
                     <h2 className="text-2xl font-bold text-slate-800 dark:text-white">
-                        Edit Purchase Order: {orderData.PO}
+                        Edit Purchase Order
                     </h2>
                     <button onClick={onClose} className="p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-full transition-colors">
                         <X className="w-7 h-7 text-slate-600 dark:text-slate-300 cursor-pointer"/>
@@ -171,7 +171,7 @@ function EditPurchaseOrderModal({ isOpen, onClose, orderData, onSave }) {
 
                     {/* Action Buttons */}
                     <div className="pt-4 flex justify-end space-x-3">
-                        <button type="button" onClick={onClose} className="px-4 py-2 text-sm font-medium rounded-md text-slate-700 dark:text-slate-300 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors">
+                        <button type="button" onClick={onClose} className="px-4 py-2 text-sm text-slate-600 dark:text-slate-400 hover:underline">
                             Cancel
                         </button>
                         <button type="submit" className="px-4 py-2 text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 transition-colors shadow-md">
