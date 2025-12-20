@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useEffect } from 'react';
-import { MoreHorizontal, Plus } from 'lucide-react'; 
+import { Plus, Pencil, Trash2 } from 'lucide-react'; 
 
 import CustomSupplierSelect from '../../components/filter/CustomSupplierSelect'; 
 import CustomPaymentStatusSelect from '../../components/filter/CustomPaymentStatusSelect'; 
@@ -13,7 +13,7 @@ const StocksTransferData = [
 
 const ALL_OPTION = 'All';
 
-function StocksTransferTable({ rowLimit, currentPage, onTotalDataChange, onAddStockTransferClick, iconProps }) {
+function StocksTransferTable({ rowLimit, currentPage, onTotalDataChange, onAddStockTransferClick, iconProps, onEdit }) {
     // --- 1. INITIAL STATES (Recalibrated to match placeholders) ---
     const [dateFilter, setDateFilter] = useState('Transfer Date');
     const [senderFilter, setSenderFilter] = useState('Sender');
@@ -144,10 +144,15 @@ function StocksTransferTable({ rowLimit, currentPage, onTotalDataChange, onAddSt
                                         {order.Status}
                                     </span>
                                 </td>
-                                <td className="p-4 text-center">
-                                    <button className="p-1 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-full transition-colors">
-                                        <MoreHorizontal className="w-4 h-4 text-slate-400" />
-                                    </button>
+                                <td className="p-4 flex items-center justify-center gap-3"> 
+                                    <span className="text-sm text-blue-800 dark:text-blue-400 cursor-pointer"
+                                        onClick={() => onEdit(order)}
+                                    >
+                                        <Pencil className="w-4 h-4"/>
+                                    </span>
+                                    <span className="text-sm text-red-800 dark:text-red-400 cursor-pointer">
+                                        <Trash2 className="w-4 h-4"/>
+                                    </span>
                                 </td>
                             </tr>
                         ))
