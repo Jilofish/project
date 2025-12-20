@@ -1,6 +1,5 @@
 import React from 'react';
 import { Plus } from 'lucide-react';
-// Assuming you have a reusable select component in this path
 import CustomSelect from '../../components/filter/CustomSupplierSelect'; 
 
 function CustomerListTableHeader({
