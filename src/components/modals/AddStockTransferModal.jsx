@@ -181,7 +181,7 @@ function AddStockTransferModal({ isOpen, onClose, itemOptions }) {
                         </div>
 
                         <div className="pt-4 flex justify-end space-x-3">
-                            <button type="button" onClick={onClose} className="px-6 py-2 text-sm font-medium rounded-md text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 transition-colors cursor-pointer">Cancel</button>
+                            <button type="button" onClick={onClose} className="cursor-pointer px-4 py-2 text-sm font-medium rounded-md text-slate-700 dark:text-slate-300 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors">Cancel</button>
                             <button type="submit" className="px-6 py-2 text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 shadow-md cursor-pointer">Save Transfer</button>
                         </div>
                     </form>

@@ -73,9 +73,8 @@ function AddCountingModal({ isOpen, onClose }) {
         
         console.log("New Counting Data:", finalData);
         
-        // Reset and close
         setFormValues({ CountDate: '', Warehouse: '', remarks: '' });
-        setItems([{ id: Date.now(), item: '', quantity: '' }]); // Reset items list
+        setItems([{ id: Date.now(), item: '', quantity: '' }]);
         onClose();
     };
 
@@ -84,12 +83,10 @@ function AddCountingModal({ isOpen, onClose }) {
     return (
         <div className="fixed inset-0 bg-black/50 dark:bg-black/70 z-[60] flex items-center justify-center">
             <div 
-                // CONTAINER: Set max height and enable flex-col layout
                 className="bg-white dark:bg-slate-800 p-8 rounded-lg shadow-2xl w-full max-w-3xl mx-4 max-h-[90vh] flex flex-col" // <--- KEY CHANGES
                 onClick={e => e.stopPropagation()}
             >
 
-                {/* HEADER: Fixed (flex-shrink-0 is default for non-flex children) */}
                 <div className="w-full flex items-center justify-between mb-6 pb-6 border-b border-slate-300 dark:border-slate-700 flex-shrink-0">
                     <h2 className="text-2xl font-bold text-slate-800 dark:text-white">
                         Add Counting
@@ -99,7 +96,6 @@ function AddCountingModal({ isOpen, onClose }) {
                     </button>
                 </div>
 
-                {/* FORM CONTENT: The scrollable area (overflow-y-auto and flex-grow) */}
                 <form onSubmit={handleSubmit} className="space-y-5 overflow-y-auto flex-grow pr-2 custom-scrollbar"> 
                     
                     {/* Main form fields */}

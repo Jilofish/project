@@ -1,11 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { X } from 'lucide-react';
 
-// *** IMPORT THE NEW COMPONENT ***
-// Adjust the path below if you saved ModalCustomFormSelect.jsx somewhere else
 import ModalCustomFormSelect from '../../components/filter/ModalCustomFormSelect'; 
 
-// --- DEFINE OPTIONS FOR SELECT FIELDS (ENSURE VALUES MATCH DATA SOURCE EXACTLY) ---
 const approvalStatusOptions = [
     { value: 'Pending', label: 'Pending' },
     { value: 'Rejected', label: 'Rejected' },
@@ -119,7 +116,7 @@ function EditPurchaseOrderModal({ isOpen, onClose, orderData, onSave }) {
 
                         {/* 6. Approval Status (ModalCustomFormSelect) */}
                         <div>
-                            <ModalCustomFormSelect // <-- New component used here
+                            <ModalCustomFormSelect
                                 label="Approval Status"
                                 name="approvalStatus"
                                 options={approvalStatusOptions}
@@ -133,7 +130,7 @@ function EditPurchaseOrderModal({ isOpen, onClose, orderData, onSave }) {
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                         {/* 7. Delivery Status (ModalCustomFormSelect) */}
                         <div>
-                            <ModalCustomFormSelect // <-- New component used here
+                            <ModalCustomFormSelect
                                 label="Delivery Status"
                                 name="deliveryStatus"
                                 options={deliveryStatusOptions}
@@ -144,7 +141,7 @@ function EditPurchaseOrderModal({ isOpen, onClose, orderData, onSave }) {
 
                         {/* 8. Payment Status (ModalCustomFormSelect) */}
                         <div>
-                            <ModalCustomFormSelect // <-- New component used here
+                            <ModalCustomFormSelect
                                 label="Payment Status"
                                 name="paymentStatus"
                                 options={paymentStatusOptions}
@@ -155,7 +152,7 @@ function EditPurchaseOrderModal({ isOpen, onClose, orderData, onSave }) {
                         
                         {/* 9. Status (ModalCustomFormSelect) */}
                         <div>
-                            <ModalCustomFormSelect // <-- New component used here
+                            <ModalCustomFormSelect
                                 label="Status"
                                 name="status"
                                 options={statusOptions}

@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { X } from 'lucide-react';
 import CustomFormSelect from '../filter/CustomFormSelect';
 
-// Assuming you have a list of items to choose from
 const itemData = [
     { name: 'Pork Belly' },
     { name: 'Chicken Breast' },
@@ -40,9 +39,9 @@ function EditItemToShipModal({ isOpen, onClose, onUpdate, initialData }) {
     return (
         <div className="fixed inset-0 bg-black/60 z-[60] flex items-center justify-center p-4">
             <div className="bg-white dark:bg-slate-800 rounded-xl shadow-xl w-full max-w-md overflow-hidden" onClick={e => e.stopPropagation()}>
-                <div className="flex items-center justify-between p-4 border-b dark:border-slate-700">
+                <div className="flex items-center justify-between p-4 border-b border-slate-200 dark:border-slate-700">
                     <h3 className="font-bold text-slate-800 dark:text-white">Edit Item to Ship</h3>
-                    <button onClick={onClose} className="cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-700 rounded-full p-1 transition-colors">
+                    <button onClick={onClose} className="cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-700 rounded-full p-2 transition-colors">
                         <X className="w-5 h-5 text-slate-500" />
                     </button>
                 </div>

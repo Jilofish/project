@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useEffect } from 'react';
-import { MoreHorizontal, Plus } from 'lucide-react'; 
+import { Plus, Pencil, Trash2 } from 'lucide-react'; 
 import CustomWarehouseSelect from '../../components/filter/CustomSupplierSelect'; 
 import CustomStatusSelect from '../../components/filter/CustomDeliveryStatusSelect'; 
 
@@ -119,10 +119,15 @@ function StocksTable({ rowLimit, currentPage, onTotalDataChange, onAddProductCli
                                         {item.Status}
                                     </span>
                                 </td>
-                                <td className="p-4">
-                                    <button className="p-1 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-full transition-colors">
-                                        <MoreHorizontal className="w-4 h-4 text-slate-400 cursor-pointer" />
-                                    </button>
+                                <td className="p-4 flex items-center gap-3"> 
+                                    <span className="text-sm text-blue-800 dark:text-blue-400 cursor-pointer"
+                                        // onClick={() => onEdit(order)}
+                                    >
+                                        <Pencil className="w-4 h-4"/>
+                                    </span>
+                                    <span className="text-sm text-red-800 dark:text-red-400 cursor-pointer">
+                                        <Trash2 className="w-4 h-4"/>
+                                    </span>
                                 </td>
                             </tr>
                         ))

@@ -49,10 +49,6 @@ function EditSupplierModal({ isOpen, onClose, onUpdate, initialData }) {
                 </div>
                 
                 <form onSubmit={handleSubmit} className="p-6 space-y-5">
-                    {/* IMPORTANT: The initialValue here is tied to data.supplier. 
-                        Because of the 'key' prop in the parent, this component 
-                        remounts fresh with the correct supplier name.
-                    */}
                     <CustomFormSelect 
                         label="Select Supplier"
                         name="supplier"

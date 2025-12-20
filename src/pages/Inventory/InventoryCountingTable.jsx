@@ -25,7 +25,7 @@ function InventoryCountingTable({ orders }) {
                     <th className="text-left p-4 text-sm font-semibold text-slate-600 dark:text-slate-200">Remarks</th> 
                     <th className="text-left p-4 text-sm font-semibold text-slate-600 dark:text-slate-200">Counting Date</th>
                     <th className="text-center p-4 text-sm font-semibold text-slate-600 dark:text-slate-200">Status</th>
-                    <th className="text-left p-4 text-sm font-semibold text-slate-600 dark:text-slate-200">Actions</th>
+                    <th className="text-center p-4 text-sm font-semibold text-slate-600 dark:text-slate-200">Actions</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -52,7 +52,7 @@ function InventoryCountingTable({ orders }) {
                                 {order.Status} 
                           </span>
                         </td>
-                        <td className="p-4"> 
+                        <td className="p-4 text-center"> 
                           <span className="text-sm text-slate-800 dark:text-white">
                             <MoreHorizontal className="w-4 h-4"/>
                           </span>

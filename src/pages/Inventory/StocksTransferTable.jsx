@@ -125,7 +125,7 @@ function StocksTransferTable({ rowLimit, currentPage, onTotalDataChange, onAddSt
                         <th className="text-left p-4 text-sm font-semibold text-slate-600 dark:text-slate-200">Remarks</th>
                         <th className="text-left p-4 text-sm font-semibold text-slate-600 dark:text-slate-200 text-center">Qty (KG)</th>
                         <th className="text-left p-4 text-sm font-semibold text-slate-600 dark:text-slate-200">Total Value</th>
-                        <th className="text-left p-4 text-sm font-semibold text-slate-600 dark:text-slate-200">Status</th>
+                        <th className="text-center p-4 text-sm font-semibold text-slate-600 dark:text-slate-200">Status</th>
                         <th className="text-center p-4 text-sm font-semibold text-slate-600 dark:text-slate-200">Actions</th>
                     </tr>
                 </thead>
@@ -137,9 +137,9 @@ function StocksTransferTable({ rowLimit, currentPage, onTotalDataChange, onAddSt
                                 <td className="p-4 text-sm text-slate-800 dark:text-white">{order.Sender}</td>
                                 <td className="p-4 text-sm text-slate-800 dark:text-white">{order.Receiver}</td>
                                 <td className="p-4 text-sm text-slate-800 dark:text-white">{order.Remarks}</td>
-                                <td className="p-4 text-sm text-center text-slate-800 dark:text-white">{order.TotalQuantity}</td>
-                                <td className="p-4 text-sm text-slate-800 dark:text-white">{order.TotalValue}</td>
-                                <td className="p-4">
+                                <td className="p-4 text-sm text-left text-slate-800 dark:text-white">{order.TotalQuantity}</td>
+                                <td className="p-4 text-sm text-left text-slate-800 dark:text-white">{order.TotalValue}</td>
+                                <td className="p-4 text-center">
                                     <span className={`font-medium text-xs px-3 py-1 rounded-full ${getStatusColor(order.Status)}`}>
                                         {order.Status}
                                     </span>
