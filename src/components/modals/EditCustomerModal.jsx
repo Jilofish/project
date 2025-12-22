@@ -58,7 +58,7 @@ function EditCustomerModal({ isOpen, onClose, supplierData, onSave }) {
 
                 {/* Header */}
                 <div className="flex items-center justify-between p-6 border-b border-slate-200 dark:border-slate-700">
-                    <h2 className="text-xl font-semibold text-slate-800 dark:text-white">Edit Supplier Details</h2>
+                    <h2 className="text-xl font-semibold text-slate-800 dark:text-white">Edit Customer Details</h2>
                     <button onClick={onClose} className="cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-700 rounded-full p-2 transition-colors">
                         <X className="w-5 h-5 text-slate-500" />
                     </button>

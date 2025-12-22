@@ -1,5 +1,5 @@
 import React from 'react';
-import { Pencil, Trash2 } from 'lucide-react'; 
+import { Pencil, Trash2, ReceiptText } from 'lucide-react'; 
 
 function SalesInvoiceTable({ orders, onEdit }) {
     // NOTE: The static PurchasedOrders data is removed and now received via the 'orders' prop.
@@ -56,7 +56,7 @@ function SalesInvoiceTable({ orders, onEdit }) {
                     <th className="text-left p-4 text-sm font-semibold text-slate-600 dark:text-slate-200">Delivery Status</th>
                     <th className="text-left p-4 text-sm font-semibold text-slate-600 dark:text-slate-200">Payment Status</th>
                     <th className="text-left p-4 text-sm font-semibold text-slate-600 dark:text-slate-200">Remarks</th> 
-                    <th className="text-left p-4 text-sm font-semibold text-slate-600 dark:text-slate-200">Actions</th>
+                    <th className="text-center p-4 text-sm font-semibold text-slate-600 dark:text-slate-200">Actions</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -103,14 +103,19 @@ function SalesInvoiceTable({ orders, onEdit }) {
                                 {order.remarks}
                             </span>
                         </td>
-                        <td className="p-4 flex items-center gap-3"> 
+                        <td className="p-4 flex items-center justify-center gap-3"> 
                           <span className="text-sm text-blue-800 dark:text-blue-400 cursor-pointer"
                             onClick={() => onEdit(order)}
                           >
-                            <Pencil className="w-4 h-4"/>
+                            <Pencil className="w-5 h-5"/>
+                          </span>
+                          <span className="text-sm text-blue-900 dark:text-blue-500 cursor-pointer"
+                            onClick={() => onEdit(order)}
+                          >
+                            <ReceiptText className="w-5 h-5"/>
                           </span>
                           <span className="text-sm text-red-800 dark:text-red-400 cursor-pointer">
-                            <Trash2 className="w-4 h-4"/>
+                            <Trash2 className="w-5 h-5"/>
                           </span>
                         </td>
                       </tr>

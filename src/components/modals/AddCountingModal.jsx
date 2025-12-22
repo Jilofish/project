@@ -159,9 +159,7 @@ function AddCountingModal({ isOpen, onClose }) {
                     </div>
 
 
-                    {/* ======================================= */}
                     {/* ITEMS TO COUNT SECTION (DYNAMIC TABLE)  */}
-                    {/* ======================================= */}
                     <div className="pb-3">
                         <div className="flex items-center justify-between pb-4 mb-1 border-b border-slate-300 dark:border-slate-600">
                             <h1 className="text-[#535353] dark:text-white text-xl font-bold">Items to Count</h1>
@@ -246,7 +244,7 @@ function AddCountingModal({ isOpen, onClose }) {
                 </form>
 
                 {/* FOOTER: Fixed (flex-shrink-0) */}
-                <div className="pt-4 flex justify-end space-x-3 flex-shrink-0 mt-auto border-t border-slate-300 dark:border-slate-700">
+                <div className="pt-8 flex justify-end space-x-3 flex-shrink-0 mt-auto">
                     <button type="button" onClick={onClose} className="cursor-pointer px-4 py-2 text-sm font-medium rounded-md text-slate-700 dark:text-slate-300 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors">
                         Cancel
                     </button>
