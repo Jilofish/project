@@ -6,6 +6,10 @@ import SalesInvoiceTable from './SalesInvoiceTable';
 import RowLimiter from '../../components/filter/RowLimiter';
 import TablePagination from '../../components/pagination/TablePagination';
 
+import CreateInvoiceModal from '../../components/modals/CreateInvoiceModal';
+import EditSalesInvoiceModal from '../../components/modals/EditSalesInvoiceModal';
+import ViewReceiptModal from '../../components/modals/ViewReceiptModal';
+
 const ALL_OPTION = 'All';
 
 const SalesData = [
@@ -191,13 +195,26 @@ const isDateInRange = (transactionDateString, startDate, endDate) => {
 };
 
 function CreateSalesInvoice() {
-  const iconProps = {
-        className: 'w-4 h-4 text-slate-500 dark:text-slate-500',
+    const iconProps = {
+      className: 'w-4 h-4 text-slate-500 dark:text-slate-500',
     };
 
+    // --- ADD MODAL STATE ---
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const openModal = () => setIsModalOpen(true);
+    const closeModal = () => setIsModalOpen(false);
+
+    // --- EDIT MODAL STATE ---
+    const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+    const [orderToEdit, setOrderToEdit] = useState(null);
+
+    const [isViewModalOpen, setIsViewModalOpen] = useState(false);
+    const openViewModal = () => setIsViewModalOpen(true);
+    const closeViewModal = () => setIsViewModalOpen(false);
+
     const extractUniqueOptions = (key, placeholder) => {
-        const uniqueValues = [...new Set(SalesData.map(order => order[key]))];
-        return [placeholder, ALL_OPTION, ...uniqueValues.sort()];
+      const uniqueValues = [...new Set(SalesData.map(order => order[key]))];
+      return [placeholder, ALL_OPTION, ...uniqueValues.sort()];
     };
 
     const rowLimitOptions = [5, 10, 15]; 
@@ -207,6 +224,7 @@ function CreateSalesInvoice() {
     const supplierOptions = extractUniqueOptions('supplier', 'Supplier');
     const deliveryOptions = extractUniqueOptions('deliveryStatus', 'Delivery Status');
     const paymentOptions = extractUniqueOptions('paymentStatus', 'Payment Status');
+    const approvalOptions = extractUniqueOptions('approvalStatus', 'Approval Status'); // NEW OPTIONS
 
     //the placeholder
     const initialRowLimit = rowLimitOptions[0];
@@ -214,6 +232,8 @@ function CreateSalesInvoice() {
     const initialSupplier = supplierOptions[0];
     const initialDeliveryStatus = deliveryOptions[0];
     const initialPaymentStatus = paymentOptions[0];
+    const initialApprovalStatus = approvalOptions[0]; // NEW INITIAL STATE
+    
 
     // --- STATE MANAGEMENT ---
     const [rowLimit, setRowLimit] = useState(initialRowLimit);
@@ -221,32 +241,54 @@ function CreateSalesInvoice() {
     const [supplierFilter, setSupplierFilter] = useState(initialSupplier);
     const [deliveryStatusFilter, setDeliveryStatusFilter] = useState(initialDeliveryStatus);
     const [paymentStatusFilter, setPaymentStatusFilter] = useState(initialPaymentStatus);
+    const [approvalStatusFilter, setApprovalStatusFilter] = useState(initialApprovalStatus); // NEW STATE
     const [currentPage, setCurrentPage] = useState(1);
 
     // --- HANDLER FUNCTIONS ---
     const handleRowLimitChange = (newValue) => {
-        setRowLimit(parseInt(newValue));
-        setCurrentPage(1); 
+      setRowLimit(parseInt(newValue));
+      setCurrentPage(1); 
     };
 
     const handleDateRangeChange = (newValue) => {
-        setDateRangeFilter(newValue);
-        setCurrentPage(1);
+      setDateRangeFilter(newValue);
+      setCurrentPage(1);
     };
 
     const handleSupplierChange = (newValue) => {
-        setSupplierFilter(newValue);
-        setCurrentPage(1);
+      setSupplierFilter(newValue);
+      setCurrentPage(1);
     };
 
     const handleDeliveryChange = (newValue) => {
-        setDeliveryStatusFilter(newValue);
-        setCurrentPage(1);
+      setDeliveryStatusFilter(newValue);
+      setCurrentPage(1);
     };
 
     const handlePaymentChange = (newValue) => {
-        setPaymentStatusFilter(newValue);
-        setCurrentPage(1);
+      setPaymentStatusFilter(newValue);
+      setCurrentPage(1);
+    };
+
+    const handleApprovalChange = (newValue) => { // NEW HANDLER
+      setApprovalStatusFilter(newValue);
+      setCurrentPage(1);
+    };
+
+    // --- EDIT HANDLER ---
+    const handleEdit = (orderData) => {
+      setOrderToEdit(orderData); 
+      setIsEditModalOpen(true); 
+    };
+
+    const handleCloseEditModal = () => {
+      setIsEditModalOpen(false);
+      setOrderToEdit(null); 
+    };
+
+    const handleSaveEdit = (updatedOrder) => {
+      console.log("Saving updated order:", updatedOrder);
+      handleCloseEditModal();
     };
 
     // --- FILTERING LOGIC ---
@@ -283,6 +325,11 @@ function CreateSalesInvoice() {
           filtered = filtered.filter(order => order.supplier === supplierFilter);
       }
 
+      // Approval Status Filter (NEW FILTER LOGIC)
+      if (approvalStatusFilter !== initialApprovalStatus && approvalStatusFilter !== ALL_OPTION) {
+          filtered = filtered.filter(order => order.approvalStatus === approvalStatusFilter);
+      }
+
       // Delivery Status Filter
       if (deliveryStatusFilter !== initialDeliveryStatus && deliveryStatusFilter !== ALL_OPTION) {
           filtered = filtered.filter(order => order.deliveryStatus === deliveryStatusFilter);
@@ -294,7 +341,7 @@ function CreateSalesInvoice() {
       }
         
         return filtered;
-    }, [dateRangeFilter, supplierFilter, deliveryStatusFilter, paymentStatusFilter, initialDateRange, initialSupplier, initialDeliveryStatus, initialPaymentStatus]); 
+    }, [dateRangeFilter, supplierFilter, approvalStatusFilter, deliveryStatusFilter, paymentStatusFilter, initialDateRange, initialSupplier, initialApprovalStatus, initialDeliveryStatus, initialPaymentStatus]); 
 
     // --- Pagination Logic ---
     const totalOrders = filteredOrders.length;
@@ -317,38 +364,65 @@ function CreateSalesInvoice() {
           supplierOptions={supplierOptions}
           deliveryOptions={deliveryOptions}
           paymentOptions={paymentOptions}
+          approvalOptions={approvalOptions} // PASS NEW OPTIONS
           
           currentDateRange={dateRangeFilter}
           currentSupplier={supplierFilter}
           currentDeliveryStatus={deliveryStatusFilter}
           currentPaymentStatus={paymentStatusFilter}
+          currentApprovalStatus={approvalStatusFilter} // PASS NEW STATE
 
           handleDateRangeChange={handleDateRangeChange}
           handleSupplierChange={handleSupplierChange}
           handleDeliveryChange={handleDeliveryChange}
           handlePaymentChange={handlePaymentChange}
+          handleApprovalChange={handleApprovalChange} // PASS NEW HANDLER
           
           iconProps={iconProps}
+          onAddPurchaseOrderClick={openModal}
         />
 
-        <SalesInvoiceTable orders={paginatedOrders}/>
+        <SalesInvoiceTable 
+          orders={paginatedOrders}
+          onEdit={handleEdit}
+          onViewReceipt={openViewModal}
+        />
 
         <div className = "flex items-center justify-between mb-3">
-            <RowLimiter
-                options={rowLimitOptions}
-                initialValue={rowLimit.toString()}
-                onSelect={handleRowLimitChange}
-                iconProps={iconProps}
-            />
-            <TablePagination
-                totalPages={totalPages}
-                currentPage={currentPage}
-                onPageChange={setCurrentPage}
-            />
+          <RowLimiter
+            options={rowLimitOptions}
+            initialValue={rowLimit.toString()}
+            onSelect={handleRowLimitChange}
+            iconProps={iconProps}
+          />
+          <TablePagination
+            totalPages={totalPages}
+            currentPage={currentPage}
+            onPageChange={setCurrentPage}
+          />
         </div>
       </div>
+
+
+      <CreateInvoiceModal
+          isOpen={isModalOpen} 
+          onClose={closeModal} 
+      />
+
+
+      <EditSalesInvoiceModal
+          isOpen={isEditModalOpen}
+          onClose={handleCloseEditModal}
+          orderData={orderToEdit} 
+          onSave={handleSaveEdit}
+      />
+      
+      <ViewReceiptModal
+          isOpen={isViewModalOpen}
+          onClose={closeViewModal}
+      />
     </div>
   )
 }
 
-export default CreateSalesInvoice
+export default CreateSalesInvoice;

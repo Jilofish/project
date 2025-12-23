@@ -6,6 +6,7 @@ import ReceivedItemsTable from './ReceivedItemsTable';
 import RowLimiter from '../../components/filter/RowLimiter';
 import TablePagination from '../../components/pagination/TablePagination';
 import AddReceivedItemsModal from '../../components/modals/AddReceivedItemsModal'; 
+import EditReceivedItemsModal from '../../components/modals/EditReceivedItemsModal';
 
 const ALL_OPTION = 'All';
 
@@ -103,7 +104,9 @@ function ReceivedItems() {
     const [deliveryStatusFilter, setDeliveryStatusFilter] = useState(initialDeliveryStatus);
     const [currentPage, setCurrentPage] = useState(1);
 
-    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+    const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+    const [itemToEdit, setItemToEdit] = useState(null);
 
     // --- HANDLER FUNCTIONS ---
     const handleRowLimitChange = (newValue) => {
@@ -128,6 +131,16 @@ function ReceivedItems() {
 
     const handleOpenModal = () => setIsModalOpen(true);
     const handleCloseModal = () => setIsModalOpen(false);
+
+    const handleEdit = (item) => {
+        setItemToEdit(item);
+        setIsEditModalOpen(true);
+    };
+
+    const handleSaveEdit = (updatedItem) => {
+        console.log("Saving Received Item:", updatedItem);
+        setIsEditModalOpen(false);
+    };
 
     // --- FILTERING LOGIC ---
     const filteredOrders = useMemo(() => {
@@ -200,12 +213,12 @@ function ReceivedItems() {
           handleSupplierChange={handleSupplierChange}
           handleDeliveryChange={handleDeliveryChange}
 
-          onAddReceivedItemClick={handleOpenModal}
+          onAddReceivedItemClick={() => setIsAddModalOpen(true)}
           
           iconProps={iconProps}
         />
 
-        <ReceivedItemsTable orders={paginatedOrders} />
+        <ReceivedItemsTable orders={paginatedOrders} onEdit={handleEdit}/>
 
         <div className = "flex items-center justify-between mb-3">
           <RowLimiter
@@ -222,10 +235,14 @@ function ReceivedItems() {
         </div>
       </div>
 
-      <AddReceivedItemsModal
-        isOpen={isModalOpen} 
-        onClose={handleCloseModal} 
-      />
+        <AddReceivedItemsModal isOpen={isAddModalOpen} onClose={() => setIsAddModalOpen(false)} />
+        
+        <EditReceivedItemsModal 
+            isOpen={isEditModalOpen} 
+            onClose={() => setIsEditModalOpen(false)} 
+            itemData={itemToEdit}
+            onSave={handleSaveEdit}
+        />
     </div>
   );
 }

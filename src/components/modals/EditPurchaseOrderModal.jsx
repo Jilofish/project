@@ -1,11 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { X } from 'lucide-react';
 
-// *** IMPORT THE NEW COMPONENT ***
-// Adjust the path below if you saved ModalCustomFormSelect.jsx somewhere else
 import ModalCustomFormSelect from '../../components/filter/ModalCustomFormSelect'; 
 
-// --- DEFINE OPTIONS FOR SELECT FIELDS (ENSURE VALUES MATCH DATA SOURCE EXACTLY) ---
 const approvalStatusOptions = [
     { value: 'Pending', label: 'Pending' },
     { value: 'Rejected', label: 'Rejected' },
@@ -73,9 +70,9 @@ function EditPurchaseOrderModal({ isOpen, onClose, orderData, onSave }) {
             <div className="bg-white dark:bg-slate-800 p-8 rounded-lg shadow-2xl w-full max-w-3xl mx-4">
                 <div className="w-full flex items-center justify-between mb-6 pb-6 border-b border-slate-300 dark:border-slate-700">
                     <h2 className="text-2xl font-bold text-slate-800 dark:text-white">
-                        Edit Purchase Order: {orderData.PO}
+                        Edit Purchase Order
                     </h2>
-                    <button onClick={onClose}>
+                    <button onClick={onClose} className="p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-full transition-colors">
                         <X className="w-7 h-7 text-slate-600 dark:text-slate-300 cursor-pointer"/>
                     </button>
                 </div>
@@ -119,12 +116,12 @@ function EditPurchaseOrderModal({ isOpen, onClose, orderData, onSave }) {
 
                         {/* 6. Approval Status (ModalCustomFormSelect) */}
                         <div>
-                            <ModalCustomFormSelect // <-- New component used here
+                            <ModalCustomFormSelect
                                 label="Approval Status"
                                 name="approvalStatus"
                                 options={approvalStatusOptions}
                                 currentValue={formValues.approvalStatus} 
-                                onSelect={handleInputChange} 
+                                onSelect={handleInputChange}
                             />
                         </div>
                     </div>
@@ -133,7 +130,7 @@ function EditPurchaseOrderModal({ isOpen, onClose, orderData, onSave }) {
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                         {/* 7. Delivery Status (ModalCustomFormSelect) */}
                         <div>
-                            <ModalCustomFormSelect // <-- New component used here
+                            <ModalCustomFormSelect
                                 label="Delivery Status"
                                 name="deliveryStatus"
                                 options={deliveryStatusOptions}
@@ -144,7 +141,7 @@ function EditPurchaseOrderModal({ isOpen, onClose, orderData, onSave }) {
 
                         {/* 8. Payment Status (ModalCustomFormSelect) */}
                         <div>
-                            <ModalCustomFormSelect // <-- New component used here
+                            <ModalCustomFormSelect
                                 label="Payment Status"
                                 name="paymentStatus"
                                 options={paymentStatusOptions}
@@ -155,7 +152,7 @@ function EditPurchaseOrderModal({ isOpen, onClose, orderData, onSave }) {
                         
                         {/* 9. Status (ModalCustomFormSelect) */}
                         <div>
-                            <ModalCustomFormSelect // <-- New component used here
+                            <ModalCustomFormSelect
                                 label="Status"
                                 name="status"
                                 options={statusOptions}
@@ -174,7 +171,7 @@ function EditPurchaseOrderModal({ isOpen, onClose, orderData, onSave }) {
 
                     {/* Action Buttons */}
                     <div className="pt-4 flex justify-end space-x-3">
-                        <button type="button" onClick={onClose} className="px-4 py-2 text-sm font-medium rounded-md text-slate-700 dark:text-slate-300 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors">
+                        <button type="button" onClick={onClose} className="px-4 py-2 text-sm text-slate-600 dark:text-slate-400 hover:underline">
                             Cancel
                         </button>
                         <button type="submit" className="px-4 py-2 text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 transition-colors shadow-md">

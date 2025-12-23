@@ -4,13 +4,14 @@ import { Plus } from 'lucide-react';
 import CustomDateRangeSelect from '../../components/filter/CustomDateRangeSelect'; 
 import CustomSupplierSelect from '../../components/filter/CustomSupplierSelect'; 
 import CustomDeliveryStatusSelect from '../../components/filter/CustomDeliveryStatusSelect'; 
-import CustomPaymentStatusSelect from '../../components/filter/CustomPaymentStatusSelect'; 
+import CustomPaymentStatusSelect from '../../components/filter/CustomPaymentStatusSelect';
+import CustomApprovalStatusSelect from '../../components/filter/CustomApprovalStatusSelect'; 
 
 function SalesInvoiceTableHeader({
-    dateRangeOptions, supplierOptions, deliveryOptions, paymentOptions,
-    currentDateRange, currentSupplier, currentDeliveryStatus, currentPaymentStatus,
-    handleDateRangeChange, handleSupplierChange, handleDeliveryChange, handlePaymentChange,
-    iconProps
+    dateRangeOptions, supplierOptions, deliveryOptions, paymentOptions, approvalOptions,
+    currentDateRange, currentSupplier, currentDeliveryStatus, currentPaymentStatus, currentApprovalStatus,
+    handleDateRangeChange, handleSupplierChange, handleDeliveryChange, handlePaymentChange, handleApprovalChange,
+    iconProps, onAddPurchaseOrderClick
 }) {
     
     // NOTE: Handlers and options are now props, removed local definitions.
@@ -37,6 +38,12 @@ function SalesInvoiceTableHeader({
                         onSelect={handleSupplierChange}
                         iconProps={iconProps}
                     />
+                    <CustomApprovalStatusSelect
+                        options={approvalOptions}
+                        initialValue={currentApprovalStatus}
+                        onSelect={handleApprovalChange}
+                        iconProps={iconProps}
+                    />
 
                     {/* 3. Delivery Status Filter */}
                     <CustomDeliveryStatusSelect
@@ -56,7 +63,7 @@ function SalesInvoiceTableHeader({
 
                 </div>
                 
-                <button className="flex items-center space-x-2 py-2 px-4 bg-blue-500 text-white rounded-lg hover:shadow-lg transition-all">
+                <button onClick={onAddPurchaseOrderClick} className="cursor-pointer flex items-center space-x-2 py-2 px-4 bg-blue-500 text-white rounded-lg hover:shadow-lg transition-all">
                     <Plus className="w-4 h-4" />
                     <span className="text-sm font-medium">Add Invoice</span>
                 </button>

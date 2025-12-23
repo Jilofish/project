@@ -1,5 +1,5 @@
 import React from 'react';
-import { MoreHorizontal, Pencil, Trash2 } from 'lucide-react'; 
+import { Pencil, Trash2 } from 'lucide-react'; 
 
 function PurchasedOrdersTable({ orders, onEdit }) {
     // NOTE: The static PurchasedOrders data is removed and now received via the 'orders' prop.

@@ -11,8 +11,9 @@ function InventoryCountingTableHeader({
         dateRangeOptions, warehouseOptions, statusOptions,
         currentDateRange, currentWarehouse, currentStatus,
         handleDateRangeChange, handleWarehouseChange, handleStatusChange,
-        iconProps
-        })
+        iconProps,
+        OnAddCountingClick
+    })
 {
     return (
         <div className="flex items-center justify-between">
@@ -41,7 +42,9 @@ function InventoryCountingTableHeader({
                 />
             </div>
 
-            <button className="flex items-center space-x-2 py-2 px-4 bg-blue-500 text-white rounded-lg hover:shadow-lg transition-all">
+            <button className="flex items-center space-x-2 py-2 px-4 bg-blue-500 text-white rounded-lg hover:shadow-lg transition-all cursor-pointer"
+                onClick = {OnAddCountingClick}
+            >
                 <Plus className="w-4 h-4" />
                 <span className="text-sm font-medium">Add Counting</span>
             </button>

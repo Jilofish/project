@@ -4,37 +4,28 @@ import CustomFormSelect from '../filter/CustomFormSelect';
 import AddItemModal from './AddItemModal'; 
 
 
-const SupplierData = [
-    { supplier: 'Earl Meats Inc.' },
-    { supplier: 'Javier Meats' },
-    { supplier: 'Betez Trading' }
-];
-
-const warehouseData = [
-    { warehouse: 'Saog' },
-    { warehouse: 'Meycuayan' },
-    { warehouse: 'Quezon City' }
+const CustomerData = [
+    { customer: 'Sarah Jane' },
+    { customer: 'Joseph Karl' },
+    { customer: 'Junnie B. Oy' }
 ];
 
 
-function AddPurchaseOrderModal({ isOpen, onClose }) {
+function CreateInvoiceModal({ isOpen, onClose }) {
     if (!isOpen) return null;
 
     // --- State for Form Values ---
     const [formValues, setFormValues] = useState({
         PONumber: '',
-        supplier: null,
+        customer: null,
         transactionDate: '',
-        warehouse: null,
         remarks: '',
     });
 
     // --- NEW STATE FOR ITEMS AND ITEM MODAL ---
     const [isItemModalOpen, setIsItemModalOpen] = useState(false);
-    // Structure: { id, brand, type, quantity, unitPrice, total }
-    const [purchaseItems, setPurchaseItems] = useState([
-        
-    ]);
+
+    const [purchaseItems, setPurchaseItems] = useState([]);
 
     // --- Handlers ---
     const handleInputChange = (value, name) => {
@@ -85,25 +76,37 @@ function AddPurchaseOrderModal({ isOpen, onClose }) {
 
 
     // --- Data Transformation ---
-    const supplierOptions = SupplierData.map(d => ({ value: d.supplier, label: d.supplier }));
-    const warehouseOptions = warehouseData.map(d => ({ value: d.warehouse, label: d.warehouse }));
+    const customerOptions = CustomerData.map(d => ({ value: d.customer, label: d.customer }));
     
-    // Calculate total payments dynamically (Simple total sum for demonstration)
-    const merchandiseSubtotal = purchaseItems.reduce((sum, item) => sum + item.total, 0);
-    const totalPayment = merchandiseSubtotal; // For simplicity, only using subtotal
+    // LOGIC: Categorized Subtotals
+    const subtotals = purchaseItems.reduce((acc, item) => {
+        const amount = parseFloat(item.total) || 0;
+        if (item.type === 'Standard Items') acc.standard += amount;
+        else if (item.type === 'Premium Items') acc.premium += amount;
+        else acc.others += amount;
+        
+        acc.grandTotal += amount;
+        return acc;
+    }, { standard: 0, premium: 0, others: 0, grandTotal: 0 });
+
+    // Mapping back to your existing variable names for the design
+    const merchandiseSubtotal = subtotals.standard; 
+    const premiumSubtotal = subtotals.premium;
+    const othersSubtotal = subtotals.others;
+    const totalPayment = subtotals.grandTotal;
 
     return (
         <>
             <div 
-                className="fixed inset-0 bg-black/20 dark:bg-black/20 z-40 flex items-center justify-center"
+                className="fixed inset-0 bg-black/20 dark:bg-black/20 z-40 flex items-center justify-center overflow-y-auto"
             >
                 {/* Modal Content Box */}
-                <div className="bg-white dark:bg-slate-800 p-8 rounded-lg shadow-2xl w-full max-w-4xl mx-4" 
+                <div className="flex flex-col h-full max-h-[95vh] bg-white dark:bg-slate-800 p-6 rounded-lg shadow-2xl w-full max-w-5xl mx-4" 
                     onClick={e => e.stopPropagation()}>
                     
-                    <div className = "w-full flex items-center justify-between mb-6 pb-6 border-b border-slate-300 dark:border-slate-700">
+                    <div className = "w-full flex items-center justify-between mb-5 pb-4 border-b border-slate-300 dark:border-slate-700 flex-shrink-0">
                         <h2 className="text-2xl font-bold text-slate-800 dark:text-white">
-                            Create New Purchase (PO)
+                            Create Invoice
                         </h2>
 
                         <button onClick={onClose} className="p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-full transition-colors">
@@ -112,56 +115,95 @@ function AddPurchaseOrderModal({ isOpen, onClose }) {
                     </div>
                     
 
-                    <form onSubmit={handleFormSubmit} className="space-y-8">
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <form onSubmit={handleFormSubmit} className="flex-grow overflow-y-auto space-y-8 pr-3">
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
                             <div>
                                 <label htmlFor="PONumber" className="block text-sm font-medium text-slate-700 dark:text-slate-300">
                                     PO No.
                                 </label>
-                                <input 
+                                <input
                                     type="text" 
                                     id="PONumber" 
-                                    className="w-full text-slate-700 dark:text-slate-200 mt-1 px-3 py-1.5 h-9 rounded-md border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 shadow-xs focus:outline-none focus:border-blue-500 dark:focus:border-blue-500 focus:caret-slate-500 dark:focus:caret-white"
+                                    className="w-full text-slate-700 
+                                    dark:text-slate-200 mt-1 px-3 py-1.5 h-9 rounded-md 
+                                    border border-slate-300 dark:border-slate-600 bg-white 
+                                    dark:bg-slate-700 shadow-xs focus:outline-none focus:border-blue-500 
+                                    dark:focus:border-blue-500 focus:caret-slate-500 dark:focus:caret-white cursor-not-allowed"
+                                    readOnly
                                 />
                             </div>
                             
                             {/* SUPPLIER FIELD */}
                             <CustomFormSelect
-                                label="Supplier"
-                                name="supplier"
-                                options={supplierOptions}
-                                initialValue={formValues.supplier}
+                                label="Customer"
+                                name="customer"
+                                options={customerOptions}
+                                initialValue={formValues.customer}
                                 onSelect={handleInputChange}
                                 placeholder="" 
                             />
 
-                            <div>
-                                <label htmlFor="transactionDate" className="block text-sm font-medium text-slate-700 dark:text-slate-300">
+                            <div className="w-full">
+                                <label htmlFor="date" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
                                     Transaction Date
                                 </label>
-                                <input 
-                                    type="text" 
-                                    id="transactionDate" 
-                                    className="w-full text-slate-700 dark:text-slate-200 mt-1 px-3 py-1.5 h-9 rounded-md border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 shadow-xs focus:outline-none focus:border-blue-500 dark:focus:border-blue-500 focus:caret-slate-500 dark:focus:caret-white"
-                                />
+                                <div className="relative"> 
+                                    <input
+                                        type="date"
+                                        id="date"
+                                        name="transactionDate" 
+                                        value={formValues.transactionDate}
+                                        onChange={handleInputChange} 
+                                        className="w-full px-3 py-2 text-sm rounded-md border border-slate-300
+                                                    bg-white text-slate-700
+                                                    dark:bg-slate-700 dark:border-slate-600 dark:text-slate-200 
+                                                    focus:outline-none focus:border-blue-500 transition 
+                                                    appearance-none date-input-no-icon pr-10" 
+                                    />
+                                    <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                                        <svg 
+                                            xmlns="http://www.w3.org/2000/svg" 
+                                            viewBox="0 0 24 24" fill="none" 
+                                            stroke="currentColor" strokeWidth="2" 
+                                            strokeLinecap="round" strokeLinejoin="round" 
+                                            className="w-5 h-5 text-slate-800 dark:text-slate-300"> 
+                                            <rect width="18" height="18" x="3" y="4" rx="2" ry="2"/>
+                                            <line x1="16" x2="16" y1="2" y2="6"/>
+                                            <line x1="8" x2="8" y1="2" y2="6"/>
+                                            <line x1="3" x2="21" y1="10" y2="10"/>
+                                        </svg>
+                                    </div>
+                                </div>
                             </div>
                             
 
-                            {/* WAREHOUSE FIELD */}
-                            <CustomFormSelect
-                                label="Warehouse"
-                                name="warehouse"
-                                options={warehouseOptions}
-                                initialValue={formValues.warehouse}
-                                onSelect={handleInputChange}
-                                placeholder="" 
-                            />
+                            <div>
+                                <label htmlFor="ContactNumber" className="block text-sm font-medium text-slate-700 dark:text-slate-300">
+                                    Contact Number
+                                </label>
+                                <input 
+                                    type="text" 
+                                    id="ContactNumber"
+                                    className="w-full text-slate-700 
+                                    dark:text-slate-200 mt-1 px-3 py-1.5 h-9 
+                                    rounded-md border border-slate-300 dark:border-slate-600 
+                                    bg-white dark:bg-slate-700 shadow-xs focus:outline-none 
+                                    focus:border-blue-500 dark:focus:border-blue-500 
+                                    focus:caret-slate-500 dark:focus:caret-white"
+                                />
+                            </div>
+
+                            <div className = "col-span-2">
+                                <label htmlFor="Address" className="block text-sm font-medium text-slate-700 dark:text-slate-300">Address</label>
+                                <input type = "text" id="Address" name="Address" rows="2" value={formValues.Address} onChange={handleInputChange}
+                                className="w-full mt-1 px-3 py-1.5 rounded-md border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 shadow-xs focus:outline-none focus:border-blue-500 dark:focus:border-blue-500 text-slate-700 dark:text-slate-200 resize-none" />
+                            </div>
                             
                         </div>
 
                         {/* Product List Table Section */}
-                        <div className="overflow-x-auto pb-3">
-                            <div className="flex items-center justify-between mb-3">
+                        <div className="overflow-x-auto">
+                            <div className="flex items-center justify-between mb-2">
                                 <h1 className="text-[#535353] dark:text-white text-xl font-bold">Product List</h1>
                                 {/* BUTTON: Triggering the AddItemModal */}
                                 <button
@@ -219,29 +261,17 @@ function AddPurchaseOrderModal({ isOpen, onClose }) {
                             </table>
                         </div>
                         
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                             <div className="space-y-4">
-                                {/* REMARKS FIELD */}
-                                <label htmlFor="remarks" className="block text-sm font-medium text-slate-700 dark:text-slate-300">
-                                    Remarks
-                                </label>
-                                <textarea
-                                    id="remarks"
-                                    name="remarks"
-                                    rows="3"
-                                    value={formValues.remarks}
-                                    onChange={(e) => handleInputChange(e.target.value, e.target.name)}
-                                    className="mt-1 p-2 block w-full rounded-md border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 shadow-xs focus:outline-none focus:border-blue-500 dark:focus:border-blue-500 focus:caret-slate-500 dark:focus:caret-white resize-none text-slate-700 dark:text-slate-200"
-                                />
 
                                 {/* FILE UPLOAD FIELD */}
-                                <label className="block mb-2.5 text-sm font-medium text-slate-700 dark:text-slate-300" htmlFor="file_input">Upload file</label>
+                                <label className="block mb-3 text-sm font-medium text-slate-700 dark:text-slate-300" htmlFor="file_input">Computation</label>
                                 <div className="relative flex rounded-lg overflow-hidden w-full max-w-xs bg-white border border-slate-300 dark:bg-slate-700 dark:border-slate-600 hover:border-blue-400 shadow-xs">
                                     <span className="bg-slate-400/20 dark:bg-slate-600/90 text-slate-600/80 dark:text-slate-400/80 px-3 py-2 text-sm font-medium flex items-center select-none cursor-pointer">
                                         Choose File
                                     </span>
                                     
-                                    <span className="text-slate-800 dark:text-white px-4 py-2.5 text-sm flex items-center truncate overflow-hidden whitespace-nowrap min-w-0">
+                                    <span className="text-slate-500 dark:text-slate-400 px-4 py-2 text-sm flex items-center truncate overflow-hidden whitespace-nowrap min-w-0">
                                         {receiptFileName}
                                     </span>
                                     
@@ -250,30 +280,46 @@ function AddPurchaseOrderModal({ isOpen, onClose }) {
                             </div>
                             
                             {/* Payment Details */}
-                            <div>
+                            <div className="col-span-2">
                                 <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-3">Payment Details</label>
                                 <div className = "w-full rounded-md overflow-hidden border border-slate-300 dark:border-slate-700">
                                     <table className="w-full">
                                         <tbody>
-                                            <tr className = "bg-slate-200/50 dark:bg-slate-700/50">
-                                                <td className="py-3 px-4 text-sm text-slate-700 dark:text-slate-200">Merchandise Subtotal</td>
+                                            <tr>
+                                                <td></td>
+                                                <td className="py-3 px-4 text-sm text-slate-700 font-medium dark:text-slate-200 text-end">Standard Items</td>
+                                                <td className="py-3 px-4 text-sm text-slate-700 font-medium dark:text-slate-200 text-end">Premium Items</td>
+                                                <td className="py-3 px-4 text-sm text-slate-700 font-medium dark:text-slate-200 text-end">Other Items/Services</td>
+                                            </tr>
+                                            <tr className="bg-slate-200/50 dark:bg-slate-700/50">
+                                                <td className="py-3 px-4 text-sm text-slate-700 font-medium dark:text-slate-200">Merchandise Subtotal</td>
                                                 <td className="py-3 px-4 text-sm text-slate-700 dark:text-slate-200 text-end">{merchandiseSubtotal.toFixed(2)}</td>
+                                                <td className="py-3 px-4 text-sm text-slate-700 dark:text-slate-200 text-end">{premiumSubtotal.toFixed(2)}</td>
+                                                <td className="py-3 px-4 text-sm text-slate-700 dark:text-slate-200 text-end">{othersSubtotal.toFixed(2)}</td>
                                             </tr>
                                             <tr className = "hover:bg-slate-50/50 dark:hover:bg-slate-800/50 transition-colors">
-                                                <td className="py-3 px-4 text-sm text-slate-700 dark:text-slate-200">Shipping Subtotal</td>
+                                                <td className="py-3 px-4 text-xs text-slate-700 dark:text-slate-200">Shipping Subtotal</td>
+                                                <td className="py-3 px-4 text-xs text-slate-700 dark:text-slate-200 text-end">0.00</td>
+                                                <td className="py-3 px-4 text-xs text-slate-700 dark:text-slate-200 text-end">0.00</td>
                                                 <td className="py-3 px-4 text-sm text-slate-700 dark:text-slate-200 text-end">0.00</td>
                                             </tr>
                                             <tr className = "hover:bg-slate-50/50 dark:hover:bg-slate-800/50 transition-colors">
-                                                <td className="py-3 px-4 text-sm text-slate-700 dark:text-slate-200">Item Discount Subtotal</td>
+                                                <td className="py-3 px-4 text-xs text-slate-700 dark:text-slate-200">Item Discount Subtotal</td>
+                                                <td className="py-3 px-4 text-xs text-slate-700 dark:text-slate-200 text-end">0.00</td>
+                                                <td className="py-3 px-4 text-xs text-slate-700 dark:text-slate-200 text-end">0.00</td>
                                                 <td className="py-3 px-4 text-sm text-slate-700 dark:text-slate-200 text-end">0.00</td>
                                             </tr>
                                             <tr className = "hover:bg-slate-50/50 dark:hover:bg-slate-800/50 transition-colors">
-                                                <td className="py-3 px-4 text-sm text-slate-700 dark:text-slate-200">Order Discount</td>
+                                                <td className="py-3 px-4 pb-6 text-xs text-slate-700 dark:text-slate-200">Order Discount</td>
+                                                <td className="py-3 px-4 pb-6 text-xs text-slate-700 dark:text-slate-200 text-end">0.00</td>
+                                                <td className="py-3 px-4 pb-6 text-xs text-slate-700 dark:text-slate-200 text-end">0.00</td>
                                                 <td className="py-3 px-4 text-sm text-slate-700 dark:text-slate-200 text-end">0.00</td>
                                             </tr>
-                                            <tr className = "hover:bg-slate-50/50 dark:hover:bg-slate-800/50 transition-colors">
-                                                <td className="py-3 px-4 text-sm text-slate-700 dark:text-slate-200 font-medium dark:font-bold">Total Payment</td>
-                                                <td className="py-3 px-4 text-sm text-slate-700 dark:text-slate-200 font-medium dark:font-bold text-end">{totalPayment.toFixed(2)}</td>
+                                            <tr className="bg-slate-200/50 dark:bg-slate-700/50 transition-colors">
+                                                <td className="py-3 px-4 text-sm text-slate-700 dark:text-slate-200 font-bold dark:font-bold"></td>
+                                                <td colSpan={3} className="py-3 px-4 text-md text-slate-700 dark:text-slate-200 font-medium dark:font-bold text-end">
+                                                    <span className  = "mr-2 text-lg font-normal">Subtotal: </span> <span className = "text-lg ">{totalPayment.toFixed(2)}</span>
+                                                </td>
                                             </tr>
                                         </tbody>
                                     </table>
@@ -281,8 +327,10 @@ function AddPurchaseOrderModal({ isOpen, onClose }) {
                             </div>
                         </div>
 
+                    </form>
+
                         {/* Action Buttons */}
-                        <div className="pt-4 flex justify-end space-x-3">
+                        <div className="pt-4 mt-4 border-t border-slate-300 dark:border-slate-700 flex justify-end space-x-3 flex-shrink-0">
                             <button type="button" onClick={onClose} className="cursor-pointer px-4 py-2 text-sm font-medium rounded-md text-slate-700 dark:text-slate-300 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors">
                                 Cancel
                             </button>
@@ -290,11 +338,9 @@ function AddPurchaseOrderModal({ isOpen, onClose }) {
                                 Save Purchase
                             </button>
                         </div>
-                    </form>
                 </div>
             </div>
 
-            {/* Render the new AddItemModal here */}
             <AddItemModal 
                 isOpen={isItemModalOpen} 
                 onClose={handleCloseItemModal} 
@@ -304,4 +350,4 @@ function AddPurchaseOrderModal({ isOpen, onClose }) {
     );
 }
 
-export default AddPurchaseOrderModal;
+export default CreateInvoiceModal;

@@ -1,7 +1,7 @@
 import React from 'react';
-import { MoreHorizontal } from 'lucide-react'; 
+import { Pencil, Trash2 } from 'lucide-react'; 
 
-function PurchasedOrdersTable({ orders }) {
+function PurchasedOrdersTable({ orders, onEdit }) {
     
     const getDeliveryStatusColor = (Status) => {
         switch (Status) {
@@ -82,10 +82,19 @@ function PurchasedOrdersTable({ orders }) {
                                 {order.remarks}
                             </span>
                         </td>
-                        <td className="p-4"> 
-                          <span className="text-sm text-slate-800 dark:text-white">
-                            <MoreHorizontal className="w-4 h-4"/>
-                          </span>
+                        <td className="p-4 flex items-center gap-3"> 
+                            <button 
+                                className="text-sm text-blue-800 dark:text-blue-400 hover:scale-110 transition-transform"
+                                onClick={() => onEdit(order)}
+                            >
+                                <Pencil className="w-4 h-4"/>
+                            </button>
+                            <button 
+                                className="text-sm text-red-800 dark:text-red-400 hover:scale-110 transition-transform"
+                                title="Delete Supplier"
+                            >
+                                <Trash2 className="w-4 h-4"/>
+                            </button>
                         </td>
                       </tr>
                     );

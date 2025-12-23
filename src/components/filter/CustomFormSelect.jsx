@@ -54,7 +54,7 @@ function CustomFormSelect({ label, name, options, initialValue, onSelect, placeh
                 type="button"
                 id={name}
                 className={`
-                    w-full mt-1 px-3 py-1.5 h-9 cursor-pointer text-left rounded-md border 
+                    w-full mt-1 px-3 py-1.5 h-[2.4rem] cursor-pointer text-left rounded-md border 
                     ${isOpen 
                         ? 'border-blue-500 ring-2 ring-blue-500' // Focus/Open style
                         : 'border-slate-300 dark:border-slate-600' // Default border

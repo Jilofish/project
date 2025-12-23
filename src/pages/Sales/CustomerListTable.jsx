@@ -1,8 +1,7 @@
 import React from 'react';
-import { MoreHorizontal } from 'lucide-react';
+import { Pencil, Trash2 } from 'lucide-react'; 
 
-// 💡 CORRECTION: Use the 'orders' prop passed from the parent component.
-function CustomerListTable({ orders }) {
+function CustomerListTable({ orders, onEdit }) {
     const getStatusColor = (Status) => {
         switch (Status) {
             case "Active":
@@ -80,9 +79,14 @@ function CustomerListTable({ orders }) {
                                     {order.Status}
                                 </span>
                             </td>
-                            <td className="p-4">
-                                <span className="text-sm text-slate-800 dark:text-white">
-                                    <MoreHorizontal className="w-4 h-4 ml-4"/>
+                            <td className="p-4 flex items-center gap-3"> 
+                                <span className="text-sm text-blue-800 dark:text-blue-400 cursor-pointer"
+                                    onClick={() => onEdit(order)}
+                                >
+                                    <Pencil className="w-4 h-4"/>
+                                </span>
+                                <span className="text-sm text-red-800 dark:text-red-400 cursor-pointer">
+                                    <Trash2 className="w-4 h-4"/>
                                 </span>
                             </td>
                         </tr>

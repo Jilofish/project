@@ -7,6 +7,7 @@ import TablePagination from '../../components/pagination/TablePagination';
 import RowLimiter from '../../components/filter/RowLimiter';
 
 import AddSupplierModal from '../../components/modals/AddSupplierModal'; 
+import EditSupplierListModal from '../../components/modals/EditSupplierListModal';
 
 const ALL_OPTION = 'All';
 
@@ -58,20 +59,17 @@ function SupplierList() {
     className: 'w-4 h-4 text-slate-500 dark:text-slate-500',
   };
 
-  // --- DYNAMIC OPTION GENERATION ---
+  // --- OPTION GENERATION ---
   const extractUniqueOptions = (key, placeholder) => {
     const uniqueValues = [...new Set(SuppliersData.map(supplier => supplier[key]))];
     return [placeholder, ALL_OPTION, ...uniqueValues.sort()];
   };
 
   const rowLimitOptions = [5, 10, 15]; 
-
-  // New/Recalibrated Dropdown Options
   const nameOptions = extractUniqueOptions('Name', 'Name');
   const businessNameOptions = extractUniqueOptions('businessName', 'Business Name');
   const statusOptions = extractUniqueOptions('Status', 'Status');
 
-  // New/Recalibrated Placeholders
   const initialRowLimit = rowLimitOptions[0];
   const initialName = nameOptions[0];
   const initialBusinessName = businessNameOptions[0];
@@ -84,8 +82,10 @@ function SupplierList() {
   const [statusFilter, setStatusFilter] = useState(initialStatus);
   const [currentPage, setCurrentPage] = useState(1);
   
-  // *** NEW MODAL STATE ***
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  // --- MODAL STATES ---
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [supplierToEdit, setSupplierToEdit] = useState(null);
 
   // --- HANDLER FUNCTIONS ---
   const handleRowLimitChange = (newValue) => {
@@ -93,85 +93,75 @@ function SupplierList() {
     setCurrentPage(1); 
   };
 
-  const handleNameChange = (newValue) => {
-    setNameFilter(newValue);
-    setCurrentPage(1);
+  // Edit Handlers
+  const handleOpenEditModal = (supplier) => {
+    setSupplierToEdit(supplier);
+    setIsEditModalOpen(true);
   };
 
-  const handleBusinessNameChange = (newValue) => {
-    setBusinessNameFilter(newValue);
-    setCurrentPage(1);
+  const handleCloseEditModal = () => {
+    setIsEditModalOpen(false);
+    setSupplierToEdit(null);
   };
 
-  const handleStatusChange = (newValue) => {
-    setStatusFilter(newValue);
-    setCurrentPage(1);
+  const handleSaveEdit = (updatedSupplier) => {
+    console.log("Updated Supplier Data:", updatedSupplier);
+    // Here you would typically update your database or global state
+    handleCloseEditModal();
   };
-  
-  // *** NEW MODAL HANDLERS ***
-  const handleOpenModal = () => setIsModalOpen(true);
-  const handleCloseModal = () => setIsModalOpen(false);
 
   // --- FILTERING LOGIC ---
   const filteredSuppliers = useMemo(() => {
     let filtered = SuppliersData;
 
-    // 1. Name Filter
     if (nameFilter !== initialName && nameFilter !== ALL_OPTION) {
-      filtered = filtered.filter(supplier => supplier.Name === nameFilter);
+      filtered = filtered.filter(s => s.Name === nameFilter);
     }
-
-    // 2. Business Name Filter
     if (businessNameFilter !== initialBusinessName && businessNameFilter !== ALL_OPTION) {
-      filtered = filtered.filter(supplier => supplier.businessName === businessNameFilter);
+      filtered = filtered.filter(s => s.businessName === businessNameFilter);
     }
-
-    // 3. Status Filter
     if (statusFilter !== initialStatus && statusFilter !== ALL_OPTION) {
-      filtered = filtered.filter(supplier => supplier.Status === statusFilter);
+      filtered = filtered.filter(s => s.Status === statusFilter);
     }
 
     return filtered;
   }, [nameFilter, businessNameFilter, statusFilter, initialName, initialBusinessName, initialStatus]); 
 
-  // --- Pagination Logic ---
-  const totalSuppliers = filteredSuppliers.length;
-  const totalPages = Math.ceil(totalSuppliers / rowLimit);
-
+  // --- PAGINATION LOGIC ---
+  const totalPages = Math.ceil(filteredSuppliers.length / rowLimit);
   const paginatedSuppliers = useMemo(() => {
     const startIndex = (currentPage - 1) * rowLimit;
-    const endIndex = startIndex + rowLimit;
-    
-    return filteredSuppliers.slice(startIndex, endIndex);
+    return filteredSuppliers.slice(startIndex, startIndex + rowLimit);
   }, [filteredSuppliers, rowLimit, currentPage]);
 
   return (
     <div>
       <SupplierStatsGrid/>
-      <div className = "bg-white/80 space-y-5 dark:bg-slate-900/80 backdrop-blur-xl rounded-2xl py-4 px-5 border border-slate-200/50 dark:border-slate-700/50">
+      <div className="bg-white/80 space-y-5 dark:bg-slate-900/80 backdrop-blur-xl rounded-2xl py-4 px-5 border border-slate-200/50 dark:border-slate-700/50">
 
         <SupplierListTableHeader
           nameOptions={nameOptions}
           businessNameOptions={businessNameOptions}
           statusOptions={statusOptions}
-
           currentName={nameFilter}
           currentBusinessName={businessNameFilter}
           currentStatus={statusFilter}
-
-          handleNameChange={handleNameChange}
-          handleBusinessNameChange={handleBusinessNameChange}
-          handleStatusChange={handleStatusChange}
           
-          // *** PASSING NEW HANDLER TO HEADER ***
-          onAddSupplierClick={handleOpenModal} 
-
+          // Update these three lines to use setters directly
+          handleNameChange={setNameFilter}
+          handleBusinessNameChange={setBusinessNameFilter}
+          handleStatusChange={setStatusFilter} 
+          
+          onAddSupplierClick={() => setIsAddModalOpen(true)} 
           iconProps={iconProps}
         />
 
-        <SupplierListTable orders={paginatedSuppliers} />
+        <SupplierListTable 
+            orders={paginatedSuppliers} 
+            onEdit={handleOpenEditModal} 
+        />
 
-        <div className = "flex items-center justify-between mb-3">
+        <div className="flex items-center justify-between mb-3">
           <RowLimiter
             options={rowLimitOptions}
             initialValue={rowLimit.toString()}
@@ -187,14 +177,19 @@ function SupplierList() {
         </div>
       </div>
       
-      {/* *** RENDERING THE NEW MODAL *** */}
       <AddSupplierModal 
-        isOpen={isModalOpen} 
-        onClose={handleCloseModal} 
-        // You will likely pass a function to add the new supplier to the data later
+        isOpen={isAddModalOpen} 
+        onClose={() => setIsAddModalOpen(false)} 
+      />
+
+      <EditSupplierListModal 
+        isOpen={isEditModalOpen}
+        onClose={handleCloseEditModal}
+        supplierData={supplierToEdit}
+        onSave={handleSaveEdit}
       />
     </div>
-  )
+  );
 }
 
 export default SupplierList;
