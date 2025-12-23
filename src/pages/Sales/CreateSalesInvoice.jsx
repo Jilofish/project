@@ -8,6 +8,7 @@ import TablePagination from '../../components/pagination/TablePagination';
 
 import CreateInvoiceModal from '../../components/modals/CreateInvoiceModal';
 import EditSalesInvoiceModal from '../../components/modals/EditSalesInvoiceModal';
+import ViewReceiptModal from '../../components/modals/ViewReceiptModal';
 
 const ALL_OPTION = 'All';
 
@@ -205,7 +206,11 @@ function CreateSalesInvoice() {
 
     // --- EDIT MODAL STATE ---
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-    const [orderToEdit, setOrderToEdit] = useState(null); 
+    const [orderToEdit, setOrderToEdit] = useState(null);
+
+    const [isViewModalOpen, setIsViewModalOpen] = useState(false);
+    const openViewModal = () => setIsViewModalOpen(true);
+    const closeViewModal = () => setIsViewModalOpen(false);
 
     const extractUniqueOptions = (key, placeholder) => {
       const uniqueValues = [...new Set(SalesData.map(order => order[key]))];
@@ -380,34 +385,41 @@ function CreateSalesInvoice() {
         <SalesInvoiceTable 
           orders={paginatedOrders}
           onEdit={handleEdit}
+          onViewReceipt={openViewModal}
         />
 
         <div className = "flex items-center justify-between mb-3">
-            <RowLimiter
-                options={rowLimitOptions}
-                initialValue={rowLimit.toString()}
-                onSelect={handleRowLimitChange}
-                iconProps={iconProps}
-            />
-            <TablePagination
-                totalPages={totalPages}
-                currentPage={currentPage}
-                onPageChange={setCurrentPage}
-            />
+          <RowLimiter
+            options={rowLimitOptions}
+            initialValue={rowLimit.toString()}
+            onSelect={handleRowLimitChange}
+            iconProps={iconProps}
+          />
+          <TablePagination
+            totalPages={totalPages}
+            currentPage={currentPage}
+            onPageChange={setCurrentPage}
+          />
         </div>
       </div>
-      {/* Add Purchase Order Modal */}
+
+
       <CreateInvoiceModal
           isOpen={isModalOpen} 
           onClose={closeModal} 
       />
 
-      {/* Edit Purchase Order Modal */}
+
       <EditSalesInvoiceModal
           isOpen={isEditModalOpen}
           onClose={handleCloseEditModal}
           orderData={orderToEdit} 
           onSave={handleSaveEdit}
+      />
+      
+      <ViewReceiptModal
+          isOpen={isViewModalOpen}
+          onClose={closeViewModal}
       />
     </div>
   )

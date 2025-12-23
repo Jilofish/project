@@ -1,7 +1,7 @@
 import React from 'react';
 import { Pencil, Trash2, ReceiptText } from 'lucide-react'; 
 
-function SalesInvoiceTable({ orders, onEdit }) {
+function SalesInvoiceTable({ orders, onEdit, onViewReceipt }) {
     // NOTE: The static PurchasedOrders data is removed and now received via the 'orders' prop.
     
     const getApprovalStatusColor = (approvalStatus) => {
@@ -110,7 +110,7 @@ function SalesInvoiceTable({ orders, onEdit }) {
                             <Pencil className="w-5 h-5"/>
                           </span>
                           <span className="text-sm text-blue-900 dark:text-blue-500 cursor-pointer"
-                            onClick={() => onEdit(order)}
+                            onClick={() => onViewReceipt(order)}
                           >
                             <ReceiptText className="w-5 h-5"/>
                           </span>
