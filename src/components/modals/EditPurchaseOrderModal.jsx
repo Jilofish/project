@@ -66,8 +66,9 @@ function EditPurchaseOrderModal({ isOpen, onClose, orderData, onSave }) {
     };
 
     return (
-        <div className="fixed inset-0 bg-black/50 dark:bg-black/70 z-[60] flex items-center justify-center">
-            <div className="bg-white dark:bg-slate-800 p-8 rounded-lg shadow-2xl w-full max-w-3xl mx-4">
+        <div className="fixed inset-0 bg-black/20 dark:bg-black/20 z-40 overflow-y-auto">
+            <div className="relative my-10 mx-auto max-w-4xl bg-white dark:bg-slate-800 p-8 rounded-lg shadow-2xl">
+                    
                 <div className="w-full flex items-center justify-between mb-6 pb-6 border-b border-slate-300 dark:border-slate-700">
                     <h2 className="text-2xl font-bold text-slate-800 dark:text-white">
                         Edit Purchase Order
@@ -82,7 +83,7 @@ function EditPurchaseOrderModal({ isOpen, onClose, orderData, onSave }) {
                         {/* 1. PO Number (Read Only) */}
                         <div>
                             <label htmlFor="PO" className="block text-sm font-medium text-slate-700 dark:text-slate-300">PO No.</label>
-                            <input type="text" id="PO" name="PO" value={formValues.PO || ''} readOnly
+                            <input type="text" id="PO" name="PO" value={formValues.po || ''} readOnly
                                 className="w-full mt-1 px-3 py-1.5 rounded-md border border-slate-300 dark:border-slate-600 bg-slate-100 dark:bg-slate-700/50 shadow-xs text-slate-500 dark:text-slate-400" />
                         </div>
                         
@@ -95,16 +96,28 @@ function EditPurchaseOrderModal({ isOpen, onClose, orderData, onSave }) {
 
                         {/* 3. Transaction Date (Editable) */}
                         <div>
-                            <label htmlFor="transactionDate" className="block text-sm font-medium text-slate-700 dark:text-slate-300">Transaction Date</label>
-                            <input type="text" id="transactionDate" name="transactionDate" value={formValues.transactionDate || ''} onChange={handleInputChange}
-                                className="w-full mt-1 px-3 py-1.5 rounded-md border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 shadow-xs focus:outline-none focus:border-blue-500 text-slate-700 dark:text-slate-200" />
+                            <label htmlFor="transactiondate" className="block text-sm font-medium text-slate-700 dark:text-slate-300">Transaction Date</label>
+                            <input
+                            type="date"
+                            id="transactiondate"
+                            name="transactiondate"
+                            value={formValues.transactiondate || ""}
+                            onChange={handleInputChange}
+                            className="relative z-10 w-full text-slate-700 dark:text-slate-200 mt-1 px-3 py-1.5 h-9 rounded-md border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 shadow-xs focus:outline-none focus:border-blue-500 dark:focus:border-blue-500 focus:caret-slate-500 dark:focus:caret-white"
+                            />
                         </div>
 
                         {/* 4. Delivery Date (Editable) */}
                         <div>
-                            <label htmlFor="deliveryDate" className="block text-sm font-medium text-slate-700 dark:text-slate-300">Delivery Date</label>
-                            <input type="text" id="deliveryDate" name="deliveryDate" value={formValues.deliveryDate || ''} onChange={handleInputChange}
-                                className="w-full mt-1 px-3 py-1.5 rounded-md border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 shadow-xs focus:outline-none focus:border-blue-500 text-slate-700 dark:text-slate-200" />
+                            <label htmlFor="deliverydate" className="block text-sm font-medium text-slate-700 dark:text-slate-300">Delivery Date</label>
+                            <input
+                            type="date"
+                            id="deliverydate"
+                            name="deliverydate"
+                            value={formValues.deliverydate || ""}
+                            onChange={handleInputChange}
+                            className="relative z-10 w-full text-slate-700 dark:text-slate-200 mt-1 px-3 py-1.5 h-9 rounded-md border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 shadow-xs focus:outline-none focus:border-blue-500 dark:focus:border-blue-500 focus:caret-slate-500 dark:focus:caret-white"
+                            />
                         </div>
                         
                         {/* 5. Total (Editable) */}
@@ -118,9 +131,9 @@ function EditPurchaseOrderModal({ isOpen, onClose, orderData, onSave }) {
                         <div>
                             <ModalCustomFormSelect
                                 label="Approval Status"
-                                name="approvalStatus"
+                                name="approvalstatus"
                                 options={approvalStatusOptions}
-                                currentValue={formValues.approvalStatus} 
+                                currentValue={formValues.approvalstatus} 
                                 onSelect={handleInputChange}
                             />
                         </div>
@@ -132,9 +145,9 @@ function EditPurchaseOrderModal({ isOpen, onClose, orderData, onSave }) {
                         <div>
                             <ModalCustomFormSelect
                                 label="Delivery Status"
-                                name="deliveryStatus"
+                                name="deliverystatus"
                                 options={deliveryStatusOptions}
-                                currentValue={formValues.deliveryStatus}
+                                currentValue={formValues.deliverystatus}
                                 onSelect={handleInputChange}
                             />
                         </div>
@@ -143,9 +156,9 @@ function EditPurchaseOrderModal({ isOpen, onClose, orderData, onSave }) {
                         <div>
                             <ModalCustomFormSelect
                                 label="Payment Status"
-                                name="paymentStatus"
+                                name="paymentstatus"
                                 options={paymentStatusOptions}
-                                currentValue={formValues.paymentStatus}
+                                currentValue={formValues.paymentstatus}
                                 onSelect={handleInputChange}
                             />
                         </div>

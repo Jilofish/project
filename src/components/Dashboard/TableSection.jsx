@@ -73,7 +73,7 @@ function TableSection() {
                 return "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400";
             case "pending":
                 return "bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400";
-            case "cancel;ed":
+            case "cancelled":
                 return "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400";
             default:
                 return "bg-slate-100 text-slate-700 dark:bg-slate-900/30 dark:text-slate-400";

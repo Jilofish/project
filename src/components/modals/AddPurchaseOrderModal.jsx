@@ -17,7 +17,7 @@ const warehouseData = [
 ];
 
 
-function AddPurchaseOrderModal({ isOpen, onClose }) {
+function AddPurchaseOrderModal({ isOpen, onClose, onAddPurchase }) {
     if (!isOpen) return null;
 
     // --- State for Form Values ---
@@ -65,11 +65,51 @@ function AddPurchaseOrderModal({ isOpen, onClose }) {
         setPurchaseItems(prev => prev.filter(item => item.id !== id));
     };
     
-    const handleFormSubmit = (e) => {
+    const handleFormSubmit = async (e) => {
         e.preventDefault();
-        console.log("Form Values:", { ...formValues, items: purchaseItems });
-        onClose();
+
+        // Use ISO string for timestamp
+        const formattedTransactionDate = new Date(formValues.transactionDate).toISOString();
+        const formattedDeliveryDate = new Date().toISOString(); // Current date/time
+
+        const newPurchase = {
+            PO: "PO-" + formValues.PONumber,
+            supplier: formValues.supplier,
+            transactionDate: formattedTransactionDate,
+            deliveryDate: formattedDeliveryDate,
+            total: totalPayment.toFixed(2),
+            approvalStatus: "Pending",
+            deliveryStatus: "Order Placed",
+            paymentStatus: "N/A",
+            remarks: formValues.remarks,
+            quantity: purchaseItems.reduce((sum, item) => sum + item.quantity, 0),
+            items: purchaseItems,
+            status:"pending"
+        };
+
+        try {
+            const response = await fetch("http://localhost:5000/api/purchasing", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(newPurchase),
+            });
+
+            if (!response.ok) throw new Error("Failed to save purchase");
+
+            const savedPurchase = await response.json();
+            console.log("Saved Purchase:", savedPurchase);
+            onAddPurchase(savedPurchase);
+
+            onClose();
+        } catch (err) {
+            console.error(err);
+            alert("Error saving purchase. See console.");
+        }
     };
+
+
 
     // File upload state and handler
     const [receiptFileName, setReceiptFileName] = useState('No file chosen');
@@ -94,12 +134,8 @@ function AddPurchaseOrderModal({ isOpen, onClose }) {
 
     return (
         <>
-            <div 
-                className="fixed inset-0 bg-black/20 dark:bg-black/20 z-40 flex items-center justify-center"
-            >
-                {/* Modal Content Box */}
-                <div className="bg-white dark:bg-slate-800 p-8 rounded-lg shadow-2xl w-full max-w-4xl mx-4" 
-                    onClick={e => e.stopPropagation()}>
+            <div className="fixed inset-0 bg-black/20 dark:bg-black/20 z-40 overflow-y-auto">
+                <div className="relative my-10 mx-auto max-w-4xl bg-white dark:bg-slate-800 p-8 rounded-lg shadow-2xl">
                     
                     <div className = "w-full flex items-center justify-between mb-6 pb-6 border-b border-slate-300 dark:border-slate-700">
                         <h2 className="text-2xl font-bold text-slate-800 dark:text-white">
@@ -115,14 +151,20 @@ function AddPurchaseOrderModal({ isOpen, onClose }) {
                     <form onSubmit={handleFormSubmit} className="space-y-8">
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                             <div>
-                                <label htmlFor="PONumber" className="block text-sm font-medium text-slate-700 dark:text-slate-300">
-                                    PO No.
-                                </label>
-                                <input 
-                                    type="text" 
-                                    id="PONumber" 
-                                    className="w-full text-slate-700 dark:text-slate-200 mt-1 px-3 py-1.5 h-9 rounded-md border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 shadow-xs focus:outline-none focus:border-blue-500 dark:focus:border-blue-500 focus:caret-slate-500 dark:focus:caret-white"
-                                />
+                            <label htmlFor="PONumber" className="block text-sm font-medium text-slate-700 dark:text-slate-300">
+                                PO No.
+                            </label>
+                            <input 
+                                type="text"
+                                id="PONumber"
+                                name="PONumber"
+                                value={formValues.PONumber}
+                                onChange={(e) => handleInputChange(e.target.value, e.target.name)} // <-- handle change
+                                maxLength={6}
+                                pattern="\d{6}"
+                                title="Please enter a 6-digit number"
+                                className="w-full text-slate-700 dark:text-slate-200 mt-1 px-3 py-1.5 h-9 rounded-md border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 shadow-xs focus:outline-none focus:border-blue-500 dark:focus:border-blue-500 focus:caret-slate-500 dark:focus:caret-white"
+                            />
                             </div>
                             
                             {/* SUPPLIER FIELD */}
@@ -135,15 +177,17 @@ function AddPurchaseOrderModal({ isOpen, onClose }) {
                                 placeholder="" 
                             />
 
-                            <div>
-                                <label htmlFor="transactionDate" className="block text-sm font-medium text-slate-700 dark:text-slate-300">
-                                    Transaction Date
-                                </label>
-                                <input 
-                                    type="text" 
-                                    id="transactionDate" 
-                                    className="w-full text-slate-700 dark:text-slate-200 mt-1 px-3 py-1.5 h-9 rounded-md border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 shadow-xs focus:outline-none focus:border-blue-500 dark:focus:border-blue-500 focus:caret-slate-500 dark:focus:caret-white"
-                                />
+                            <div> 
+                                <label htmlFor="transactionDate" 
+                                className="block text-sm font-medium text-slate-700 dark:text-slate-300"> 
+                                Transaction Date 
+                                </label> 
+                                <input type="date" 
+                                id="transactionDate"
+                                name="transactionDate"
+                                value={formValues.transactionDate}
+                                onChange={(e) => handleInputChange(e.target.value, e.target.name)} 
+                                className="relative z-10 w-full text-slate-700 dark:text-slate-200 mt-1 px-3 py-1.5 h-9 rounded-md border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 shadow-xs focus:outline-none focus:border-blue-500 dark:focus:border-blue-500 focus:caret-slate-500 dark:focus:caret-white" /> 
                             </div>
                             
 

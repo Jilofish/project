@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 
 import PurchasedStatsGrid from './PurchasedStatsGrid';
 import PurchasedOrdersTableHeader from './PurchasedOrdersTableHeader';
@@ -11,173 +11,7 @@ import EditPurchaseOrderModal from '../../components/modals/EditPurchaseOrderMod
 const ALL_OPTION = 'All';
 
 // --- DATA SOURCE (Keeping your original data) ---
-const PurchasedOrdersData = [
-    {
-        PO: 'PO-123456',
-        supplier: 'Earl Meats',
-        transactionDate: 'Sep 21, 2025',
-        deliveryDate: 'Sep 25, 2025',
-        total: '$1,234.56',
-        approvalStatus: 'Pending',
-        deliveryStatus: 'Out for Delivery',
-        paymentStatus: 'N/A',
-        remarks: 'Chicken Restock',
-    },
-    {
-        PO: 'PO-135790',
-        supplier: 'Javier Meats',
-        transactionDate: 'Sep 12, 2025',
-        deliveryDate: 'Sep 20, 2025',
-        total: '$1,900.25',
-        approvalStatus: 'Approved',
-        deliveryStatus: 'Delivered',
-        paymentStatus: 'Paid',
-        remarks: 'Beef Jowls x10',
-    },
-    {
-        PO: 'PO-24681',
-        supplier: 'Betez Trading',
-        transactionDate: 'Sep 11, 2025',
-        deliveryDate: 'Sep 19, 2025',
-        total: '$2,100.15',
-        approvalStatus: 'Rejected',
-        deliveryStatus: 'Order Placed',
-        paymentStatus: 'Unpaid',
-        remarks: 'Supply for Saog',
-    },
-    {
-        PO: "PO-987654",
-        supplier: "Global Foods Inc.",
-        transactionDate: "Dec 05, 2025",
-        deliveryDate: "Dec 10, 2025",
-        total: "$5,432.10",
-        approvalStatus: "Approved",
-        deliveryStatus: "Delivered",
-        paymentStatus: "Paid",
-        remarks: "Urgent shipment of grain"
-    },
-    {
-        PO: "PO-001122",
-        supplier: "Reyes Farms",
-        transactionDate: "Nov 28, 2025",
-        deliveryDate: "Dec 01, 2025",
-        total: "$850.75",
-        approvalStatus: "Pending",
-        deliveryStatus: "Out for Delivery",
-        paymentStatus: "N/A",
-        remarks: "Fruit and vegetable stock"
-    },
-    {
-        PO: "PO-765432",
-        supplier: "Fresh Produce Co.",
-        transactionDate: "Dec 09, 2025",
-        deliveryDate: "Dec 11, 2025",
-        total: "$450.00",
-        approvalStatus: "Pending",
-        deliveryStatus: "Order Placed",
-        paymentStatus: "Unpaid",
-        remarks: "Urgent lettuce and tomato order"
-    },
-    {
-        PO: "PO-981234",
-        supplier: "Betez Trading",
-        transactionDate: "Nov 30, 2025",
-        deliveryDate: "Dec 05, 2025",
-        total: "$1,999.99",
-        approvalStatus: "Approved",
-        deliveryStatus: "Delivered",
-        paymentStatus: 'Paid',
-        remarks: "Kitchen equipment maintenance parts"
-    },
-    {
-        PO: "PO-345678",
-        supplier: "Central Dairy Inc.",
-        transactionDate: "Dec 02, 2025",
-        deliveryDate: "Dec 02, 2025",
-        total: "$675.30",
-        approvalStatus: "Approved",
-        deliveryStatus: "Out for Delivery",
-        paymentStatus: 'N/A',
-        remarks: "Milk and cheese rush order"
-    },
-    {
-        PO: "PO-210987",
-        supplier: "Earl Meats",
-        transactionDate: "Oct 15, 2025",
-        deliveryDate: "Oct 20, 2025",
-        total: "$5,200.70",
-        approvalStatus: "Rejected",
-        deliveryStatus: "Delivered",
-        paymentStatus: "Unpaid",
-        remarks: "Order rejected due to quality issue"
-    },
-    {
-        PO: "PO-556677",
-        supplier: "Global Foods Inc.",
-        transactionDate: "Nov 18, 2025",
-        deliveryDate: "Nov 23, 2025",
-        total: "$1,250.40",
-        approvalStatus: "Pending",
-        deliveryStatus: "Order Placed",
-        paymentStatus: "Paid",
-        remarks: "Canned goods restock"
-    },
-    {
-        PO: "PO-112233",
-        supplier: "Javier Meats",
-        transactionDate: "Dec 06, 2025",
-        deliveryDate: "Dec 10, 2025",
-        total: "$3,800.10",
-        approvalStatus: "Approved",
-        deliveryStatus: "Out for Delivery",
-        paymentStatus: 'N/A',
-        remarks: "Holiday beef tenderloin order"
-    },
-    {
-        PO: "PO-889900",
-        supplier: "Reyes Farms",
-        transactionDate: "Oct 25, 2025",
-        deliveryDate: "Oct 28, 2025",
-        total: "$580.95",
-        approvalStatus: "Approved",
-        deliveryStatus: "Delivered",
-        paymentStatus: "Paid",
-        remarks: "Seasonal squash and pumpkin"
-    },
-    {
-        PO: "PO-404040",
-        supplier: "Fresh Produce Co.",
-        transactionDate: "Nov 01, 2025",
-        deliveryDate: "Nov 03, 2025",
-        total: "$710.25",
-        approvalStatus: "Pending",
-        deliveryStatus: "Out for Delivery",
-        paymentStatus: "Unpaid",
-        remarks: "Weekly fruit basket delivery"
-    },
-    {
-        PO: "PO-606060",
-        supplier: "Central Dairy Inc.",
-        transactionDate: "Sep 05, 2025",
-        deliveryDate: "Sep 07, 2025",
-        total: "$990.00",
-        approvalStatus: "Rejected",
-        deliveryStatus: "Order Placed",
-        paymentStatus: 'N/A',
-        remarks: "Cream shortage notification"
-    },
-    {
-        PO: "PO-707070",
-        supplier: "Earl Meats",
-        transactionDate: "Dec 07, 2025",
-        deliveryDate: "Dec 07, 2025",
-        total: "$2,150.00",
-        approvalStatus: "Approved",
-        deliveryStatus: "Delivered",
-        paymentStatus: "Paid",
-        remarks: "Last minute catering order"
-    }
-];
+
 
 // --- DATE HELPER FUNCTIONS ---
 const parseDate = (dateString) => {
@@ -195,10 +29,41 @@ const isDateInRange = (transactionDateString, startDate, endDate) => {
 };
 
 function CreatePurchase() {
+    const [stats, setStats] = useState(null);
+
     const iconProps = {
         className: 'w-4 h-4 text-slate-500 dark:text-slate-500',
     };
+    useEffect(() => {
+    const fetchStats = async () => {
+        try {
+        const response = await fetch(
+            "http://localhost:5000/api/purchasing/stats"
+        );
+        const data = await response.json();
+        setStats(data);
+        } catch (error) {
+        console.error("Failed to fetch purchase stats", error);
+        }
+    };
 
+    fetchStats();
+    }, []);
+    const [orders, setOrders] = useState([]);
+
+    useEffect(() => {
+    const fetchOrders = async () => {
+        try {
+        const response = await fetch("http://localhost:5000/api/purchasing");
+        const data = await response.json();
+        setOrders(data);
+        } catch (err) {
+        console.error("Failed to fetch purchased orders", err);
+        }
+    };
+
+    fetchOrders();
+    }, []);
     // --- ADD MODAL STATE ---
     const [isModalOpen, setIsModalOpen] = useState(false);
     const openModal = () => setIsModalOpen(true);
@@ -210,7 +75,7 @@ function CreatePurchase() {
 
     // --- DYNAMIC OPTION GENERATION ---
     const extractUniqueOptions = (key, placeholder) => {
-        const uniqueValues = [...new Set(PurchasedOrdersData.map(order => order[key]))];
+        const uniqueValues = [...new Set(orders.map(order => order[key]))];
         return [placeholder, ALL_OPTION, ...uniqueValues.sort()];
     };
 
@@ -280,15 +145,14 @@ function CreatePurchase() {
         setIsEditModalOpen(false);
         setOrderToEdit(null); 
     };
-
-    const handleSaveEdit = (updatedOrder) => {
-        console.log("Saving updated order:", updatedOrder);
-        handleCloseEditModal();
+    const handleAddNewPurchase = (newPurchase) => {
+        setOrders(prev => [...prev, newPurchase]);
     };
+    
 
     // --- FILTERING LOGIC ---
     const filteredOrders = useMemo(() => {
-    let filtered = PurchasedOrdersData;
+    let filtered = orders;
 
     // 1. Date Range Filter
     if (dateRangeFilter !== initialDateRange && dateRangeFilter !== ALL_OPTION) {
@@ -335,7 +199,15 @@ function CreatePurchase() {
     }
 
     return filtered;
-    }, [dateRangeFilter, supplierFilter, approvalStatusFilter, deliveryStatusFilter, paymentStatusFilter, initialDateRange, initialSupplier, initialApprovalStatus, initialDeliveryStatus, initialPaymentStatus]); 
+    }, [
+    orders,                
+    supplierFilter,
+    approvalStatusFilter,
+    deliveryStatusFilter,
+    paymentStatusFilter,
+    dateRangeFilter
+    ]); 
+    
 
     // --- Pagination Logic ---
     const totalOrders = filteredOrders.length;
@@ -346,11 +218,71 @@ function CreatePurchase() {
         const endIndex = startIndex + rowLimit;
         return filteredOrders.slice(startIndex, endIndex);
     }, [filteredOrders, rowLimit, currentPage]);
+    // --- SAVE EDIT HANDLER ---
+    const handleSaveEdit = async (updatedOrder) => {
+        console.log("Updated Order to send:", updatedOrder); // <-- log here
+        try {
+            const response = await fetch(
+            `http://localhost:5000/api/purchasing/${updatedOrder.po}`, // <-- URL param
+            {
+                method: "PUT",
+                headers: {
+                "Content-Type": "application/json",
+                },
+                body: JSON.stringify(updatedOrder),
+            }
+            );
 
+            if (!response.ok) {
+            const text = await response.text();
+            console.error("Status:", response.status);
+            console.error("Response:", text);
+            throw new Error("Failed to update purchase");
+            }
 
+            const saved = await response.json();
+
+            setOrders(prev =>
+            prev.map(order => (order.PO === saved.PO ? saved : order))
+            );
+
+            setIsEditModalOpen(false);
+        } catch (err) {
+            console.error(err);
+            alert("Error updating purchase");
+        }
+    };
+    // --- DELETE HANDLER ---
+    const handleDeletePurchase = async (po) => {
+        if (!confirm("Delete this purchase?")) return;
+
+        try {
+            const res = await fetch(
+            `http://localhost:5000/api/purchasing/${po}`,
+            { method: "DELETE" }
+            );
+
+            if (!res.ok) throw new Error("Delete failed");
+
+            // ✅ REFRESH DATA
+            await fetchPurchases();
+        } catch (err) {
+            console.error(err);
+        }
+        };
+    // --- FETCH PURCHASES FOR INITIAL LOAD ---
+    const fetchPurchases = async () => {
+        const res = await fetch("http://localhost:5000/api/purchasing");
+        const data = await res.json();
+        setOrders(data);
+    };
+    useEffect(() => {
+        fetchPurchases();
+    }, []);
+    
     return (
         <div>
-            <PurchasedStatsGrid/>
+            <PurchasedStatsGrid stats={stats}/>
 
             <div className = "bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl rounded-2xl py-5 px-5 border border-slate-200/50 dark:border-slate-700/50">
 
@@ -379,7 +311,8 @@ function CreatePurchase() {
 
                 <PurchasedOrdersTable 
                     orders={paginatedOrders} 
-                    onEdit={handleEdit} 
+                    onEdit={handleEdit}
+                    onDelete={handleDeletePurchase} 
                 />
 
                 <div className = "flex items-center justify-between mb-3">
@@ -401,6 +334,7 @@ function CreatePurchase() {
             <AddPurchaseOrderModal 
                 isOpen={isModalOpen} 
                 onClose={closeModal} 
+                onAddPurchase={handleAddNewPurchase}
             />
 
             {/* Edit Purchase Order Modal */}

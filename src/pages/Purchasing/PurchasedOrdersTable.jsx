@@ -1,11 +1,11 @@
 import React from 'react';
 import { Pencil, Trash2 } from 'lucide-react'; 
 
-function PurchasedOrdersTable({ orders, onEdit }) {
+function PurchasedOrdersTable({ orders, onEdit, onDelete }) {
     // NOTE: The static PurchasedOrders data is removed and now received via the 'orders' prop.
     
-    const getApprovalStatusColor = (approvalStatus) => {
-        switch (approvalStatus) {
+    const getApprovalStatusColor = (approvalstatus) => {
+        switch (approvalstatus) {
             case "Approved":
                 return "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400";
             case "Pending":
@@ -17,8 +17,8 @@ function PurchasedOrdersTable({ orders, onEdit }) {
         }
     };
     
-    const getDeliveryStatusColor = (deliveryStatus) => {
-        switch (deliveryStatus) {
+    const getDeliveryStatusColor = (deliverystatus) => {
+        switch (deliverystatus) {
             case "Delivered":
                 return "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400";
             case "Out for Delivery":
@@ -30,8 +30,8 @@ function PurchasedOrdersTable({ orders, onEdit }) {
         }
     };
 
-    const getPaymentStatusColor = (paymentStatus) => {
-        switch (paymentStatus) {
+    const getPaymentStatusColor = (paymentstatus) => {
+        switch (paymentstatus) {
             case "Paid":
                 return "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400";
             case "Unpaid":
@@ -62,10 +62,10 @@ function PurchasedOrdersTable({ orders, onEdit }) {
                 <tbody>
                   {orders.map((order, index) => {
                     return (
-                      <tr key={order.PO} className="border-b border-slate-200/50 dark:border-slate-700/50 hover:bg-slate-50/50 dark:hover:bg-slate-800/50 transition-colors">
+                      <tr key={order.po} className="border-b border-slate-200/50 dark:border-slate-700/50 hover:bg-slate-50/50 dark:hover:bg-slate-800/50 transition-colors">
                         <td className="p-4" key={index}>
                           <span className="text-sm font-medium text-blue-500">
-                            {order.PO}
+                            {order.po}
                           </span>
                         </td>
                         <td className="p-4">
@@ -75,7 +75,7 @@ function PurchasedOrdersTable({ orders, onEdit }) {
                         </td>
                         <td className="p-4">
                           <span className="text-sm text-slate-800 dark:text-white">
-                            {order.transactionDate}
+                            {order.transactiondate}
                           </span>
                         </td>
                         <td className="p-4">
@@ -84,18 +84,18 @@ function PurchasedOrdersTable({ orders, onEdit }) {
                           </span>
                         </td>
                         <td className="p-4">
-                          <span className={`font-medium text-xs px-3 py-1 rounded-full ${getApprovalStatusColor(order.approvalStatus)}`}> 
-                            {order.approvalStatus}
+                          <span className={`font-medium text-xs px-3 py-1 rounded-full ${getApprovalStatusColor(order.approvalstatus)}`}> 
+                            {order.approvalstatus}
                           </span>
                         </td>
                         <td className="p-4">
-                          <span className={`font-medium text-xs px-3 py-1 rounded-full ${getDeliveryStatusColor(order.deliveryStatus)}`}>
-                            {order.deliveryStatus}
+                          <span className={`font-medium text-xs px-3 py-1 rounded-full ${getDeliveryStatusColor(order.deliverystatus)}`}>
+                            {order.deliverystatus}
                           </span>
                         </td>
                         <td className="p-4">
-                          <span className={`font-medium text-xs px-3 py-1 rounded-full ${getPaymentStatusColor(order.paymentStatus)}`}>
-                            {order.paymentStatus}
+                          <span className={`font-medium text-xs px-3 py-1 rounded-full ${getPaymentStatusColor(order.paymentstatus)}`}>
+                            {order.paymentstatus}
                           </span>
                         </td>
                         <td className="p-4"> 
@@ -109,8 +109,11 @@ function PurchasedOrdersTable({ orders, onEdit }) {
                           >
                             <Pencil className="w-4 h-4"/>
                           </span>
-                          <span className="text-sm text-red-800 dark:text-red-400 cursor-pointer">
-                            <Trash2 className="w-4 h-4"/>
+                          <span
+                            className="text-sm text-red-800 dark:text-red-400 cursor-pointer hover:scale-110 transition"
+                            onClick={() => onDelete(order.po)}
+                          >
+                            <Trash2 className="w-4 h-4" />
                           </span>
                         </td>
                       </tr>
