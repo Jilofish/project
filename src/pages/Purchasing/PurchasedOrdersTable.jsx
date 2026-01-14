@@ -86,15 +86,26 @@ function PurchasedOrdersTable({ orders, onViewReceipt, onDelete ,suppliers, onVi
                         className: getDeliveryStatusColor(order.delivery_status),
                       };
                     }
+                  const diffTime = today - deliveryDate;
 
-                    const diffTime = today - deliveryDate;
-                    const overdueDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+                  const totalHours = Math.floor(diffTime / (1000 * 60 * 60));
+                  const overdueDays = Math.floor(totalHours / 24);
 
-                    return {
-                      label: `Overdue (${overdueDays} day${overdueDays > 1 ? "s" : ""})`,
-                      className:
-                        "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400",
-                    };
+                  let label;
+
+                  if (totalHours < 1) {
+                    label = "Overdue (< 1 hour)";
+                  } else if (totalHours < 24) {
+                    label = `Overdue (${totalHours} hour${totalHours > 1 ? "s" : ""})`;
+                  } else {
+                    label = `Overdue (${overdueDays} day${overdueDays > 1 ? "s" : ""})`;
+                  }
+
+                  return {
+                    label,
+                    className:
+                      "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400",
+                  };
                   };
                     return (
                       <tr key={order.po} className="border-b border-slate-200/50 dark:border-slate-700/50 hover:bg-slate-50/50 dark:hover:bg-slate-800/50 transition-colors">
