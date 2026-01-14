@@ -35,6 +35,7 @@ function CreatePurchase() {
     const [stats, setStats] = useState(null);
     const [orders, setOrders] = useState([]);
     const [suppliers, setSuppliers] = useState([]);
+    const [itemList,setItemList] = useState([]);
     const [dataView, setDataView] = useState([]);
     
     const [isViewModalOpen, setIsViewModalOpen] = useState(false);
@@ -95,7 +96,15 @@ function CreatePurchase() {
         console.error("Failed to fetch suppliers", err);
     }
     };
-
+    const fetchBrands = async () =>{
+        try {
+            const res = await fetch("http://localhost:5000/api/purchasing/items");
+            const data = await res.json();
+            setItemList(data);
+        } catch (err) {
+            console.error("Failed to fetch item list", err);
+        }
+    };
     /* =======================
     MODAL HANDLERS
     ======================= */
@@ -335,6 +344,7 @@ function CreatePurchase() {
         fetchPurchases();
         fetchSuppliers();
         fetchStats();
+        fetchBrands();
     }
     }, [isEditModalOpen, isViewModalOpen, isModalOpen]);
     
@@ -396,6 +406,7 @@ function CreatePurchase() {
                 isOpen={isModalOpen} 
                 onClose={closeModal} 
                 onAddPurchase={handleAddNewPurchase}
+                itemList={itemList}
             />
 
             {/* Edit Purchase Order Modal */}

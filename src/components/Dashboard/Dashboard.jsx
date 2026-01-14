@@ -6,7 +6,6 @@ import ActivityFeed from './ActivityFeed';
 
 
 function Dashboard() {
-    console.log("Dashboard render");
 
   useEffect(() => {
       fetchOrderTable();
@@ -27,7 +26,6 @@ function Dashboard() {
       console.error("Fetch failed:", err);
     }
   };
-  console.log(orderTableData);
   return (
     <div className="space-y-6">
       {/* Stats Grid */}

@@ -7,7 +7,7 @@ function DeliveryStatusModal({
     purchaseOrderId,
     currentStatus,
 }) {
-    const [status, setStatus] = useState(currentStatus || "Order Placed");
+    const [delivery_status, setStatus] = useState(currentStatus || "Order Placed");
     const [remarks, setRemarks] = useState("");
     const [statusHistory, setStatusHistory] = useState([]);
     const [loadingHistory, setLoadingHistory] = useState(false);
@@ -26,6 +26,7 @@ function DeliveryStatusModal({
 
             const data = await response.json();
             setStatusHistory(data);
+
             } catch (error) {
             console.error("Fetch status history error:", error);
             } finally {
@@ -39,14 +40,14 @@ function DeliveryStatusModal({
     const handleSubmit = async (e) => {
         e.preventDefault();
         setIsSubmitting(true);
-
+        
         try {
             const response = await fetch(
                 `http://localhost:5000/api/purchasing/update-delivery-status/${purchaseOrderId}`,
                 {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ status, remarks }),
+                    body: JSON.stringify({ delivery_status, remarks }),
                 }
             );
 
@@ -59,7 +60,7 @@ function DeliveryStatusModal({
                 {
                     created_at: new Date().toISOString(),
                     remarks,
-                    delivery_status: status,
+                    delivery_status: delivery_status,
                 },
                 ...prev,
             ]);
@@ -97,13 +98,12 @@ function DeliveryStatusModal({
                                 Status
                             </label>
                             <select
-                                value={status}
+                                value={delivery_status}
                                 onChange={(e) => setStatus(e.target.value)}
                                 className="w-full h-10 px-3 rounded-md border dark:bg-slate-700"
                             >
                                 <option>Order Placed</option>
                                 <option>Out for Delivery</option>
-                                <option>Overdue (X Days)</option>
                                 <option>Delivered</option>
                             </select>
                         </div>
@@ -156,7 +156,7 @@ function DeliveryStatusModal({
                                                     {new Date(row.created_at).toLocaleString()}
                                                 </td>
                                                 <td className="px-4 py-3">
-                                                    {row.status}
+                                                    {row.delivery_status}
                                                 </td>
                                                 <td className="px-4 py-3">
                                                     {row.remarks || "-"}
