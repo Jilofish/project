@@ -2,7 +2,7 @@ import React, { useState,useEffect } from 'react';
 import { X, Eye } from 'lucide-react';
 import ProofOfPaymentModal from './ProofOfPaymentModal';
 
-function DeliveryPaymentHistoryModal({ isOpen, onClose,displayData }) {
+function DeliveryPaymentHistoryModal({ isOpen, onClose,displayData, transactType}) {
      const [paymentHistory, setPaymentHistory] = useState([]);
     const [loading, setLoading] = useState(false);
     const [isProofOpen, setIsProofOpen] = useState(false);
@@ -28,9 +28,10 @@ function DeliveryPaymentHistoryModal({ isOpen, onClose,displayData }) {
 
         const fetchPaymentHistory = async () => {
             setLoading(true);
+            
             try {
                 const response = await fetch(
-                    `http://localhost:5000/api/purchasing/payment-history/${displayData.id}`
+                    `http://localhost:5000/api/${transactType}/payment-history/${displayData.id}`
                 );
 
                 if (!response.ok) {

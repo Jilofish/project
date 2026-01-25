@@ -52,6 +52,7 @@ function PurchasedOrdersTable({ orders, onViewReceipt, onDelete ,suppliers, onVi
                     <th className="text-left p-4 text-sm font-semibold text-slate-600 dark:text-slate-200">PO No.</th>
                     <th className="text-left p-4 text-sm font-semibold text-slate-600 dark:text-slate-200">Supplier</th>
                     <th className="text-left p-4 text-sm font-semibold text-slate-600 dark:text-slate-200">Transaction Date</th>
+                    <th className="text-left p-4 text-sm font-semibold text-slate-600 dark:text-slate-200">Delivery Date</th>
                     <th className="text-left p-4 text-sm font-semibold text-slate-600 dark:text-slate-200">Total(in ₱)</th>
                     <th className="text-left p-4 text-sm font-semibold text-slate-600 dark:text-slate-200">Approval Status</th>
                     <th className="text-left p-4 text-sm font-semibold text-slate-600 dark:text-slate-200">Delivery Status</th>
@@ -122,6 +123,11 @@ function PurchasedOrdersTable({ orders, onViewReceipt, onDelete ,suppliers, onVi
                         <td className="p-4">
                           <span className="text-sm text-slate-800 dark:text-white">
                             {order.transaction_date}
+                          </span>
+                        </td>
+                        <td className="p-4">
+                          <span className="text-sm text-slate-800 dark:text-white">
+                            {order.delivery_date}
                           </span>
                         </td>
                         <td className="p-4">

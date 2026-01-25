@@ -6,6 +6,7 @@ function DeliveryStatusModal({
     onClose,
     purchaseOrderId,
     currentStatus,
+    transactType,
 }) {
     const [delivery_status, setStatus] = useState(currentStatus || "Order Placed");
     const [remarks, setRemarks] = useState("");
@@ -21,7 +22,7 @@ function DeliveryStatusModal({
             setLoadingHistory(true);
             try {
             const response = await fetch(
-                `http://localhost:5000/api/purchasing/delivery-status-history/${purchaseOrderId}`
+                `http://localhost:5000/api/${transactType}/delivery-status-history/${purchaseOrderId}`
             );
 
             const data = await response.json();
@@ -43,7 +44,7 @@ function DeliveryStatusModal({
         
         try {
             const response = await fetch(
-                `http://localhost:5000/api/purchasing/update-delivery-status/${purchaseOrderId}`,
+                `http://localhost:5000/api/${transactType}/update-delivery-status/${purchaseOrderId}`,
                 {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },

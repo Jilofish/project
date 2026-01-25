@@ -1,7 +1,7 @@
 import React, {  useState } from 'react';
 import { X } from 'lucide-react';
 
-function PayDeliveryNowModal({ isOpen, onClose , displayData}) {
+function PayDeliveryNowModal({ isOpen, onClose , displayData, transactType}) {
     const money = (value) =>
     new Intl.NumberFormat("en-PH", {
         minimumFractionDigits: 2,
@@ -22,10 +22,11 @@ function PayDeliveryNowModal({ isOpen, onClose , displayData}) {
         paymentMethod,
         remainingBalance: maxAmountPay,
     };
-
+    
     try {
+        
         const response = await fetch(
-        `http://localhost:5000/api/purchasing/payment/${displayData.id}`,
+        `http://localhost:5000/api/${transactType}/payment/${displayData.id}`,
         {
             method: "PATCH",
             headers: { "Content-Type": "application/json" },

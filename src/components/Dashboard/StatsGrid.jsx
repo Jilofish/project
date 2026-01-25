@@ -21,6 +21,11 @@ function StatsGrid() {
       change: "0%",
       trend: "up",
     },
+    revenue: {
+      value: 0,
+      change: "0%",
+      trend: "up",
+    },
   });
   
   useEffect(() => {
@@ -33,9 +38,9 @@ function StatsGrid() {
   const stats = [
     {
       title: "Total Revenue",
-      value: "₱45,231.89",
-      change: "+12.5%",
-      trend: "up",
+      value: `₱${statsData.revenue.value.toLocaleString()}`,
+      change: statsData.revenue.change,
+      trend: statsData.revenue.trend,
       icon: DollarSign,
       color: "from-green-500 to-teal-600",
       bgColor: "bg-emerald-50 dark:bg-emerald-900/20",

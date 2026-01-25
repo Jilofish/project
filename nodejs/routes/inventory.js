@@ -1,4 +1,3 @@
-
 import express from "express";
 import * as inventoryCountingController from "../controllers/inventoryCountingController.js";
 

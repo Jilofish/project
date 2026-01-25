@@ -6,7 +6,6 @@ import PurchasedOrdersTable from './PurchasedOrdersTable';
 import RowLimiter from '../../components/filter/RowLimiter';
 import TablePagination from '../../components/pagination/TablePagination';
 import AddPurchaseOrderModal from '../../components/modals/AddPurchaseOrderModal';
-import EditPurchaseOrderModal from '../../components/modals/EditPurchaseOrderModal';
 import ViewPurchaseOrderModal from '../../components/modals/ViewPurchaseOrderModal';
 import ViewDeliveryReceiptModal from '../../components/modals/ViewDeliveryReceiptModal';
 
@@ -43,7 +42,6 @@ function CreatePurchase() {
 
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-    const [orderToEdit, setOrderToEdit] = useState(null);
 
     const [currentPage, setCurrentPage] = useState(1);
 
@@ -112,10 +110,6 @@ function CreatePurchase() {
     const openModal = () => setIsModalOpen(true);
     const closeModal = () => setIsModalOpen(false);
 
-    const handleEdit = (order) => {
-    setOrderToEdit(order);
-    setIsEditModalOpen(true);
-    };
     const handleView = (order) => {
     setDataView(order);
     setIsEditModalOpen(true);
@@ -129,10 +123,7 @@ function CreatePurchase() {
         setIsViewModalOpen(false);
     };
 
-    const handleCloseEditModal = () => {
-    setIsEditModalOpen(false);
-    setOrderToEdit(null);
-    };
+    
     const handleCloseViewModal = () => {
     setIsEditModalOpen(false);
     setDataView(null);
@@ -285,36 +276,10 @@ function CreatePurchase() {
     return filteredOrders.slice(start, start + rowLimit);
     }, [filteredOrders, rowLimit, currentPage]);
     /* =======================
-    SAVE / DELETE
+    DELETE
     ======================= */
 
-    const handleSaveEdit = async (updatedOrder) => {
-    try {
-        const res = await fetch(
-        `http://localhost:5000/api/purchasing/${updatedOrder.po}`,
-        {
-            method: "PUT",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(updatedOrder),
-        }
-        );
-
-        if (!res.ok) throw new Error("Failed to update purchase");
-
-        const saved = await res.json();
-
-        setOrders((prev) =>
-        prev.map((o) => (o.po === saved.po ? saved : o))
-        );
-        setIsEditModalOpen(false);
-        fetchPurchases();
-        fetchSuppliers();
-        fetchStats();
-    } catch (err) {
-        console.error(err);
-        alert("Error updating purchase");
-    }
-    };
+    
 
     const handleDeletePurchase = async (po) => {
     if (!confirm("Delete this purchase?")) return;
@@ -379,7 +344,6 @@ function CreatePurchase() {
 
                 <PurchasedOrdersTable 
                     orders={paginatedOrders} 
-                    onEdit={handleEdit}
                     onDelete={handleDeletePurchase} 
                     suppliers={suppliers}
                     onView={handleView}
@@ -410,12 +374,12 @@ function CreatePurchase() {
             />
 
             {/* Edit Purchase Order Modal */}
-            <EditPurchaseOrderModal 
+            {/* <EditPurchaseOrderModal 
                 isOpen={isEditModalOpen}
                 onClose={handleCloseEditModal}
                 orderData={orderToEdit} 
                 onSave={handleSaveEdit}
-            />
+            /> */}
              {/* View Purchase Order Modal */}
             <ViewPurchaseOrderModal 
                 isOpen={isEditModalOpen}
@@ -426,6 +390,7 @@ function CreatePurchase() {
                 isOpen={isViewModalOpen}
                 onClose={closeViewModal}
                 displayData={dataView}
+                transactType="purchasing"
             />
         </div>
     );

@@ -32,18 +32,6 @@ export const createPurchase = async (req, res) => {
     });
   }
 };
-export const updatePurchase = async (req, res) => {
-  try {
-    const data = await purchasingService.updatePurchase(req.params.po, req.body);
-    if (!data || data.length === 0) {
-      return res.status(404).json({ message: "Purchase order not found" });
-    }
-    res.json(data[0]);
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: "Failed to update purchase" });
-  }
-};
 
 export const deletePurchase = async (req, res) => {
   try {
@@ -145,6 +133,7 @@ export const updateDeliveryStatus = async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 };
+
 export const updatePaymentHistory = async(req,res) => {
   try {
     const { id } = req.params;
