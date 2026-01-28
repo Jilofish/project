@@ -16,20 +16,21 @@ export const addSalesInvoice = async(req,res) =>{
         return res.status(201).json(result);
     
       } catch (err) {
-        console.error("Sales Invoice controller error:", err);
-    
-        if (err.message === "DUPLICATE_SI") {
-          return res.status(409).json({
-            code: "DUPLICATE_SI",
-            message: "Sales Invoice number already exists"
-          });
-        }
-    
-        return res.status(500).json({
-          code: "INVOICE_CREATE_FAILED",
-          message: "Failed to save invoice"
+      console.error("Sales Invoice controller error:", err);
+
+      if (err.message === "DUPLICATE_SI") {
+        return res.status(409).json({
+          code: "DUPLICATE_SI",
+          message: "Sales Invoice number already exists"
         });
       }
+
+      return res.status(400).json({
+        code: "INVOICE_CREATE_FAILED",
+        message: err.message // 🔴 THIS IS THE FIX
+      });
+    }
+
 }
 export const getSalesStats = async (req, res) => {
   try {

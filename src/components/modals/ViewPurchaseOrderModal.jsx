@@ -202,6 +202,7 @@ function ViewPurchaseOrderModal({ isOpen, onClose, displayData }) {
     /* ----------------------------- GUARD ----------------------------------- */
     if (!isOpen) return null;
     /* ----------------------------- JSX ------------------------------------- */
+    console.log("Display Data:", displayData);
     return (
     <>
         <div className="fixed inset-0 z-40 overflow-y-auto bg-black/20 dark:bg-black/30">
