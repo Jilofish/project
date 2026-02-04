@@ -111,8 +111,8 @@ function CreatePurchase() {
     const closeModal = () => setIsModalOpen(false);
 
     const handleView = (order) => {
-    setDataView(order);
-    setIsEditModalOpen(true);
+        setDataView(order);
+        setIsEditModalOpen(true);
     };
     const openViewModal = (order) => {
         setDataView(order);
@@ -385,6 +385,7 @@ function CreatePurchase() {
                 isOpen={isEditModalOpen}
                 onClose={handleCloseViewModal}
                 displayData={dataView}
+                itemList={itemList}
             /> 
             <ViewDeliveryReceiptModal
                 isOpen={isViewModalOpen}

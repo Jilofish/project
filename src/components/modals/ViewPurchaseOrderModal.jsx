@@ -24,7 +24,7 @@ const warehouseData = [
 /*                             MAIN COMPONENT                                 */
 /* -------------------------------------------------------------------------- */
 
-function ViewPurchaseOrderModal({ isOpen, onClose, displayData }) {
+function ViewPurchaseOrderModal({ isOpen, onClose, displayData, itemList}) {
   /* ----------------------------- STATE ----------------------------------- */
     const [isPayOpen, setIsPayOpen] = useState(false);
     const [isEditingItems, setIsEditingItems] = useState(false);
@@ -278,7 +278,7 @@ function ViewPurchaseOrderModal({ isOpen, onClose, displayData }) {
                 </label>
                 <input
                 type="text"
-                value={displayData.purchased_order_item[0]?.warehouse}
+                value={displayData.warehouse}
                 disabled
                 className="mt-1 h-9 w-full cursor-not-allowed rounded-md
                             border border-transparent bg-slate-100 px-3 py-1.5
@@ -538,6 +538,7 @@ function ViewPurchaseOrderModal({ isOpen, onClose, displayData }) {
         isOpen={isAddItemModalOpen}
         onClose={handleCloseModals}
         onAddItem={handleAddLocalItem}
+        loadItemList={itemList}
         />
 
         <EditItemModal
@@ -545,6 +546,7 @@ function ViewPurchaseOrderModal({ isOpen, onClose, displayData }) {
         onClose={handleCloseModals}
         editingItem={editingItem}
         onSaveLocalItem={handleSaveLocalItem}
+        loadItemList={itemList}
         />
         <DeliveryStatusModal 
             isOpen={isPayOpen} 

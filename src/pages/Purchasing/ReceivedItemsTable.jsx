@@ -1,7 +1,7 @@
 import React from 'react';
-import { Pencil, Trash2 } from 'lucide-react'; 
+import { Eye,ReceiptText, Trash2 } from 'lucide-react'; 
 
-function ReceivedItemsTable({ orders, onEdit, onDelete }) {
+function ReceivedItemsTable({ orders, onView, onViewReceipt, onDelete }) {
     
     const getDeliveryStatusColor = (Status) => {
         switch (Status) {
@@ -82,12 +82,23 @@ function ReceivedItemsTable({ orders, onEdit, onDelete }) {
                           </span>
                         </td>
                         <td className="p-4 flex items-center gap-3"> 
-                            <button 
-                                className="text-sm text-blue-800 dark:text-blue-400 hover:scale-110 transition-transform"
-                                onClick={() => onEdit(order)}
+                             {/* View */}
+                            <span
+                              className="text-sm text-blue-800 dark:text-blue-400 cursor-pointer"
+                              onClick={() => onView(order)}
                             >
-                                <Pencil className="w-4 h-4"/>
-                            </button>
+                              <Eye className="w-4 h-4" />
+                            </span>
+
+                            {/* View Receipt – only if NOT Rejected */}
+                            {order.approval_status !== "Rejected" && (
+                              <span
+                                className="text-sm text-blue-900 dark:text-blue-500 cursor-pointer"
+                                onClick={() => onViewReceipt(order)}
+                              >
+                                <ReceiptText className="w-5 h-5" />
+                              </span>
+                            )}
                             <button 
                                 className="text-sm text-red-800 dark:text-red-400 hover:scale-110 transition-transform"
                                 title="Delete Supplier" onClick={() => onDelete(order.id)}

@@ -29,7 +29,7 @@ function AddItemModal({ isOpen, onClose, onAddItem,loadItemList }) {
             label: item.item_name,
             }])
         ).values()
-        ];
+    ];
 
     /* =======================
     AUTO TOTAL CALCULATION
@@ -114,6 +114,7 @@ function AddItemModal({ isOpen, onClose, onAddItem,loadItemList }) {
         e.preventDefault();
         const finalItem = {
             ...itemForm,
+            product_name: itemForm.brand,
             quantity: Number(itemForm.quantity) || 0,
             unitPrice: Number(itemForm.unitPrice) || 0,
             shipping: Number(itemForm.shipping) || 0,
