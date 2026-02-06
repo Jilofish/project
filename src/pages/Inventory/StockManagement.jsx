@@ -7,6 +7,9 @@ import TablePagination from '../../components/pagination/TablePagination';
 import AddProductModal from '../../components/modals/AddProductModal';
 import AddStockTransferModal from '../../components/modals/AddStockTransferModal';
 import EditStockDetailsModal from '../../components/modals/EditStockDetailsModal';
+import EditItemToShipModal from '../../components/modals/EditItemToShipModal';
+import { Edit } from 'lucide-react';
+import EditStockTransferDetailsModal from '../../components/modals/EditStockTransferDetailsModal';
 
 function StockManagement() {
     const [activeTab, setActiveTab] = useState('profile');
@@ -16,6 +19,7 @@ function StockManagement() {
     const [isAddProductModalOpen, setIsAddProductModalOpen] = useState(false);
     const [isAddTransferModalOpen, setIsAddTransferModalOpen] = useState(false);
     const [isEditStockDetailsModalOpen, setIsEditStockDetailsModalOpen] = useState(false);
+    const [isEditTransferDetailsModalOpen, setIsEditTransferDetailsModalOpen] = useState(false);
     const [selectedStock, setSelectedStock] = useState(null);
     
     // --- PAGINATION & SHARED STATE ---
@@ -59,6 +63,11 @@ function StockManagement() {
     const handleEditClick = (item) => {
         setSelectedStock(item);
         setIsEditStockDetailsModalOpen(true);
+    };
+
+    const handleEditTransferModalClick = (item) => {
+        setSelectedStock(item);
+        setIsEditTransferDetailsModalOpen(true); // Matches the state setter
     };
 
     return (
@@ -118,6 +127,7 @@ function StockManagement() {
                                     // Trigger Transfer Modal
                                     onAddStockTransferClick={() => setIsAddTransferModalOpen(true)}
                                     iconProps={iconProps}
+                                    onEditStockTransferClick={handleEditTransferModalClick}
                                 />
                             </div>
                         )}
@@ -155,6 +165,14 @@ function StockManagement() {
                 isOpen={isEditStockDetailsModalOpen}
                 onClose={() => {
                     setIsEditStockDetailsModalOpen(false);
+                    setSelectedStock(null);
+                }}
+                initialData={selectedStock}
+            />
+            <EditStockTransferDetailsModal
+                isOpen={isEditTransferDetailsModalOpen}
+                onClose={() => {
+                    setIsEditTransferDetailsModalOpen(false);
                     setSelectedStock(null);
                 }}
                 initialData={selectedStock}
