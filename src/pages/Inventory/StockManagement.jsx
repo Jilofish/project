@@ -81,12 +81,39 @@ function StockManagement() {
         setIsDeleteModalOpen(true);
     };
 
-    const handleConfirmDelete = async () => {
-        // Logic for backend deletion goes here
-        console.log("Deleting item:", itemToDelete);
-        setIsDeleteModalOpen(false);
-        setItemToDelete(null);
-    };
+    // const handleConfirmDelete = async () => {
+    //     // Logic for backend deletion goes here
+    //     console.log("Deleting item:", itemToDelete);
+    //     setIsDeleteModalOpen(false);
+    //     setItemToDelete(null);
+    // };
+
+    // ------------------------------------------------------------------------------------------ //
+    // DELETE FUNCTION MOVED FROM StocksTable.jsx TO HERE TO HANDLE THE MODAL
+
+        const handleConfirmDelete = async () => {
+            if (!itemToDelete) return;
+            try {
+                // Keep your backend logic exactly as it was
+                const res = await fetch(
+                    `http://localhost:5000/api/stock/${itemToDelete.id}`,
+                    { method: "DELETE" }
+                );
+
+                if (!res.ok) throw new Error("Delete failed");
+                
+                // Re-fetch stats or items to refresh UI
+                fetchStats(); 
+                
+                setIsDeleteModalOpen(false);
+                setItemToDelete(null);
+                setItemIndex(null);
+            } catch (err) {
+                console.error("Delete Error:", err);
+            }
+        };
+
+    // ------------------------------------------------------------------------------------------ //
 
     return (
         <div>
@@ -170,12 +197,30 @@ function StockManagement() {
                 onClose={() => { setIsEditTransferDetailsModalOpen(false); setSelectedStock(null); }}
                 initialData={selectedStock}
             />
-            <DeleteConfirmModal
+
+
+            {/* OLD DELETE CONFIRM MODAL  */}
+            {/* <DeleteConfirmModal
                 isOpen={isDeleteModalOpen}
                 onClose={() => setIsDeleteModalOpen(false)}
                 onConfirm={handleConfirmDelete}
                 // front-end mockup display
                 itemName={itemToDelete ? `${itemToDelete.id} | ${itemToDelete.Sender} | ${itemToDelete.Remarks} | ${itemToDelete.TotalQuantity} kg | ${itemToDelete.TotalValue}` : ''}
+            /> */}
+
+
+            {/* NEW DELETE CONFIRM MODAL WITH INDEX DISPLAY */}
+            <DeleteConfirmModal
+                isOpen={isDeleteModalOpen}
+                onClose={() => { setIsDeleteModalOpen(false); setItemToDelete(null); }}
+                onConfirm={handleConfirmDelete}
+                itemName={
+                    itemToDelete 
+                        ? itemToDelete.Sender 
+                            ? `Row #${itemIndex} | ${itemToDelete.Sender} | ${itemToDelete.Remarks} | ${itemToDelete.TotalQuantity} kg`
+                            : `Row #${itemIndex} | ${itemToDelete.item_code} | ${itemToDelete.item_name} | ${itemToDelete.quantity} kg`
+                        : ''
+                }
             />
         </div>
     );

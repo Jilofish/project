@@ -22,7 +22,7 @@ const StocksData = [
 
 const ALL_OPTION = 'All';
 
-function StocksTable({ rowLimit, currentPage, onTotalDataChange, onAddProductClick, onEditStockClick, iconProps, onAddProductClose}) {
+function StocksTable({ rowLimit, currentPage, onTotalDataChange, onAddProductClick, onEditStockClick, iconProps, onDeleteClick, onAddProductClose}) {
     // These values match the first item in the options array below
     const [warehouseFilter, setWarehouseFilter] = useState('warehouse');
     const [statusFilter, setStatusFilter] = useState('status');
@@ -119,6 +119,8 @@ function StocksTable({ rowLimit, currentPage, onTotalDataChange, onAddProductCli
 
     // ------------------------------------------------------------------------------------------- //
 
+
+
     // 3. Update Parent with new total count for Pagination
     useEffect(() => {
         onTotalDataChange(filteredData.length);
@@ -129,21 +131,27 @@ function StocksTable({ rowLimit, currentPage, onTotalDataChange, onAddProductCli
         const start = (currentPage - 1) * rowLimit;
         return filteredData.slice(start, start + rowLimit);
     }, [filteredData, rowLimit, currentPage]);
-    
-    const handleDeletePurchase = async (id) => {
-        if (!confirm("Delete this stock?")) return;
-        try {
-            const res = await fetch(
-            `http://localhost:5000/api/stock/${id}`,
-            { method: "DELETE" }
-            );
 
-            if (!res.ok) throw new Error("Delete failed");
-            fetchItems();
-        } catch (err) {
-            console.error(err);
-        }
-    };
+    // ------------------------------------------------------------------------------------------ //
+
+    //  I MOVED THIS DELETE FUNCTION TO StockManagement.jsx TO HANDLE THE MODAL THERE
+    
+    // const handleDeletePurchase = async (id) => {
+    //     if (!confirm("Delete this stock?")) return;
+    //     try {
+    //         const res = await fetch(
+    //         `http://localhost:5000/api/stock/${id}`,
+    //         { method: "DELETE" }
+    //         );
+
+    //         if (!res.ok) throw new Error("Delete failed");
+    //         fetchItems();
+    //     } catch (err) {
+    //         console.error(err);
+    //     }
+    // };
+
+    // ------------------------------------------------------------------------------------------ //
     const getStatusColor = (status) => {
         switch (status) {
             case "In Stock": return "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400";
@@ -252,7 +260,9 @@ function StocksTable({ rowLimit, currentPage, onTotalDataChange, onAddProductCli
                                     >
                                         <Eye className="w-4 h-4"/>
                                     </span>
-                                    <span className="text-sm text-red-800 dark:text-red-400 cursor-pointer" onClick={() => handleDeletePurchase(item.id)}>
+                                    <span className="text-sm text-red-800 dark:text-red-400 cursor-pointer" 
+                                        onClick={() => onDeleteClick(item, index)}
+                                    >
                                         <Trash2 className="w-4 h-4"/>
                                     </span>
                                 </td>
