@@ -77,10 +77,20 @@ function InventoryCounting() {
     //     fetchInventoryItem();
     // },[])
     // --- DYNAMIC OPTION GENERATION (Explicitly uses ALL_OPTION) ---
+
     const extractUniqueOptions = (key, placeholder) => {
         const uniqueValues = [...new Set(WarehouseData.map(order => order[key]))];
         return [placeholder, ALL_OPTION, ...uniqueValues.sort()];
     };
+
+    // ------------------------------------------------------------------------------------------- //
+
+    // const extractUniqueOptions = (key, placeholder) => {
+    //     const uniqueValues = [...new Set(items.map(order => order[key]))];
+    //     return [placeholder, ALL_OPTION, ...uniqueValues.sort()];
+    // };
+
+    // ------------------------------------------------------------------------------------------- //
 
     const rowLimitOptions = [5, 10, 15]; 
     
@@ -88,6 +98,11 @@ function InventoryCounting() {
     const dateRangeOptions = ['Date', ALL_OPTION, 'Today', 'Last 7 Days', 'Last 30 Days'];
     const warehouseOptions = extractUniqueOptions('warehouse', 'Warehouse');
     const statusOptions = extractUniqueOptions('status', 'Status');
+
+    // ------------------------------------------------------------------------------------------- //
+    // const warehouseOptions = extractUniqueOptions('warehouse', 'Warehouse');
+    // const statusOptions = extractUniqueOptions('wtatus', 'Status');
+    // ------------------------------------------------------------------------------------------- //
 
     // Recalibrated Placeholders
     const initialRowLimit = rowLimitOptions[0];
@@ -158,7 +173,7 @@ function InventoryCounting() {
 
     // --- FILTERING LOGIC ---
     const filteredOrders = useMemo(() => {
-        let filtered = [...WarehouseData]; // Use WarehouseData instead of items for demonstration
+        let filtered = [...WarehouseData]; // Use WarehouseData instead of items for FRONTEND MOCKUP. Switch to "items" for BACKEND IMPLEMENTATION.
         
         // 1. Date Range Filter (Using CountingDate)
         if (dateRangeFilter !== initialDateRange && dateRangeFilter !== ALL_OPTION) {
