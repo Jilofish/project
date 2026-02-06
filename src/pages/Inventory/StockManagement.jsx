@@ -6,14 +6,17 @@ import RowLimiter from '../../components/filter/RowLimiter';
 import TablePagination from '../../components/pagination/TablePagination';
 import AddProductModal from '../../components/modals/AddProductModal';
 import AddStockTransferModal from '../../components/modals/AddStockTransferModal';
+import EditStockDetailsModal from '../../components/modals/EditStockDetailsModal';
 
 function StockManagement() {
     const [activeTab, setActiveTab] = useState('profile');
     const [stats, setStats]= useState([]);
      // --- MODAL STATES ---
    
-   const [isAddProductModalOpen, setIsAddProductModalOpen] = useState(false);
+    const [isAddProductModalOpen, setIsAddProductModalOpen] = useState(false);
     const [isAddTransferModalOpen, setIsAddTransferModalOpen] = useState(false);
+    const [isEditStockDetailsModalOpen, setIsEditStockDetailsModalOpen] = useState(false);
+    const [selectedStock, setSelectedStock] = useState(null);
     
     // --- PAGINATION & SHARED STATE ---
     const [rowLimit, setRowLimit] = useState(5);
@@ -22,7 +25,6 @@ function StockManagement() {
 
     const totalPages = Math.ceil(totalItems / rowLimit);
     const iconProps = { className: 'w-4 h-4 text-slate-500 dark:text-slate-500' };
-
 
      
     const fetchStats = async () => {
@@ -53,6 +55,11 @@ function StockManagement() {
         activeTab === tabId 
             ? "inline-block p-4 border-b-2 border-blue-500 text-blue-500 font-semibold cursor-pointer hover:text-blue-600 hover:border-blue-600"
             : "inline-block p-4 border-b-2 border-transparent text-slate-600 dark:text-slate-400 hover:text-blue-500 hover:border-blue-300 cursor-pointer";
+
+    const handleEditClick = (item) => {
+        setSelectedStock(item);
+        setIsEditStockDetailsModalOpen(true);
+    };
 
     return (
         <div>
@@ -97,6 +104,7 @@ function StockManagement() {
                                     onAddProductClick={() => setIsAddProductModalOpen(true)}
                                     iconProps={iconProps}
                                     onAddProductClose={isAddProductModalOpen}
+                                    onEditStockClick={handleEditClick}
                                 />
                             </div>
                         )}
@@ -141,6 +149,15 @@ function StockManagement() {
             <AddStockTransferModal 
                 isOpen={isAddTransferModalOpen} 
                 onClose={() => setIsAddTransferModalOpen(false)} 
+            />
+            
+            <EditStockDetailsModal
+                isOpen={isEditStockDetailsModalOpen}
+                onClose={() => {
+                    setIsEditStockDetailsModalOpen(false);
+                    setSelectedStock(null);
+                }}
+                initialData={selectedStock}
             />
         </div>
     );

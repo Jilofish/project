@@ -1,7 +1,7 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { Plus, Eye, Trash2 } from 'lucide-react'; 
 import CustomWarehouseSelect from '../../components/filter/CustomSupplierSelect'; 
-import CustomStatusSelect from '../../components/filter/CustomDeliveryStatusSelect'; 
+import CustomStatusSelect from '../../components/filter/CustomDeliveryStatusSelect';
 
 const StocksData = [
     { warehouse_name: 'Saog', item_name: 'Jowls', item_code: 'M-JWLS-UNP', quantity: '50.00', suggested_retail_price: '220.00', status: 'In Stock' },
@@ -22,7 +22,7 @@ const StocksData = [
 
 const ALL_OPTION = 'All';
 
-function StocksTable({ rowLimit, currentPage, onTotalDataChange, onAddProductClick, iconProps,onAddProductClose }) {
+function StocksTable({ rowLimit, currentPage, onTotalDataChange, onAddProductClick, onEditStockClick, iconProps, onAddProductClose}) {
     // These values match the first item in the options array below
     const [warehouseFilter, setWarehouseFilter] = useState('warehouse');
     const [statusFilter, setStatusFilter] = useState('status');
@@ -68,12 +68,12 @@ function StocksTable({ rowLimit, currentPage, onTotalDataChange, onAddProductCli
 
     // ------------------------------------------------------------------------------------------- //
 
-    // uncomment this for the backend data fetching above to work
+        // uncomment this for the backend data fetching above to work
 
-    // const warehouseOptions = useMemo(() => {
-    //     const unique = [...new Set(items.map(item => item.warehouse))];
-    //     return ['warehouse', ALL_OPTION, ...unique.sort()];
-    // }, []);
+        // const warehouseOptions = useMemo(() => {
+        //     const unique = [...new Set(items.map(item => item.warehouse))];
+        //     return ['warehouse', ALL_OPTION, ...unique.sort()];
+        // }, []);
 
     // ------------------------------------------------------------------------------------------- //
 
@@ -247,6 +247,7 @@ function StocksTable({ rowLimit, currentPage, onTotalDataChange, onAddProductCli
                                 <td className="p-4 flex items-center gap-3"> 
                                     <span className="text-sm text-blue-800 dark:text-blue-400 cursor-pointer"
                                         //onClick={() => onEdit(order)}
+                                        onClick={() => onEditStockClick(item)}
                                     >
                                         <Eye className="w-4 h-4"/>
                                     </span>
