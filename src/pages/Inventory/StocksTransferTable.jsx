@@ -49,7 +49,7 @@ const StocksTransferData = [
 
 const ALL_OPTION = 'All';
 
-function StocksTransferTable({ rowLimit, currentPage, onTotalDataChange, onAddStockTransferClick, iconProps, onEditStockTransferClick }) {
+function StocksTransferTable({ rowLimit, currentPage, onTotalDataChange, onAddStockTransferClick, iconProps, onEditStockTransferClick, OnDeleteCountingClick }) {
     // --- 1. INITIAL STATES (Recalibrated to match placeholders) ---
     const [dateFilter, setDateFilter] = useState('Transfer Date');
     const [senderFilter, setSenderFilter] = useState('Sender');
@@ -186,7 +186,9 @@ function StocksTransferTable({ rowLimit, currentPage, onTotalDataChange, onAddSt
                                     >
                                         <Pencil className="w-4 h-4"/>
                                     </span>
-                                    <span className="text-sm text-red-800 dark:text-red-400 cursor-pointer">
+                                    <span className="text-sm text-red-800 dark:text-red-400 cursor-pointer"
+                                        onClick={() => OnDeleteCountingClick(order)}
+                                    >
                                         <Trash2 className="w-4 h-4"/>
                                     </span>
                                 </td>

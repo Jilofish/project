@@ -1,4 +1,4 @@
-import React, { useState,useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import StockStatsGrid from './StockStatsGrid';
 import StocksTable from './StocksTable';
 import StocksTransferTable from './StocksTransferTable';
@@ -7,20 +7,22 @@ import TablePagination from '../../components/pagination/TablePagination';
 import AddProductModal from '../../components/modals/AddProductModal';
 import AddStockTransferModal from '../../components/modals/AddStockTransferModal';
 import EditStockDetailsModal from '../../components/modals/EditStockDetailsModal';
-import EditItemToShipModal from '../../components/modals/EditItemToShipModal';
-import { Edit } from 'lucide-react';
 import EditStockTransferDetailsModal from '../../components/modals/EditStockTransferDetailsModal';
+import DeleteConfirmModal from '../../components/modals/DeleteConfirmModal';
 
 function StockManagement() {
     const [activeTab, setActiveTab] = useState('profile');
-    const [stats, setStats]= useState([]);
-     // --- MODAL STATES ---
-   
+    const [stats, setStats] = useState([]);
+    
+    // --- MODAL STATES ---
     const [isAddProductModalOpen, setIsAddProductModalOpen] = useState(false);
     const [isAddTransferModalOpen, setIsAddTransferModalOpen] = useState(false);
     const [isEditStockDetailsModalOpen, setIsEditStockDetailsModalOpen] = useState(false);
     const [isEditTransferDetailsModalOpen, setIsEditTransferDetailsModalOpen] = useState(false);
+    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+    
     const [selectedStock, setSelectedStock] = useState(null);
+    const [itemToDelete, setItemToDelete] = useState(null);
     
     // --- PAGINATION & SHARED STATE ---
     const [rowLimit, setRowLimit] = useState(5);
@@ -30,7 +32,6 @@ function StockManagement() {
     const totalPages = Math.ceil(totalItems / rowLimit);
     const iconProps = { className: 'w-4 h-4 text-slate-500 dark:text-slate-500' };
 
-     
     const fetchStats = async () => {
         try {
             const res = await fetch("http://localhost:5000/api/stock/stats");
@@ -40,10 +41,12 @@ function StockManagement() {
             console.error("Failed to fetch purchase stats", err);
         }
     };
+
     useEffect(() => {
-        if(!isAddProductModalOpen){
-        fetchStats();
-    }}, [isAddProductModalOpen]);
+        if (!isAddProductModalOpen) {
+            fetchStats();
+        }
+    }, [isAddProductModalOpen]);
 
     const handleDataChange = useCallback((count) => {
         setTotalItems(count);
@@ -60,6 +63,7 @@ function StockManagement() {
             ? "inline-block p-4 border-b-2 border-blue-500 text-blue-500 font-semibold cursor-pointer hover:text-blue-600 hover:border-blue-600"
             : "inline-block p-4 border-b-2 border-transparent text-slate-600 dark:text-slate-400 hover:text-blue-500 hover:border-blue-300 cursor-pointer";
 
+    // --- HANDLERS ---
     const handleEditClick = (item) => {
         setSelectedStock(item);
         setIsEditStockDetailsModalOpen(true);
@@ -67,7 +71,19 @@ function StockManagement() {
 
     const handleEditTransferModalClick = (item) => {
         setSelectedStock(item);
-        setIsEditTransferDetailsModalOpen(true); // Matches the state setter
+        setIsEditTransferDetailsModalOpen(true);
+    };
+
+    const handleDeleteClick = (item) => {
+        setItemToDelete(item);
+        setIsDeleteModalOpen(true);
+    };
+
+    const handleConfirmDelete = async () => {
+        // Logic for backend deletion goes here
+        console.log("Deleting item:", itemToDelete);
+        setIsDeleteModalOpen(false);
+        setItemToDelete(null);
     };
 
     return (
@@ -80,23 +96,13 @@ function StockManagement() {
                 <div>
                     <div className="mb-4 border-b border-gray-200 dark:border-gray-700">
                         <ul className="flex flex-wrap -mb-px text-sm font-medium text-center" role="tablist">
-                            <li className="me-2" role="presentation">
-                                <button 
-                                    onClick={() => handleTabClick('profile')} 
-                                    className={getTabClasses('profile')} 
-                                    type="button" 
-                                    role="tab"
-                                >
+                            <li className="me-2">
+                                <button onClick={() => handleTabClick('profile')} className={getTabClasses('profile')} type="button">
                                     Stocks
                                 </button>
                             </li>
-                            <li className="me-2" role="presentation">
-                                <button 
-                                    onClick={() => handleTabClick('dashboard')} 
-                                    className={getTabClasses('dashboard')} 
-                                    type="button" 
-                                    role="tab"
-                                >
+                            <li className="me-2">
+                                <button onClick={() => handleTabClick('dashboard')} className={getTabClasses('dashboard')} type="button">
                                     Stocks Transfer
                                 </button>
                             </li>
@@ -105,29 +111,29 @@ function StockManagement() {
 
                     <div id="default-tab-content">
                         {activeTab === 'profile' && (
-                            <div id="profile" role="tabpanel">
+                            <div id="profile">
                                 <StocksTable 
                                     rowLimit={rowLimit}
                                     currentPage={currentPage}
                                     onTotalDataChange={handleDataChange}
                                     onAddProductClick={() => setIsAddProductModalOpen(true)}
                                     iconProps={iconProps}
-                                    onAddProductClose={isAddProductModalOpen}
                                     onEditStockClick={handleEditClick}
+                                    onDeleteClick={handleDeleteClick}
                                 />
                             </div>
                         )}
 
                         {activeTab === 'dashboard' && (
-                            <div id="dashboard" role="tabpanel">
+                            <div id="dashboard">
                                 <StocksTransferTable 
                                     rowLimit={rowLimit}
                                     currentPage={currentPage}
                                     onTotalDataChange={handleDataChange}
-                                    // Trigger Transfer Modal
                                     onAddStockTransferClick={() => setIsAddTransferModalOpen(true)}
                                     iconProps={iconProps}
                                     onEditStockTransferClick={handleEditTransferModalClick}
+                                    OnDeleteCountingClick={handleDeleteClick} 
                                 />
                             </div>
                         )}
@@ -149,33 +155,24 @@ function StockManagement() {
                 </div>
             </div>
 
-            {/* PRODUCT MODAL */}
-            <AddProductModal 
-                isOpen={isAddProductModalOpen} 
-                onClose={() => setIsAddProductModalOpen(false)} 
-            />
-
-            {/* TRANSFER MODAL */}
-            <AddStockTransferModal 
-                isOpen={isAddTransferModalOpen} 
-                onClose={() => setIsAddTransferModalOpen(false)} 
-            />
+            <AddProductModal isOpen={isAddProductModalOpen} onClose={() => setIsAddProductModalOpen(false)} />
+            <AddStockTransferModal isOpen={isAddTransferModalOpen} onClose={() => setIsAddTransferModalOpen(false)} />
             
             <EditStockDetailsModal
                 isOpen={isEditStockDetailsModalOpen}
-                onClose={() => {
-                    setIsEditStockDetailsModalOpen(false);
-                    setSelectedStock(null);
-                }}
+                onClose={() => { setIsEditStockDetailsModalOpen(false); setSelectedStock(null); }}
                 initialData={selectedStock}
             />
             <EditStockTransferDetailsModal
                 isOpen={isEditTransferDetailsModalOpen}
-                onClose={() => {
-                    setIsEditTransferDetailsModalOpen(false);
-                    setSelectedStock(null);
-                }}
+                onClose={() => { setIsEditTransferDetailsModalOpen(false); setSelectedStock(null); }}
                 initialData={selectedStock}
+            />
+            <DeleteConfirmModal
+                isOpen={isDeleteModalOpen}
+                onClose={() => setIsDeleteModalOpen(false)}
+                onConfirm={handleConfirmDelete}
+                itemName={itemToDelete ? (itemToDelete.Remarks || itemToDelete.name || "this item") : ''}
             />
         </div>
     );
