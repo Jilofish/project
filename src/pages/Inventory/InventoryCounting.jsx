@@ -7,33 +7,39 @@ import RowLimiter from '../../components/filter/RowLimiter';
 import TablePagination from '../../components/pagination/TablePagination';
 
 import AddCountingModal from '../../components/modals/AddCountingModal';
+import EditCountingModal from '../../components/modals/EditCountingModal';
+import DeleteConfirmModal from '../../components/modals/DeleteConfirmModal';
 
 const ALL_OPTION = 'All';
 
 const WarehouseData = [
     {
-        Warehouse: 'Saog',
+        warehouseID: 1,
+        warehouse: 'Saog',
         remarks: 'Daily Counting - Jowls',
-        CountingDate: 'Oct 01, 2025',
-        Status: 'Approved',
+        count_date: 'Oct 01, 2025',
+        status: 'Approved',
     },
     {
-        Warehouse: 'Meycuayan',
+        warehouseID: 2,
+        warehouse: 'Meycuayan',
         remarks: 'Daily Counting - Premium Beef',
-        CountingDate: 'Aug 12, 2025',
-        Status: 'Approved'
+        count_date: 'Aug 12, 2025',
+        status: 'Approved'
     },
     {
-        Warehouse: 'Quezon City',
+        warehouseID: 3,
+        warehouse: 'Quezon City',
         remarks: 'Daily Counting - Chicken',
-        CountingDate: 'Sep 14, 2025',
-        Status: 'Pending'
+        count_date: 'Sep 14, 2025',
+        status: 'Pending'
     },
     {
-        Warehouse: 'Bocaue',
+        warehouseID: 4,
+        warehouse: 'Bocaue',
         remarks: 'Daily Counting - Pork',
-        CountingDate: 'Oct 12, 2025',
-        Status: 'Rejected'
+        count_date: 'Oct 12, 2025',
+        status: 'Rejected'
     }
 ];
 
@@ -57,22 +63,22 @@ function InventoryCounting() {
     const iconProps = {
         className: 'w-4 h-4 text-slate-500 dark:text-slate-500',
     };
-    const [items,setItems]=useState([]);
-    const fetchInventoryItem = async () =>{
-        try {
-             const res = await fetch("http://localhost:5000/api/inventory");
-            const data = await res.json();
-            setItems(data);
-        } catch (error) {
-            console.error("Failed to display items", error)
-        }
-    }
-    useEffect(()=>{
-        fetchInventoryItem();
-    },[])
+    // const [items,setItems]=useState([]);
+    // const fetchInventoryItem = async () =>{
+    //     try {
+    //          const res = await fetch("http://localhost:5000/api/inventory");
+    //         const data = await res.json();
+    //         setItems(data);
+    //     } catch (error) {
+    //         console.error("Failed to display items", error)
+    //     }
+    // }
+    // useEffect(()=>{
+    //     fetchInventoryItem();
+    // },[])
     // --- DYNAMIC OPTION GENERATION (Explicitly uses ALL_OPTION) ---
     const extractUniqueOptions = (key, placeholder) => {
-        const uniqueValues = [...new Set(items.map(order => order[key]))];
+        const uniqueValues = [...new Set(WarehouseData.map(order => order[key]))];
         return [placeholder, ALL_OPTION, ...uniqueValues.sort()];
     };
 
@@ -80,8 +86,8 @@ function InventoryCounting() {
     
     // Recalibrated Options
     const dateRangeOptions = ['Date', ALL_OPTION, 'Today', 'Last 7 Days', 'Last 30 Days'];
-    const warehouseOptions = extractUniqueOptions('Warehouse', 'Warehouse');
-    const statusOptions = extractUniqueOptions('Status', 'Status');
+    const warehouseOptions = extractUniqueOptions('warehouse', 'Warehouse');
+    const statusOptions = extractUniqueOptions('status', 'Status');
 
     // Recalibrated Placeholders
     const initialRowLimit = rowLimitOptions[0];
@@ -95,8 +101,12 @@ function InventoryCounting() {
     const [warehouseFilter, setWarehouseFilter] = useState(initialWarehouse); // New state
     const [statusFilter, setStatusFilter] = useState(initialStatus);           // New state
     const [currentPage, setCurrentPage] = useState(1);
+    const [selectedCounting, setSelectedCounting] = useState(null);
+    const [itemToDelete, setItemToDelete] = useState(null);
 
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
     // --- HANDLER FUNCTIONS ---
     const handleRowLimitChange = (newValue) => {
@@ -122,10 +132,33 @@ function InventoryCounting() {
     const handleOpenModal = () => setIsModalOpen(true);
     const handleCloseModal = () => setIsModalOpen(false);
 
+    // Edit Modal Handlers
+    const handleOpenEditModal = (order) => {
+        setSelectedCounting(order);
+        setIsEditModalOpen(true);
+    };
+    const handleCloseEditModal = () => {
+        setIsEditModalOpen(false);
+        setSelectedCounting(null);
+    };
+
+    // Delete Modal Handlers
+    const handleOpenDeleteModal = (order) => {
+        setItemToDelete(order);
+        setIsDeleteModalOpen(true);
+    };
+
+    const handleConfirmDelete = async () => {
+        // Logic for backend deletion would go here
+        console.log("Deleting:", itemToDelete.warehouseID);
+        setIsDeleteModalOpen(false);
+        setItemToDelete(null);
+    };
+
 
     // --- FILTERING LOGIC ---
     const filteredOrders = useMemo(() => {
-        let filtered = items;
+        let filtered = [...WarehouseData]; // Use WarehouseData instead of items for demonstration
         
         // 1. Date Range Filter (Using CountingDate)
         if (dateRangeFilter !== initialDateRange && dateRangeFilter !== ALL_OPTION) {
@@ -150,22 +183,22 @@ function InventoryCounting() {
             }
 
             filtered = filtered.filter(order => 
-                isDateInRange(order.CountingDate, startDate, today) // Use CountingDate
+                isDateInRange(order.count_date, startDate, today) // Use CountingDate
             );
         }
 
         // 2. Warehouse Filter (New Filter)
         if (warehouseFilter !== initialWarehouse && warehouseFilter !== ALL_OPTION) {
-            filtered = filtered.filter(order => order.Warehouse === warehouseFilter);
+            filtered = filtered.filter(order => order.warehouse === warehouseFilter);
         }
 
         // 3. Status Filter (New Filter)
         if (statusFilter !== initialStatus && statusFilter !== ALL_OPTION) {
-            filtered = filtered.filter(order => order.Status === statusFilter);
+            filtered = filtered.filter(order => order.status === statusFilter);
         }
             
         return filtered;
-    }, [items,dateRangeFilter, warehouseFilter, statusFilter, initialDateRange, initialWarehouse, initialStatus]); 
+    }, [WarehouseData,dateRangeFilter, warehouseFilter, statusFilter, initialDateRange, initialWarehouse, initialStatus]); 
 
     // --- Pagination Logic ---
     const totalOrders = filteredOrders.length;
@@ -200,11 +233,16 @@ function InventoryCounting() {
                     handleStatusChange={handleStatusChange}
 
                     OnAddCountingClick={handleOpenModal}
+                    OnEditCountingClick={handleOpenEditModal}
                     
                     iconProps={iconProps}
                 />
 
-                <InventoryCountingTable orders={paginatedOrders} />
+                <InventoryCountingTable 
+                    orders={paginatedOrders} 
+                    OnEditCountingClick={handleOpenEditModal}
+                    OnDeleteCountingClick={handleOpenDeleteModal}
+                />
 
                 <div className = "flex items-center justify-between mb-3">
                     <RowLimiter
@@ -223,6 +261,18 @@ function InventoryCounting() {
             <AddCountingModal
                 isOpen={isModalOpen} 
                 onClose={handleCloseModal}
+            />
+            <EditCountingModal
+                isOpen={isEditModalOpen} 
+                onClose={handleCloseEditModal}
+                initialData={selectedCounting}
+            />
+            <DeleteConfirmModal 
+                isOpen={isDeleteModalOpen}
+                onClose={() => setIsDeleteModalOpen(false)}
+                onConfirm={handleConfirmDelete}
+                itemId={itemToDelete?.warehouseID}
+                itemName={itemToDelete?.warehouse}
             />
         </div>
     );

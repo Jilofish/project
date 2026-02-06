@@ -1,7 +1,7 @@
 import React from 'react';
-import { MoreHorizontal } from 'lucide-react'; 
+import { Pencil, Trash } from 'lucide-react'; 
 
-function InventoryCountingTable({ orders }) {
+function InventoryCountingTable({ orders, OnEditCountingClick, OnDeleteCountingClick }) {
     
     const getStatusColor = (Status) => {
         switch (Status) {
@@ -52,10 +52,17 @@ function InventoryCountingTable({ orders }) {
                                 {order.status} 
                           </span>
                         </td>
-                        <td className="p-4 text-center"> 
-                          <span className="text-sm text-slate-800 dark:text-white">
-                            <MoreHorizontal className="w-4 h-4"/>
-                          </span>
+                        <td className="p-4 flex items-center justify-center space-x-3"> 
+                          <button onClick = {() => OnEditCountingClick(order)}
+                          className="text-sm text-blue-600 dark:text-blue-500">
+                            <Pencil className="w-4 h-4"/>
+                          </button>
+                          <button 
+                            onClick={() => OnDeleteCountingClick(order)}
+                            className="text-sm text-red-600 dark:text-red-500 hover:text-red-700 transition-colors"
+                          >
+                            <Trash className="w-4 h-4"/>
+                          </button>
                         </td>
                       </tr>
                     );
