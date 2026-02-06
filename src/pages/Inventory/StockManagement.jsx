@@ -23,7 +23,8 @@ function StockManagement() {
     
     const [selectedStock, setSelectedStock] = useState(null);
     const [itemToDelete, setItemToDelete] = useState(null);
-    
+    const [itemIndex, setItemIndex] = useState(null);
+
     // --- PAGINATION & SHARED STATE ---
     const [rowLimit, setRowLimit] = useState(5);
     const [currentPage, setCurrentPage] = useState(1);
@@ -74,8 +75,9 @@ function StockManagement() {
         setIsEditTransferDetailsModalOpen(true);
     };
 
-    const handleDeleteClick = (item) => {
+    const handleDeleteClick = (item, index) => {
         setItemToDelete(item);
+        setItemIndex(index + 1 + (currentPage - 1) * rowLimit);
         setIsDeleteModalOpen(true);
     };
 
@@ -172,7 +174,7 @@ function StockManagement() {
                 isOpen={isDeleteModalOpen}
                 onClose={() => setIsDeleteModalOpen(false)}
                 onConfirm={handleConfirmDelete}
-                itemName={itemToDelete ? (itemToDelete.Remarks || itemToDelete.name || "this item") : ''}
+                itemName={itemToDelete ? `Row #${itemIndex} (${itemToDelete.Remarks || itemToDelete.name || 'this item'})` : ''}
             />
         </div>
     );

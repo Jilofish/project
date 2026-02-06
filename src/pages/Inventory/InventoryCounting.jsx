@@ -63,32 +63,32 @@ function InventoryCounting() {
     const iconProps = {
         className: 'w-4 h-4 text-slate-500 dark:text-slate-500',
     };
-    // const [items,setItems]=useState([]);
-    // const fetchInventoryItem = async () =>{
-    //     try {
-    //          const res = await fetch("http://localhost:5000/api/inventory");
-    //         const data = await res.json();
-    //         setItems(data);
-    //     } catch (error) {
-    //         console.error("Failed to display items", error)
-    //     }
-    // }
-    // useEffect(()=>{
-    //     fetchInventoryItem();
-    // },[])
+    const [items,setItems]=useState([]);
+    const fetchInventoryItem = async () =>{
+        try {
+             const res = await fetch("http://localhost:5000/api/inventory");
+            const data = await res.json();
+            setItems(data);
+        } catch (error) {
+            console.error("Failed to display items", error)
+        }
+    }
+    useEffect(()=>{
+        fetchInventoryItem();
+    },[])
     // --- DYNAMIC OPTION GENERATION (Explicitly uses ALL_OPTION) ---
 
-    const extractUniqueOptions = (key, placeholder) => {
-        const uniqueValues = [...new Set(WarehouseData.map(order => order[key]))];
-        return [placeholder, ALL_OPTION, ...uniqueValues.sort()];
-    };
+    // const extractUniqueOptions = (key, placeholder) => {
+    //     const uniqueValues = [...new Set(WarehouseData.map(order => order[key]))];
+    //     return [placeholder, ALL_OPTION, ...uniqueValues.sort()];
+    // };
 
     // ------------------------------------------------------------------------------------------- //
 
-    // const extractUniqueOptions = (key, placeholder) => {
-    //     const uniqueValues = [...new Set(items.map(order => order[key]))];
-    //     return [placeholder, ALL_OPTION, ...uniqueValues.sort()];
-    // };
+    const extractUniqueOptions = (key, placeholder) => {
+        const uniqueValues = [...new Set(items.map(order => order[key]))];
+        return [placeholder, ALL_OPTION, ...uniqueValues.sort()];
+    };
 
     // ------------------------------------------------------------------------------------------- //
 
@@ -98,11 +98,6 @@ function InventoryCounting() {
     const dateRangeOptions = ['Date', ALL_OPTION, 'Today', 'Last 7 Days', 'Last 30 Days'];
     const warehouseOptions = extractUniqueOptions('warehouse', 'Warehouse');
     const statusOptions = extractUniqueOptions('status', 'Status');
-
-    // ------------------------------------------------------------------------------------------- //
-    // const warehouseOptions = extractUniqueOptions('warehouse', 'Warehouse');
-    // const statusOptions = extractUniqueOptions('wtatus', 'Status');
-    // ------------------------------------------------------------------------------------------- //
 
     // Recalibrated Placeholders
     const initialRowLimit = rowLimitOptions[0];
@@ -173,9 +168,9 @@ function InventoryCounting() {
 
     // --- FILTERING LOGIC ---
     const filteredOrders = useMemo(() => {
-        let filtered = [...WarehouseData]; // Use WarehouseData instead of items for FRONTEND MOCKUP. Switch to "items" for BACKEND IMPLEMENTATION.
+        let filtered = [...items]; // Use WarehouseData instead of items for FRONTEND MOCKUP. Switch to "items" for BACKEND IMPLEMENTATION.
         
-        // 1. Date Range Filter (Using CountingDate)
+        // 1. Date Range Filter
         if (dateRangeFilter !== initialDateRange && dateRangeFilter !== ALL_OPTION) {
             const today = new Date();
             let startDate = new Date(0); 
@@ -213,7 +208,8 @@ function InventoryCounting() {
         }
             
         return filtered;
-    }, [WarehouseData,dateRangeFilter, warehouseFilter, statusFilter, initialDateRange, initialWarehouse, initialStatus]); 
+    }, [items,dateRangeFilter, warehouseFilter, statusFilter, initialDateRange, initialWarehouse, initialStatus]); 
+    // Use WarehouseData instead of items for FRONTEND MOCKUP. Switch to "items" for BACKEND IMPLEMENTATION.
 
     // --- Pagination Logic ---
     const totalOrders = filteredOrders.length;
@@ -286,7 +282,6 @@ function InventoryCounting() {
                 isOpen={isDeleteModalOpen}
                 onClose={() => setIsDeleteModalOpen(false)}
                 onConfirm={handleConfirmDelete}
-                itemId={itemToDelete?.warehouseID}
                 itemName={itemToDelete?.warehouse}
             />
         </div>

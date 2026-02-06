@@ -187,7 +187,7 @@ function StocksTransferTable({ rowLimit, currentPage, onTotalDataChange, onAddSt
                                         <Pencil className="w-4 h-4"/>
                                     </span>
                                     <span className="text-sm text-red-800 dark:text-red-400 cursor-pointer"
-                                        onClick={() => OnDeleteCountingClick(order)}
+                                        onClick={() => OnDeleteCountingClick(order, index)}
                                     >
                                         <Trash2 className="w-4 h-4"/>
                                     </span>
