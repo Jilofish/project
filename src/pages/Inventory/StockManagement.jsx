@@ -174,7 +174,8 @@ function StockManagement() {
                 isOpen={isDeleteModalOpen}
                 onClose={() => setIsDeleteModalOpen(false)}
                 onConfirm={handleConfirmDelete}
-                itemName={itemToDelete ? `Row #${itemIndex} (${itemToDelete.Remarks || itemToDelete.name || 'this item'})` : ''}
+                // front-end mockup display
+                itemName={itemToDelete ? `${itemToDelete.id} | ${itemToDelete.Sender} | ${itemToDelete.Remarks} | ${itemToDelete.TotalQuantity} kg | ${itemToDelete.TotalValue}` : ''}
             />
         </div>
     );

@@ -129,6 +129,7 @@ function StocksTable({ rowLimit, currentPage, onTotalDataChange, onAddProductCli
         const start = (currentPage - 1) * rowLimit;
         return filteredData.slice(start, start + rowLimit);
     }, [filteredData, rowLimit, currentPage]);
+    
     const handleDeletePurchase = async (id) => {
         if (!confirm("Delete this stock?")) return;
         try {
