@@ -60,13 +60,13 @@ export const updateSalesFiles = async (req, res) => {
   }
 };
 
-export const deleteSalesInvoice = async (req, res) => {
+export const removeSalesInvoice = async (req, res) => {
   try {
-    await salesInvoiceService.deleteSalesInvoice(req.params.si);
-    res.json({ message: "Sales Invoice deleted" });
+    await salesInvoiceService.removeSalesInvoice(req.params.si);
+    res.json({ message: "Sales Invoice removed" });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ message: "Failed to delete sales invoice" });
+    res.status(500).json({ message: "Failed to remove sales invoice" });
   }
 };
 

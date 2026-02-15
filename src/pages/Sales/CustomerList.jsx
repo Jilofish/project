@@ -307,7 +307,6 @@ function CustomerList() {
         const startIndex = (currentPage - 1) * rowLimit;
         return filteredOrders.slice(startIndex, startIndex + rowLimit);
     }, [filteredOrders, rowLimit, currentPage]);
-    console.log(orders);
     return (
       <div>
           <CustomerListStatsGrid stats={stats}/>
@@ -352,6 +351,7 @@ function CustomerList() {
         <AddCustomerModal
           isOpen={isAddModalOpen} 
           onClose={() => setIsAddModalOpen(false)} 
+          onCustomerAdded={fetchCustomers}
         />
 
         <EditCustomerModal

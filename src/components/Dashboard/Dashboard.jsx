@@ -11,14 +11,14 @@ function Dashboard() {
       fetchSalesWeightChart();
       fetchSalesTable();
       getRevenueChartData();
-      getBalanceChartData();
+      getSalesPurchaseCounts();
       getInventoryStatus();
   },[]);
 
   const [salesWeightData, setSalesWeightData] = useState([]);
   const [salesTableData, setSalesTableData] = useState([]);
   const [revenueChartData, setRevenueChartData] = useState([]);
-  const [clientSupplierBalanceData, setClientSupplierBalanceData] = useState([]);
+  const [salesPurchaseCountsData, setSalesPurchaseCountsData] = useState([]);
   const [inventoryStatusData, setInventoryStatusData] = useState([]);
   const fetchSalesTable = async () => {
     try {
@@ -54,20 +54,18 @@ function Dashboard() {
       }
       const data = await res.json();
       setRevenueChartData(data);
-      console.log("Revenue Chart Data:", data);
     } catch (err) {
       console.error("Fetch failed:", err);
     }
   };
-  const getBalanceChartData = async () => {
+  const getSalesPurchaseCounts = async () => {
     try {
-      const res = await fetch('http://localhost:5000/api/dashboard/client-supplier-balance-chart');
+      const res = await fetch('http://localhost:5000/api/dashboard/sales-purchase-counts-chart');
       if (!res.ok) {
         throw new Error(`HTTP error: ${res.status}`);
       }
       const data = await res.json();
-      setClientSupplierBalanceData(data);
-      console.log("Client Supplier Balance Data:", data);
+      setSalesPurchaseCountsData(data);
     
     }
     catch (err) {
@@ -102,7 +100,7 @@ function Dashboard() {
         <div className="xl:col-span-2">
           <TableSection
           salesandweightdata={salesWeightData}
-          balanceData={clientSupplierBalanceData}
+          balanceData={salesPurchaseCountsData}
           />
         </div>
         <div>

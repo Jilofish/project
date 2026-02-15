@@ -164,7 +164,6 @@ function InventoryCounting() {
 
     const handleConfirmDelete = async () => {
         // Logic for backend deletion would go here
-        console.log("Deleting:", itemToDelete.warehouseID);
         setIsDeleteModalOpen(false);
         setItemToDelete(null);
     };

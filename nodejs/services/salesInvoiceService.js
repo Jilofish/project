@@ -13,7 +13,8 @@ export const getAllSales = async () =>{
         *)
         `
     )
-    .order("id", {ascending:false});
+    .order("id", {ascending:false})
+    .eq("transaction_status", "Active");
 
 
     if(error) throw error;
@@ -21,7 +22,6 @@ export const getAllSales = async () =>{
 }
 
 export const addSales = async (transaction) => {
-  console.log("Adding Sales Invoice:", transaction);
   const {
     customer,
     transaction_date,
@@ -105,13 +105,19 @@ export const addSales = async (transaction) => {
 export const getSalesStats = async () => {
   const { data: sales, error: ordersError } = await supabase
     .from("sales_invoice")
-    .select("id, total, payment_status, delivery_status");
+    .select("id, total, payment_status, delivery_status")
+    .eq("transaction_status","Active");
   
   if (ordersError) throw ordersError;
   // 2️⃣ Fetch quantity from line items
   const { data: items, error: itemsError } = await supabase
     .from("sales_invoice_item")
-    .select("sales_invoice_id, quantity");
+    .select(`
+      sales_invoice_id,
+      quantity,
+      sales_invoice!inner(transaction_status)
+    `)
+    .eq("sales_invoice.transaction_status", "Active");
 
   if (itemsError) throw itemsError;
   // 3️⃣ Aggregate quantities per order
@@ -147,10 +153,10 @@ export const getSalesStats = async () => {
   
 }
 
-export const deleteSalesInvoice = async (si) => {
+export const removeSalesInvoice = async (si) => {
   const { error } = await supabase
     .from("sales_invoice")
-    .delete()
+    .update({ transaction_status: "Removed" })
     .eq("si", si);
   if (error) throw error;
 };
@@ -161,6 +167,7 @@ export const updateSalesFiles = async (sales_id, fileURL) => {
     .from("sales_invoice")
     .update({ computation_img_url: fileURL.computation_url, payment_image_url: fileURL.receipt_url })
     .eq("id", sales_id)
+    .eq("transaction_status","Active")
     .select()
     .single();
 
@@ -176,6 +183,7 @@ export const updateStatus = async (id, status) => {
     .from("sales_invoice")
     .update({ approval_status: status, updated_at: new Date().toISOString() })
     .eq("id", id)
+    .eq("transaction_status","Active")
     .select()
     .single();
 

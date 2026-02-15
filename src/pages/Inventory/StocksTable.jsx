@@ -27,95 +27,98 @@ function StocksTable({ rowLimit, currentPage, onTotalDataChange, onAddProductCli
     const [warehouseFilter, setWarehouseFilter] = useState('warehouse');
     const [statusFilter, setStatusFilter] = useState('status');
     
-    // const [items, setItems] =useState([]);
+    const [items, setItems] =useState([]);
     
-    // const fetchItems = async () => {
-    //     try {
-    //         const res = await fetch("http://localhost:5000/api/stock");
-    //         const data = await res.json();
+    const fetchItems = async () => {
+        try {
+            const res = await fetch("http://localhost:5000/api/stock");
+            const data = await res.json();
 
-    //         const normalized = data.map(item => ({
-    //         id: item.id,
-    //         item_name: item.item_name,
-    //         quantity: item.quantity,
-    //         threshold_count: item.threshold_count,
-    //         suggested_retail_price: item.suggested_retail_price,
-    //         status: item.status,
-    //         item_code: item.item_code,
+            const normalized = data.map(item => ({
+            id: item.id,
+            item_name: item.item_name,
+            quantity: item.quantity,
+            threshold_count: item.threshold_count,
+            suggested_retail_price: item.suggested_retail_price,
+            selling_price:item.selling_price,
+            status: item.status,
+            item_code: item.item_code,
 
-    //         // flatten warehouse
-    //         warehouse_id: item.warehouse?.id ?? null,
-    //         warehouse_name: item.warehouse?.whouse_name ?? "—",
-    //         warehouse_address: item.warehouse?.whouse_address ?? "—",
+            // flatten warehouse
+            warehouse_id: item.warehouse?.id ?? null,
+            warehouse_name: item.warehouse?.whouse_name ?? "—",
+            warehouse_address: item.warehouse?.whouse_address ?? "—",
 
-    //         // keep relations if needed
-    //         purchased_order_item: item.purchased_order_item ?? []
-    //         }));
+            // keep relations if needed
+            purchased_order_item: item.purchased_order_item ?? []
+            }));
 
-    //         setItems(normalized);
-    //     } catch (err) {
-    //         console.error("Failed to fetch received items", err);
-    //     }
-    //     };
+            setItems(normalized);
+        } catch (err) {
+            console.error("Failed to fetch received items", err);
+        }
+        };
 
     
-    //   useEffect(() => {
-    // if (!onAddProductClose) {
-    //     fetchItems();
-    // }
-    // }, [onAddProductClose]);
+    useEffect(() => {
+        if (!onAddProductClose) {
+            fetchItems();
+        }
+    }, [onAddProductClose]);
+
+    console.log("Items",items);
     // 1. Extract Options (Strings only to match your CustomSelect components)
 
     // ------------------------------------------------------------------------------------------- //
 
         // uncomment this for the backend data fetching above to work
 
-        // const warehouseOptions = useMemo(() => {
-        //     const unique = [...new Set(items.map(item => item.warehouse))];
-        //     return ['warehouse', ALL_OPTION, ...unique.sort()];
-        // }, []);
+        const warehouseOptions = useMemo(() => {
+            const unique = [...new Set(items.map(item => item.warehouse))];
+            return ['warehouse', ALL_OPTION, ...unique.sort()];
+        }, []);
 
     // ------------------------------------------------------------------------------------------- //
 
     //comment this for the backend data fetching above to work
-    const warehouseOptions = useMemo(() => {
-        const unique = [...new Set(StocksData.map(item => item.warehouse))];
-        return ['warehouse', ALL_OPTION, ...unique.sort()];
-    }, []);
+    // const warehouseOptions = useMemo(() => {
+    //     const unique = [...new Set(StocksData.map(item => item.warehouse))];
+    //     return ['warehouse', ALL_OPTION, ...unique.sort()];
+    // }, []);
 
-    const statusOptions = useMemo(() => {
-        const unique = [...new Set(StocksData.map(item => item.status))];
-        return ['status', ALL_OPTION, ...unique.sort()];
-    }, []);
+    // const statusOptions = useMemo(() => {
+    //     const unique = [...new Set(StocksData.map(item => item.status))];
+    //     return ['status', ALL_OPTION, ...unique.sort()];
+    // }, []);
 
 // ------------------------------------------------------------------------------------------- //
     // uncomment this for the backend data fetching above to work
 
-    // const statusOptions = useMemo(() => {
-    //     const unique = [...new Set(items.map(item => item.status))];
-    //     return ['status', ALL_OPTION, ...unique.sort()];
-    // }, []);
+    const statusOptions = useMemo(() => {
+        const unique = [...new Set(items.map(item => item.status))];
+        return ['status', ALL_OPTION, ...unique.sort()];
+    }, []);
 // ------------------------------------------------------------------------------------------- //
 
     // 2. Filter Logic
-    const filteredData = useMemo(() => {
-        return StocksData.filter(item => {
-            const matchW = warehouseFilter === 'warehouse' || warehouseFilter === ALL_OPTION || item.warehouse === warehouseFilter;
-            const matchS = statusFilter === 'status' || statusFilter === ALL_OPTION || item.status === statusFilter;
-            return matchW && matchS;
-        });
-    }, [StocksData,warehouseFilter, statusFilter]);
+    // const filteredData = useMemo(() => {
+    //     return StocksData.filter(item => {
+    //         const matchW = warehouseFilter === 'warehouse' || warehouseFilter === ALL_OPTION || item.warehouse === warehouseFilter;
+    //         const matchS = statusFilter === 'status' || statusFilter === ALL_OPTION || item.status === statusFilter;
+    //         return matchW && matchS;
+    //     });
+    // }, [StocksData,warehouseFilter, statusFilter]);
 
     // ------------------------------------------------------------------------------------------- //
     // THIS IS FOR THE BACKEND DATA FETCHING
 
-    // const filteredData = useMemo(() => {
-    //     return items.filter(item => {
-    //         const matchW = warehouseFilter === 'warehouse' || warehouseFilter === ALL_OPTION || item.warehouse_name === warehouseFilter;
-    //         const matchS = statusFilter === 'status' || statusFilter === ALL_OPTION || item.status === statusFilter;
-    //         return matchW && matchS;
-    //     });
-    // }, [items,warehouseFilter, statusFilter]);
+    const filteredData = useMemo(() => {
+        return items.filter(item => {
+            const matchW = warehouseFilter === 'warehouse' || warehouseFilter === ALL_OPTION || item.warehouse_name === warehouseFilter;
+            const matchS = statusFilter === 'status' || statusFilter === ALL_OPTION || item.status === statusFilter;
+            return matchW && matchS;
+        });
+    }, [items,warehouseFilter, statusFilter]);
 
     // ------------------------------------------------------------------------------------------- //
 
@@ -195,12 +198,13 @@ function StocksTable({ rowLimit, currentPage, onTotalDataChange, onAddProductCli
                         <th className="p-4 text-sm font-semibold text-slate-600 dark:text-slate-200 text-center">Item Code</th>
                         <th className="p-4 text-sm font-semibold text-slate-600 dark:text-slate-200 text-center">Qty (KG)</th>
                         <th className="p-4 text-sm font-semibold text-slate-600 dark:text-slate-200 text-center">Unit Price</th>
+                        <th className="p-4 text-sm font-semibold text-slate-600 dark:text-slate-200 text-center">Selling Price</th>
                         <th className="p-4 text-sm font-semibold text-slate-600 dark:text-slate-200 text-center">Total Value</th>
                         <th className="p-4 text-sm font-semibold text-slate-600 dark:text-slate-200 text-center">Status</th>
                         <th className="p-4 text-sm font-semibold text-slate-600 dark:text-slate-200">Actions</th>
                     </tr>
                 </thead>
-                {/* <tbody>
+                 <tbody>
                     {paginatedData.length > 0 ? (
                         paginatedData.map((item, index) => (
                             <tr key={`${item.id}`} className="border-b border-slate-200/50 dark:border-slate-700/50 hover:bg-slate-50/50 dark:hover:bg-slate-800/50 transition-colors">
@@ -209,6 +213,7 @@ function StocksTable({ rowLimit, currentPage, onTotalDataChange, onAddProductCli
                                 <td className="p-4 text-sm text-center text-slate-800 dark:text-white">{item.item_code}</td>
                                 <td className="p-4 text-sm text-center text-slate-800 dark:text-white">{item.quantity}</td>
                                 <td className="p-4 text-sm text-center text-slate-800 dark:text-white">{item.suggested_retail_price}</td>
+                                <td className="p-4 text-sm text-center text-slate-800 dark:text-white">{item.selling_price}</td>
                                 <td className="p-4 text-sm text-center text-slate-800 dark:text-white">{item.quantity * item.suggested_retail_price}</td>
 
                                 <td className="p-4 text-center">
@@ -235,9 +240,9 @@ function StocksTable({ rowLimit, currentPage, onTotalDataChange, onAddProductCli
                             </td>
                         </tr>
                     )}
-                </tbody> */}
+                </tbody>
 
-                <tbody>
+                {/* <tbody>
                     {paginatedData.length > 0 ? (
                         paginatedData.map((item, index) => (
                             <tr key={`${item.id}`} className="border-b border-slate-200/50 dark:border-slate-700/50 hover:bg-slate-50/50 dark:hover:bg-slate-800/50 transition-colors">
@@ -275,7 +280,7 @@ function StocksTable({ rowLimit, currentPage, onTotalDataChange, onAddProductCli
                             </td>
                         </tr>
                     )}
-                </tbody>
+                </tbody> */}
             </table>
         </div>
     );

@@ -282,12 +282,12 @@ function CreatePurchase() {
     
 
     const handleDeletePurchase = async (po) => {
-    if (!confirm("Delete this purchase?")) return;
+    if (!confirm("Remove this transaction?")) return;
 
     try {
         const res = await fetch(
-        `http://localhost:5000/api/purchasing/${po}`,
-        { method: "DELETE" }
+        `http://localhost:5000/api/purchasing/remove/${po}`,
+        { method: "POST" }
         );
 
         if (!res.ok) throw new Error("Delete failed");

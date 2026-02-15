@@ -64,7 +64,6 @@ function EditStockTransferDetailsModal({ isOpen, onClose, itemOptions, initialDa
     
     const handleFormSubmit = (e) => {
         e.preventDefault();
-        console.log("Submitting updated transfer:", { ...formValues, items: shipmentItems });
         onClose();
     };
 

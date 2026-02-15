@@ -316,7 +316,6 @@ function CreateSalesInvoice() {
     const [paymentStatusFilter, setPaymentStatusFilter] = useState(initialPaymentStatus);
     const [approvalStatusFilter, setApprovalStatusFilter] = useState(initialApprovalStatus); // NEW STATE
     const [currentPage, setCurrentPage] = useState(1);
-    console.log("Orders:", orders);
     // --- HANDLER FUNCTIONS ---
     const handleRowLimitChange = (newValue) => {
       setRowLimit(parseInt(newValue));
@@ -370,19 +369,19 @@ function CreateSalesInvoice() {
     fetchStats();
     };
     const handleDeleteSalesInvoice = async (si) => {
-      if (!confirm("Delete this sale invoice?")) return;
+      if (!confirm("Remove this sale invoice?")) return;
       try {
-        const response = await fetch(`http://localhost:5000/api/sales-invoice/${si}`, {
-          method: 'DELETE',
+        const response = await fetch(`http://localhost:5000/api/sales-invoice/remove/${si}`, {
+          method: 'POST',
         });
-        if (!response.ok) throw new Error("Delete failed");
+        if (!response.ok) throw new Error("Remove failed");
 
         fetchStats();
         fetchInvoice();
         fetchCustomers();
         fetchBrands();
       } catch (error) {
-        console.error('Failed to delete sales invoice:', error);
+        console.error('Failed to remove sales invoice:', error);
       }
     };
     // --- FILTERING LOGIC ---
