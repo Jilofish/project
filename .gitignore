@@ -24,3 +24,6 @@ dist-ssr
 *.sw?
 .env*
 database/*.sql
+nodejs/uploads/computation-images/*
+nodejs/uploads/proof-of-payment-images/*
+nodejs/uploads/purchase-receipts/*
