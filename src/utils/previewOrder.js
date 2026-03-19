@@ -1,33 +1,33 @@
-import { supabase } from "../config/supabaseClient";
-
 export const fetchPoPreview = async (transactionDate) => {
   if (!transactionDate) return "";
 
-  const { data, error } = await supabase.rpc(
-    "preview_po_number",
-    { p_transaction_date: transactionDate }
-  );
+  try {
+    const res = await fetch(
+      `http://localhost:5000/api/preview/po?transaction_date=${transactionDate}`
+    );
 
-  if (error) {
-    console.error("PO preview error:", error);
+    if (!res.ok) throw new Error("Failed to fetch");
+
+    return await res.json();
+  } catch (err) {
+    console.error("PO preview error:", err);
     return "";
   }
-
-  return data;
 };
 
 export const fetchSIPreview = async (transactionDate) => {
   if (!transactionDate) return "";
 
-  const { data, error } = await supabase.rpc(
-    "preview_si_number",
-    { p_transaction_date: transactionDate }
-  );
+  try {
+    const res = await fetch(
+      `http://localhost:5000/api/preview/si?transaction_date=${transactionDate}`
+    );
 
-  if (error) {
-    console.error("SI preview error:", error);
+    if (!res.ok) throw new Error("Failed to fetch");
+
+    return await res.json();
+  } catch (err) {
+    console.error("SI preview error:", err);
     return "";
   }
-
-  return data;
 };

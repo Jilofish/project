@@ -15,7 +15,6 @@ function InventoryCountingTable({ orders, OnEditCountingClick, OnDeleteCountingC
               return "bg-slate-100 text-slate-700 dark:bg-slate-900/30 dark:text-slate-400";
         }
     };
-
     return (
         <div className="overflow-x-auto pb-6 mt-4">
           <table className="w-full">
@@ -24,6 +23,7 @@ function InventoryCountingTable({ orders, OnEditCountingClick, OnDeleteCountingC
                     <th className="text-left p-4 text-sm font-semibold text-slate-600 dark:text-slate-200">Warehouse</th>
                     <th className="text-left p-4 text-sm font-semibold text-slate-600 dark:text-slate-200">Remarks</th> 
                     <th className="text-left p-4 text-sm font-semibold text-slate-600 dark:text-slate-200">Counting Date</th>
+                    <th className="text-left p-4 text-sm font-semibold text-slate-600 dark:text-slate-200">Total Kilos</th>
                     <th className="text-center p-4 text-sm font-semibold text-slate-600 dark:text-slate-200">Status</th>
                     <th className="text-center p-4 text-sm font-semibold text-slate-600 dark:text-slate-200">Actions</th>
                 </tr>
@@ -43,6 +43,11 @@ function InventoryCountingTable({ orders, OnEditCountingClick, OnDeleteCountingC
                           </span>
                         </td>
                         <td className="p-4">
+                          <span className="text-sm text-slate-800 dark:text-white">
+                                {order.count_date}
+                          </span>
+                        </td>
+                         <td className="p-4">
                           <span className="text-sm text-slate-800 dark:text-white">
                                 {order.count_date}
                           </span>

@@ -1,95 +1,117 @@
-import { supabase } from "../config/supabaseClient.js";
-
-
+import pool from "../config/connection.js";
+/* ============================================================
+   GET ALL STOCK ITEMS
+============================================================ */
 export const getAllStockItems = async () => {
-    const { data, error } = await supabase
-    .from('items')
-    .select(`
-        id,
-        item_name,
-        quantity,
-        threshold_count,
-        suggested_retail_price,
-        selling_price,
-        status,
-        item_code,
-        warehouse(
-        id,
-        whouse_name,
-        whouse_address
-        ),
-        purchased_order_item(
-        *,
-            purchased_order(
-            *
-            )
-        )
-    `);
-    if (error) throw error;
-    return data;
-}
+  const query = `
+    SELECT 
+      i.id,
+      i.item_name,
+      i.quantity,
+      i.threshold_count,
+      i.suggested_retail_price,
+      i.selling_price,
+      i.status,
+      i.item_code,
+      w.id AS warehouse_id,
+      w.whouse_name,
+      w.whouse_address
+    FROM items i
+    LEFT JOIN warehouse w ON i.whouse_id = w.id
+  `;
+
+  const { rows } = await pool.query(query);
+
+  return rows;
+};
+
+/* ============================================================
+   CREATE STOCK ITEM
+============================================================ */
 export const createStockItem = async (stock) => {
-    const {data, error} = await supabase
-        .from("items")
-        .insert([{
-            item_name:stock.name,
-            quantity:stock.quantity,
-            suggested_retail_price:stock.price,
-            item_code:"FLD_FR_TST",
-            quantity:1,
-            whouse_id:stock.warehouse_id,
-            threshold_count:stock.threshold_count,
-            status:"In Stock"
-        }])
-        .select()
-        .single();
-    if(!data) throw error;
-    return data;
+  console.log("Creating stock item with data:", stock);
+  if (!stock?.name) throw new Error("Item name is required.");
+
+  const query = `
+    INSERT INTO items (
+      item_name,
+      quantity,
+      suggested_retail_price,
+      item_code,
+      whouse_id,
+      threshold_count,
+      status,
+      item_type,
+      selling_price
+    )
+    VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+    RETURNING *
+  `;
+
+  const values = [
+    stock.name,
+    Number(stock.quantity) || 0,
+    Number(stock.price) || 0,
+    stock.item_code ?? "ITM-" + String(stock.id).padStart(3, "0"),
+    stock.warehouse_id,
+    Number(stock.threshold_count) || 0,
+    "In Stock",
+    stock.item_type,
+    Number(stock.price) || 0
+  ];
+
+  const { rows } = await pool.query(query, values);
+  console.log("Inserted stock item:", rows[0]);
+  return rows[0];
 };
 
+
+/* ============================================================
+   DELETE STOCK ITEM
+============================================================ */
 export const deleteStockItem = async (id) => {
-  const { error } = await supabase
-    .from("items")
-    .delete()
-    .eq("id", id);
-  if (error) throw error;
+  const query = `DELETE FROM items WHERE id = $1`;
+  await pool.query(query, [id]);
 };
 
-export const getStockStats = async() =>{
+/* ============================================================
+   STOCK STATS (Optimized for SQL)
+============================================================ */
+export const getStockStats = async () => {
 
-    const { data: totalItems, error: countError } = await supabase
-        .from("items")
-        .select("*", {count:"exact"});
-    if (countError) throw countError;
-    const totalProduct = totalItems.length;
-    const { data: totalQuantity, error: stockError } = await supabase
-        .from("items")
-        .select("quantity");
-    if (stockError) throw stockError;
+  /* 1️⃣ Total Products */
+  const totalProductQuery = `
+    SELECT COUNT(*) FROM items
+  `;
+  const totalProductResult = await pool.query(totalProductQuery);
+  const totalProduct = Number(totalProductResult.rows[0].count);
 
-    const totalStock = totalQuantity.reduce(
-        (sum, row) => sum + Number(row.quantity || 0),
-        0
-    );
+  /* 2️⃣ Total Stock Quantity */
+  const totalStockQuery = `
+    SELECT COALESCE(SUM(quantity), 0) AS total FROM items
+  `;
+  const totalStockResult = await pool.query(totalStockQuery);
+  const totalStock = Number(totalStockResult.rows[0].total);
 
-    const { data: totalCost, error: costError } = await supabase
-        .from("purchased_order_item")
-        .select("line_total");
-    if (costError) throw costError;
-    const totalVal = totalCost.reduce(
-        (sum, row) => sum + Number(row.line_total || 0),
-        0
-    );
-    const { data: totalCritical, error: CritError } = await supabase
-        .from("items")
-        .select("*", {count:"exact"})
-        .eq("status","Critical Stock");
-    if (CritError) throw CritError;
-    const totalCritStock = totalCritical.length;
-    return {
-        totalProduct,
-        totalStock,
-        totalVal,
-        totalCritStock
-    };
-}
+  /* 3️⃣ Total Inventory Value (Purchase Cost) */
+  const totalValQuery = `
+    SELECT COALESCE(SUM(line_total), 0) AS total 
+    FROM purchased_order_item
+  `;
+  const totalValResult = await pool.query(totalValQuery);
+  const totalVal = Number(totalValResult.rows[0].total);
+
+  /* 4️⃣ Critical Stock Count */
+  const totalCritStockQuery = `
+    SELECT COUNT(*) FROM items WHERE status = 'Critical Stock'
+  `;
+  const totalCritStockResult = await pool.query(totalCritStockQuery);
+  const totalCritStock = Number(totalCritStockResult.rows[0].count);
+
+  return {
+    totalProduct,
+    totalStock,
+    totalVal,
+    totalCritStock
+  };
+};

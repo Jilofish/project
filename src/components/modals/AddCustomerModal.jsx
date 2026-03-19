@@ -140,6 +140,7 @@ function AddCustomerModal({ isOpen, onClose, onCustomerAdded }) {
                                 placeholder="0900xxxxxxx"
                                 inputMode="numeric"   // 📱 mobile numeric keypad
                                 className="w-full mt-1 px-3 py-1.5 rounded-md border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 shadow-xs focus:outline-none focus:border-blue-500 dark:focus:border-blue-500 text-slate-700 dark:text-slate-200"
+                                required
                             />
                         </div>
                         

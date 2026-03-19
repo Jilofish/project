@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import StockStatsGrid from './StockStatsGrid';
 import StocksTable from './StocksTable';
 import StocksTransferTable from './StocksTransferTable';
+import ItemTypeTransferTable from './ItemTypeTransferTable';
 import RowLimiter from '../../components/filter/RowLimiter';
 import TablePagination from '../../components/pagination/TablePagination';
 import AddProductModal from '../../components/modals/AddProductModal';
@@ -32,7 +33,7 @@ function StockManagement() {
 
     const totalPages = Math.ceil(totalItems / rowLimit);
     const iconProps = { className: 'w-4 h-4 text-slate-500 dark:text-slate-500' };
-
+    
     const fetchStats = async () => {
         try {
             const res = await fetch("http://localhost:5000/api/stock/stats");
@@ -135,6 +136,11 @@ function StockManagement() {
                                     Stocks Transfer
                                 </button>
                             </li>
+                             <li className="me-2">
+                                <button onClick={() => handleTabClick('commisary')} className={getTabClasses('commisary')} type="button">
+                                    Commisary and Trading Transfer
+                                </button>
+                            </li>
                         </ul>
                     </div>
 
@@ -156,6 +162,19 @@ function StockManagement() {
                         {activeTab === 'dashboard' && (
                             <div id="dashboard">
                                 <StocksTransferTable 
+                                    rowLimit={rowLimit}
+                                    currentPage={currentPage}
+                                    onTotalDataChange={handleDataChange}
+                                    onAddStockTransferClick={() => setIsAddTransferModalOpen(true)}
+                                    iconProps={iconProps}
+                                    onEditStockTransferClick={handleEditTransferModalClick}
+                                    OnDeleteCountingClick={handleDeleteClick} 
+                                />
+                            </div>
+                        )}
+                         {activeTab === 'commisary' && (
+                            <div id="commisary">
+                                <ItemTypeTransferTable 
                                     rowLimit={rowLimit}
                                     currentPage={currentPage}
                                     onTotalDataChange={handleDataChange}

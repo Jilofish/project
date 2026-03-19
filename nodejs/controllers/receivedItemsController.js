@@ -78,16 +78,11 @@ export const bulkSaveItems = async (req, res) => {
 export const deliverPurchasedOrder = async (req, res) => {
   try {
     const { id } = req.params;
-
-    console.log('Deliver request for PO ID:', id);
-
     const updatedOrder = await receivedItemsService.markAsDelivered(id);
 
-    console.log('Updated Order:', updatedOrder);
 
     return res.status(200).json(updatedOrder);
   } catch (error) {
-    console.error('Controller Error:', error);
     return res.status(500).json({
       message: error.message,
       error: error

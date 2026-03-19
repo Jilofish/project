@@ -29,7 +29,6 @@ export const updateCustomer = async(req ,res)=> {
         }
         res.json(data[0]);
     } catch (error) {
-        console.log(error);
         res.status(500).json({message:"Failed to update customers"})
     }
 }

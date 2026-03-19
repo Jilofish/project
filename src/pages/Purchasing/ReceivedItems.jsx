@@ -202,8 +202,7 @@ function ReceivedItems() {
         expected_quantity: item.expected_quantity,
         quantity: item.quantity,
         remarks: item.purchased_order.remarks,
-      }));
-
+        }));
       setItems(normalized);
     } catch (err) {
       console.error("Failed to fetch received items", err);
@@ -212,7 +211,6 @@ function ReceivedItems() {
 
   useEffect(() => {
     if (!isEditModalOpen) {
-      console.log("The modal is refreshed");
       fetchItems();
       fetchStats();
     }

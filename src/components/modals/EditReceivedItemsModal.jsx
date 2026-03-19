@@ -58,14 +58,11 @@ function EditReceivedItemsModal({ isOpen, onClose, itemData, onSave }) {
             console.error('Backend error response:', data);
             throw new Error(data.message || 'Failed to deliver');
             }
-
-            console.log('Success:', data);
             onClose();
         } catch (err) {
             console.error('Deliver error:', err);
         }
     };
-    console.log("FormData", formData);
     return (
         <div className="fixed inset-0 bg-black/50 dark:bg-black/70 z-[60] flex items-center justify-center">
             <div

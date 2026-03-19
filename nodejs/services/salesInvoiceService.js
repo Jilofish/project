@@ -1,26 +1,49 @@
-import { supabase } from "../config/supabaseClient.js";
-import {getDeliveryHistoryCore, updateDeliveryStatusCore} from "./deliveryStatusService.js";
-import {applyPaymentCore, getPaymentHistoryCore} from "./paymentHistoryService.js";
+import pool from "../config/connection.js";
+import {
+  getDeliveryHistoryCore,
+  updateDeliveryStatusCore
+} from "./deliveryStatusService.js";
+import {
+  applyPaymentCore,
+  getPaymentHistoryCore
+} from "./paymentHistoryService.js";
+/* ============================================================
+   GET ALL SALES
+============================================================ */
+export const getAllSales = async () => {
 
-export const getAllSales = async () =>{
-    const {data, error} = await supabase
-    .from("sales_invoice")
-    .select(
-        `*,
-        customer(
-        *),
-        sales_invoice_item(
-        *)
-        `
-    )
-    .order("id", {ascending:false})
-    .eq("transaction_status", "Active");
+  const query = `
+    SELECT 
+      si.*,
+      row_to_json(c) AS customer,
+      COALESCE(
+        json_agg(sii.*) FILTER (WHERE sii.id IS NOT NULL),
+        '[]'
+      ) AS sales_invoice_item
+    FROM sales_invoice si
+    LEFT JOIN customer c ON c.id = si.cust_id   -- ✅ FIXED HERE
+    LEFT JOIN sales_invoice_item sii 
+      ON sii.sales_invoice_id = si.id
+    WHERE si.transaction_status = 'Active'
+    GROUP BY si.id, c.id
+    ORDER BY si.id DESC
+  `;
 
+  try {
+    const { rows } = await pool.query(query);
+    return rows;
 
-    if(error) throw error;
-    return data;
-}
-
+  } catch (error) {
+    console.error("❌ getAllSales ERROR:");
+    console.error("Message:", error.message);
+    console.error("Detail:", error.detail);
+    console.error("Stack:", error.stack);
+    throw error;
+  }
+};
+/* ============================================================
+   ADD SALES (Authoritative Totals + RPC)
+============================================================ */
 export const addSales = async (transaction) => {
   const {
     customer,
@@ -64,135 +87,147 @@ export const addSales = async (transaction) => {
   );
 
   /*
-   * STEP 2: CALL RPC (DB DOES THE REST)
+   * STEP 2: CALL FUNCTION USING POOL
    */
-  const { data: sales, error } = await supabase.rpc(
-    "create_sales_invoice",
-    {
-      s_cust_id: customer,
-      s_transaction_date: transaction_date,
-      s_merchandise_subtotal: merchandiseSubtotal,
-      s_shipping_subtotal: shippingSubtotal,
-      s_discount_subtotal: discountSubtotal,
-      s_total: totalPayment,
-      s_approval_status: approval_status,
-      s_delivery_status: delivery_status,
-      s_payment_status: payment_status,
-      s_items: preparedItems
-    }
-  );
+  const query = `
+    SELECT *
+    FROM public.create_sales_invoice(
+      $1, $2, $3, $4, $5, $6, $7, $8, $9, $10
+    );
+  `;
 
-  if (error) {
+  const values = [
+    customer,
+    transaction_date,
+    merchandiseSubtotal,
+    shippingSubtotal,
+    discountSubtotal,
+    totalPayment,
+    approval_status,
+    delivery_status,
+    payment_status,
+    JSON.stringify(preparedItems) // IMPORTANT: send as jsonb
+  ];
+
+  try {
+    const { rows } = await pool.query(query, values);
+
+    const sales = rows[0]; // since RETURNS sales_invoice
+
+    return {
+      ...sales,
+      items: preparedItems,
+      payment_totals: {
+        merchandiseSubtotal,
+        shippingSubtotal,
+        discountSubtotal,
+        totalPayment
+      }
+    };
+
+  } catch (error) {
     console.error("Create Sales Invoice failed:", error);
     throw error;
   }
-
-  /*
-   * STEP 3: RETURN CLEAN RESPONSE
-   */
-  return {
-    ...sales,
-    items: preparedItems,
-    payment_totals: {
-      merchandiseSubtotal,
-      shippingSubtotal,
-      discountSubtotal,
-      totalPayment
-    }
-  };
 };
 
+/* ============================================================
+   SALES STATS
+============================================================ */
 export const getSalesStats = async () => {
-  const { data: sales, error: ordersError } = await supabase
-    .from("sales_invoice")
-    .select("id, total, payment_status, delivery_status")
-    .eq("transaction_status","Active");
-  
-  if (ordersError) throw ordersError;
-  // 2️⃣ Fetch quantity from line items
-  const { data: items, error: itemsError } = await supabase
-    .from("sales_invoice_item")
-    .select(`
-      sales_invoice_id,
-      quantity,
-      sales_invoice!inner(transaction_status)
-    `)
-    .eq("sales_invoice.transaction_status", "Active");
+  const totalsQuery = `
+    SELECT 
+      COALESCE(SUM(total),0) AS total_purchased,
+      COUNT(*) FILTER (WHERE delivery_status = 'Delivered') 
+        AS total_deliveries,
+      COALESCE(
+        SUM(total) FILTER (WHERE payment_status = 'Paid'),
+        0
+      ) AS total_paid
+    FROM sales_invoice
+    WHERE transaction_status = 'Active'
+  `;
 
-  if (itemsError) throw itemsError;
-  // 3️⃣ Aggregate quantities per order
-  const quantityByOrder = items.reduce((acc, item) => {
-    acc[item.sales_invoice_id] =
-      (acc[item.sales_invoice_id] || 0) + item.quantity;
-    return acc;
-  }, {});
-  // 4️⃣ Final calculations
-  const totalPurchased = sales.reduce(
-    (sum, s) => sum + Number(s.total || 0),
-    0
-  );
+  const quantityQuery = `
+    SELECT COALESCE(SUM(sii.quantity),0) AS total_quantity
+    FROM sales_invoice_item sii
+    JOIN sales_invoice si
+      ON si.id = sii.sales_invoice_id
+    WHERE si.transaction_status = 'Active'
+  `;
 
-  const totalQuantity = Object.values(quantityByOrder).reduce(
-    (sum, q) => sum + q,
-    0
-  );
+  const totalsRes = await pool.query(totalsQuery);
+  const quantityRes = await pool.query(quantityQuery);
 
-  const totalPaid = sales
-    .filter(s => s.payment_status === "Paid")
-    .reduce((sum, s) => sum + Number(s.total || 0), 0);
-
-  const totalDeliveries = sales.filter(
-    s => s.delivery_status === "Delivered"
-  ).length;
   return {
-    totalPurchased,
-    totalQuantity,
-    totalPaid,
-    totalDeliveries
+    totalPurchased: Number(totalsRes.rows[0].total_purchased),
+    totalQuantity: Number(quantityRes.rows[0].total_quantity),
+    totalPaid: Number(totalsRes.rows[0].total_paid),
+    totalDeliveries: Number(totalsRes.rows[0].total_deliveries)
   };
-  
-}
-
-export const removeSalesInvoice = async (si) => {
-  const { error } = await supabase
-    .from("sales_invoice")
-    .update({ transaction_status: "Removed" })
-    .eq("si", si);
-  if (error) throw error;
 };
 
 
-export const updateSalesFiles = async (sales_id, fileURL) => {
-  const { data, error } = await supabase
-    .from("sales_invoice")
-    .update({ computation_img_url: fileURL.computation_url, payment_image_url: fileURL.receipt_url })
-    .eq("id", sales_id)
-    .eq("transaction_status","Active")
-    .select()
-    .single();
+/* ============================================================
+   SOFT DELETE SALES
+============================================================ */
+export const removeSalesInvoice = async (id) => {
+  const query = `
+    UPDATE sales_invoice
+    SET transaction_status = 'Removed',
+        updated_at = NOW()
+    WHERE si = $1
+  `;
 
-  if (error) {
-    throw error;
-  }
-
-  return data;
+  await pool.query(query, [id]);
 };
 
+/* ============================================================
+   FILE UPLOAD UPDATE
+============================================================ */
+export const updateSalesFiles = async (salesId, fileURL) => {
+  const query = `
+    UPDATE sales_invoice
+    SET 
+      computation_img_url = $1,
+      payment_image_url = $2,
+      updated_at = NOW()
+    WHERE id = $3
+      AND transaction_status = 'Active'
+    RETURNING *
+  `;
+
+  const values = [
+    fileURL?.computation_url ?? null,
+    fileURL?.receipt_url ?? null,
+    salesId
+  ];
+
+  const { rows } = await pool.query(query, values);
+  return rows[0];
+};
+
+
+/* ============================================================
+   APPROVAL STATUS UPDATE
+============================================================ */
 export const updateStatus = async (id, status) => {
-  const { data, error } = await supabase
-    .from("sales_invoice")
-    .update({ approval_status: status, updated_at: new Date().toISOString() })
-    .eq("id", id)
-    .eq("transaction_status","Active")
-    .select()
-    .single();
+  const query = `
+    UPDATE sales_invoice
+    SET approval_status = $1,
+        updated_at = NOW()
+    WHERE id = $2
+      AND transaction_status = 'Active'
+    RETURNING *
+  `;
 
-  if (error) {
-    throw error;
-  }
-  return data;
+  const { rows } = await pool.query(query, [status, id]);
+  return rows[0];
 };
 
+/* ============================================================
+   DELIVERY HISTORY
+============================================================ */
 export const displayDeliveryHistory = async (siId) => {
   return getDeliveryHistoryCore("SI", siId);
 };
@@ -207,20 +242,38 @@ export const updateDeliveryStatus = async (
     sourceType: "SI",
     sourceId: siId,
     deliveryStatus,
-    remark: remarks,
+    remark: remarks
   });
 };
 
-export const updatePaymentHistory = async (siId, paymentdata) => {
+
+/* ============================================================
+   PAYMENT HISTORY
+============================================================ */
+export const updatePaymentHistory = async (siId, paymentData) => {
   return applyPaymentCore({
     table: "sales_invoice",
     sourceType: "SI",
     sourceId: siId,
-    paymentMethod: paymentdata.paymentMethod,
-    amount: Number(paymentdata.amountPay),
+    paymentMethod: paymentData.paymentMethod,
+    amount: Number(paymentData.amountPay) || 0
   });
 };
 
 export const getPaymentHistory = async (siId) => {
   return getPaymentHistoryCore("SI", siId);
+};
+
+export const updateProofOfPayment = async (id, receiptUrl) => {
+  await pool.query(
+    `UPDATE sales_invoice SET payment_image_url = $1 WHERE id = $2`,
+    [receiptUrl, id]
+  );
+};
+
+export const updateComputation = async (id, computationUrl) => {
+  await pool.query(
+    `UPDATE sales_invoice SET computation_img_url = $1 WHERE id = $2`,
+    [computationUrl, id]
+  );
 };

@@ -1,22 +1,32 @@
-import { supabase } from "../config/supabaseClient.js";
+import pool from "../config/connection.js";
 
+/* =======================================================
+   GET DELIVERY HISTORY
+======================================================= */
 export const getDeliveryHistoryCore = async (sourceType, sourceId) => {
-  const { data, error } = await supabase
-    .from("delivery_status_history")
-    .select(`
-      id,
-      delivery_status,
-      remarks,
-      created_at
-    `)
-    .eq("source_type", sourceType)
-    .eq("source_id", sourceId)
-    .order("created_at", { ascending: false });
+  try {
+    const result = await pool.query(
+      `
+      SELECT id, delivery_status, remarks, created_at
+      FROM delivery_status_history
+      WHERE source_type = $1
+        AND source_id = $2
+      ORDER BY created_at DESC
+      `,
+      [sourceType, sourceId]
+    );
 
-  if (error) throw error;
-  return data;
+    return result.rows;
+
+  } catch (error) {
+    console.error("❌ getDeliveryHistoryCore:", error.message);
+    throw error;
+  }
 };
 
+/* =======================================================
+   UPDATE DELIVERY STATUS
+======================================================= */
 export const updateDeliveryStatusCore = async ({
   table,
   sourceType,
@@ -24,30 +34,52 @@ export const updateDeliveryStatusCore = async ({
   deliveryStatus,
   remark,
 }) => {
-  // 1️⃣ Update current status (authoritative)
-  const { error: updateError } = await supabase
-    .from(table)
-    .update({
-      delivery_status: deliveryStatus,
-      updated_at: new Date().toISOString(),
-    })
-    .eq("id", sourceId);
+  const client = await pool.connect();
 
-  if (updateError) throw updateError;
+  try {
+    await client.query("BEGIN");
 
-  // 2️⃣ Append immutable history
-  const { data, error: historyError } = await supabase
-    .from("delivery_status_history")
-    .insert({
-      source_type: sourceType,
-      source_id: sourceId,
-      delivery_status: deliveryStatus,
-      remarks: remark,
-    })
-    .select()
-    .single();
+    /* ⚠️ IMPORTANT:
+       Table name cannot be parameterized.
+       You MUST whitelist allowed tables to prevent SQL injection.
+    */
+    const allowedTables = ["sales_invoice", "purchased_order"];
 
-  if (historyError) throw historyError;
+    if (!allowedTables.includes(table)) {
+      throw new Error("Invalid table name");
+    }
 
-  return data;
+    // 1️⃣ Update main table status
+    await client.query(
+      `
+      UPDATE ${table}
+      SET delivery_status = $1,
+          updated_at = NOW()
+      WHERE id = $2
+      `,
+      [deliveryStatus, sourceId]
+    );
+
+    // 2️⃣ Insert into history table
+    const historyResult = await client.query(
+      `
+      INSERT INTO delivery_status_history
+      (source_type, source_id, delivery_status, remarks)
+      VALUES ($1, $2, $3, $4)
+      RETURNING *
+      `,
+      [sourceType, sourceId, deliveryStatus, remark]
+    );
+
+    await client.query("COMMIT");
+
+    return historyResult.rows[0];
+
+  } catch (error) {
+    await client.query("ROLLBACK");
+    console.error("❌ updateDeliveryStatusCore:", error.message);
+    throw error;
+  } finally {
+    client.release();
+  }
 };

@@ -5,7 +5,6 @@ import CustomFormSelect from "../filter/CustomFormSelect";
 import AddItemModal from "./AddItemModal";
 import EditItemModal from "./EditItemModal";
 import { calculatePurchaseTotals } from "../../utils/paymentCalculator";
-import { uploadReceipt } from "../../utils/storageHelpers";
 import { fetchPoPreview  } from "../../utils/previewOrder";
 
 /* -------------------------------------------------------------------------- */
@@ -168,14 +167,16 @@ function AddPurchaseOrderModal({ isOpen, onClose, onAddPurchase, itemList}) {
 
     // 2️⃣ UPLOAD RECEIPT (OPTIONAL)
     if (receiptFile) {
-      const receiptPath = await uploadReceipt(receiptFile, savedPurchase.po);
+      const formData = new FormData();
+      formData.append("file", receiptFile);
 
-      // 3️⃣ UPDATE PURCHASE WITH RECEIPT PATH
-      await fetch(`http://localhost:5000/api/purchasing/${savedPurchase.id}/receipt`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ receipt_url: receiptPath }),
-      });
+      await fetch(
+        `http://localhost:5000/api/purchasing/${savedPurchase.id}/filereceipt/${savedPurchase.po}`,
+        {
+          method: "PATCH",
+          body: formData, 
+        }
+      );
     }
 
     onAddPurchase(savedPurchase);

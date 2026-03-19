@@ -1,15 +1,16 @@
-import React, { useState,useMemo, useEffect,useRef } from "react";
+import React, { useState, useMemo, useEffect, useRef } from "react";
 import { Plus, Pencil, Trash2, X } from "lucide-react";
 
 import CustomFormSelect from "../filter/CustomFormSelect";
 import { calculatePurchaseTotals } from "../../utils/paymentCalculator";
 import AddItemModal from "./AddItemModal";
 import EditItemModal from "./EditItemModal";
-import DeliveryStatusModal from './DeliveryStatusModal';
-import { getProofUrl,getComputationImageUrl } from "../../utils/storageHelpers";
+import DeliveryStatusModal from "./DeliveryStatusModal";
+import { getProofUrl, getComputationImageUrl } from "../../utils/storageHelpers";
+
+import GatePass from "../../utils/Gatepass";
+
 import html2pdf from "html2pdf.js";
-
-
 /* -------------------------------------------------------------------------- */
 /*                                   DATA                                     */
 /* -------------------------------------------------------------------------- */
@@ -29,6 +30,7 @@ function ViewSalesInvoiceModal({ isOpen, onClose, displayData }) {
     const [isPayOpen, setIsPayOpen] = useState(false);
     const [isEditingItems, setIsEditingItems] = useState(false);
     const exportRef = useRef(null);
+    const gatePassRef = useRef(null);
     const [isAddItemModalOpen, setIsAddItemModalOpen] = useState(false);
     const [isEditItemModalOpen, setIsEditItemModalOpen] = useState(false);
     const [editingItem, setEditingItem] = useState(null);
@@ -204,6 +206,19 @@ function ViewSalesInvoiceModal({ isOpen, onClose, displayData }) {
     ]);
 
     handleCloseModals();
+    };
+    const handleGenerateGatePass = () => {
+        const element = gatePassRef.current;
+
+        const options = {
+            margin: 10,
+            filename: `GatePass-${displayData.si}.pdf`,
+            image: { type: "jpeg", quality: 1 },
+            html2canvas: { scale: 3 },
+            jsPDF: { unit: "mm", format: "a4", orientation: "portrait" }
+        };
+
+        html2pdf().set(options).from(element).save();
     };
     /* ----------------------------- EFFECTS --------------------------------- */
     const ProofPublicUrl = getProofUrl(displayData?.payment_image_url);
@@ -561,9 +576,28 @@ function ViewSalesInvoiceModal({ isOpen, onClose, displayData }) {
                         </button>
                     </>
                 )}
+                 {displayData.approval_status === "Approved" && displayData.delivery_status === "Delivered" && (
+                    <>
+                        <button
+                        onClick={handleGenerateGatePass}
+                        className="rounded-md bg-green-600 px-4 py-2 text-white"
+                        >
+                        Generate Gate Pass
+                        </button>
+                    </>
+                )}
             </div>
 
         </div>
+        </div>
+        <div className="hidden">
+            <div ref={gatePassRef}>
+                <GatePass
+                data={displayData}
+                items={purchaseItems}
+                proofUrl={ProofPublicUrl}
+                />
+            </div>
         </div>
 
         <AddItemModal

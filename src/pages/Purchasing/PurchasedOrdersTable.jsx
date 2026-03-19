@@ -42,10 +42,11 @@ function PurchasedOrdersTable({ orders, onViewReceipt, onDelete ,suppliers, onVi
                 return "bg-slate-100 text-slate-700 dark:bg-slate-900/30 dark:text-slate-400";
         }
     };
-    const getSupplierById = (id) => {
-        return suppliers.find(supplier => supplier.id === id);
-    }
-
+    const formatDate = (dateString) => {
+      if (!dateString) return "—";
+      return new Date(dateString).toISOString().split("T")[0];
+    };
+    
     return (
         <div className="overflow-x-auto pb-6 mt-4">
           <table className="w-full">
@@ -121,17 +122,17 @@ function PurchasedOrdersTable({ orders, onViewReceipt, onDelete ,suppliers, onVi
                         </td>
                         <td className="p-4">
                           <span className="text-sm text-slate-800 dark:text-white">
-                            {getSupplierById(order.supplier_id)?.businessname ?? "—"}
+                            {order.supplier.businessname ?? "—"}
                           </span>
                         </td>
                         <td className="p-4">
                           <span className="text-sm text-slate-800 dark:text-white">
-                            {order.transaction_date}
+                            {formatDate(order.transaction_date)}
                           </span>
                         </td>
                         <td className="p-4">
                           <span className="text-sm text-slate-800 dark:text-white">
-                            {order.delivery_date}
+                            {formatDate(order.delivery_date)}
                           </span>
                         </td>
                         <td className="p-4">

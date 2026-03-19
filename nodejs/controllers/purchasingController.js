@@ -169,3 +169,21 @@ export const getBrands = async (req, res) => {
     res.status(500).json({ message: "Failed to fetch purchases" });
   }
 };
+
+export const uploadReceipt = async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ message: "No file uploaded" });
+    }
+    const filePath = `uploads/purchase-receipts/${req.params.poNumber}/${req.file.filename}`;
+
+    await purchasingService.updateReceipt(
+      req.params.id,
+      filePath
+    );
+
+    res.json({ filePath });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};

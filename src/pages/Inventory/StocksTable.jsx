@@ -43,13 +43,9 @@ function StocksTable({ rowLimit, currentPage, onTotalDataChange, onAddProductCli
             selling_price:item.selling_price,
             status: item.status,
             item_code: item.item_code,
-
-            // flatten warehouse
-            warehouse_id: item.warehouse?.id ?? null,
-            warehouse_name: item.warehouse?.whouse_name ?? "—",
-            warehouse_address: item.warehouse?.whouse_address ?? "—",
-
-            // keep relations if needed
+            warehouse_id: item.warehouse_id ?? null,
+            warehouse_name: item.whouse_name ?? "—",
+            warehouse_address: item.whouse_address ?? "—",
             purchased_order_item: item.purchased_order_item ?? []
             }));
 
@@ -66,7 +62,6 @@ function StocksTable({ rowLimit, currentPage, onTotalDataChange, onAddProductCli
         }
     }, [onAddProductClose]);
 
-    console.log("Items",items);
     // 1. Extract Options (Strings only to match your CustomSelect components)
 
     // ------------------------------------------------------------------------------------------- //

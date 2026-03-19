@@ -1,86 +1,132 @@
-import { supabase } from "../config/supabaseClient.js";
-
+import pool from "../config/connection.js";
+/* ============================================================
+   GET ALL SUPPLIERS
+============================================================ */
 export const getAllSuppliers = async () => {
-  const { data, error } = await supabase
-    .from("supplier")
-    .select("*")
-    .order("name", { ascending: true });
-  if (error) throw error;
-  return data;
+  const query = `
+    SELECT *
+    FROM supplier
+    ORDER BY name ASC
+  `;
+
+  const { rows } = await pool.query(query);
+  return rows;
 };
 
+/* ============================================================
+   SUPPLIER STATS (Optimized)
+============================================================ */
+/* ============================================================
+   SUPPLIER STATS (Optimized)
+============================================================ */
 export const getSupplierStats = async () => {
-  // Total suppliers
-  const { count: totalCount, error: totalError } = await supabase
-    .from("supplier")
-    .select("*", { count: "exact", head: true });
+  const query = `
+    SELECT
+      COUNT(*) AS total,
+      COUNT(*) FILTER (WHERE status = 'Active') AS active,
+      COUNT(*) FILTER (WHERE status = 'Inactive') AS inactive
+    FROM supplier
+  `;
 
-  if (totalError) throw totalError;
-
-  // Active suppliers
-  const { count: activeCount, error: activeError } = await supabase
-    .from("supplier")
-    .select("*", { count: "exact", head: true })
-    .eq("status", "Active");
-
-  if (activeError) throw activeError;
-
-  // Inactive suppliers
-  const { count: inactiveCount, error: inactiveError } = await supabase
-    .from("supplier")
-    .select("*", { count: "exact", head: true })
-    .eq("status", "Inactive");
-
-  if (inactiveError) throw inactiveError;
+  const { rows } = await pool.query(query);
 
   return {
-    total: totalCount,
-    active: activeCount,
-    inactive: inactiveCount,
+    total: Number(rows[0].total),
+    active: Number(rows[0].active),
+    inactive: Number(rows[0].inactive)
   };
 };
 
+
+/* ============================================================
+   ADD SUPPLIER
+============================================================ */
 export const addSupplier = async (newSupplier) => {
-  const { data, error } = await supabase
-    .from("supplier")
-    .insert([{
-      name: newSupplier.name,
-      businessname: newSupplier.businessname,
-      contactno: newSupplier.contactno,
-      tinno: newSupplier.tinno,
-      bankaccount: newSupplier.bankaccount,
-      email: newSupplier.email,
-      address: newSupplier.address,
-      status: newSupplier.status
-    }])
-    .select()
-    .single();
-  if (error) throw error;
-  return data;
-};
-export const updateSupplier = async (id, updatedData) => {
-  const { data, error } = await supabase
-    .from("supplier")
-    .update({
-      name: updatedData.name,
-      businessname: updatedData.businessname,
-      contactno: updatedData.contactno,
-      tinno: updatedData.tinno,
-      bankaccount: updatedData.bankaccount,
-      email: updatedData.email,
-      address: updatedData.address,
-      status: updatedData.status
-    })
-    .eq("id", id)
-    .select(); 
-  if (error) throw error;
-  return data;
+  if (!newSupplier?.name) {
+    throw new Error("Supplier name is required.");
+  }
+
+  const query = `
+    INSERT INTO supplier (
+      name,
+      businessname,
+      contactno,
+      tinno,
+      bankaccount,
+      email,
+      address,
+      status
+    )
+    VALUES ($1,$2,$3,$4,$5,$6,$7,$8)
+    RETURNING *
+  `;
+
+  const values = [
+    newSupplier.name,
+    newSupplier.businessname ?? null,
+    newSupplier.contactno ?? null,
+    newSupplier.tinno ?? null,
+    newSupplier.bankaccount ?? null,
+    newSupplier.email ?? null,
+    newSupplier.address ?? null,
+    newSupplier.status ?? "Active"
+  ];
+
+  const { rows } = await pool.query(query, values);
+
+  return rows[0];
 };
 
+
+/* ============================================================
+   UPDATE SUPPLIER
+============================================================ */
+export const updateSupplier = async (id, updatedData) => {
+  if (!id) throw new Error("Supplier ID is required.");
+
+  const query = `
+    UPDATE supplier
+    SET
+      name = $1,
+      businessname = $2,
+      contactno = $3,
+      tinno = $4,
+      bankaccount = $5,
+      email = $6,
+      address = $7,
+      status = $8
+    WHERE id = $9
+    RETURNING *
+  `;
+
+  const values = [
+    updatedData.name,
+    updatedData.businessname ?? null,
+    updatedData.contactno ?? null,
+    updatedData.tinno ?? null,
+    updatedData.bankaccount ?? null,
+    updatedData.email ?? null,
+    updatedData.address ?? null,
+    updatedData.status,
+    id
+  ];
+
+  const { rows } = await pool.query(query, values);
+
+  return rows[0];
+};
+
+
+/* ============================================================
+   DELETE SUPPLIER
+============================================================ */
 export const deleteSupplier = async (id) => {
-  const { error } = await supabase
-    .from("supplier")
-    .delete()
-    .eq("id", id);
-  if (error) throw error;
+  if (!id) throw new Error("Supplier ID is required.");
+
+  const query = `
+    DELETE FROM supplier
+    WHERE id = $1
+  `;
+
+  await pool.query(query, [id]);
 };

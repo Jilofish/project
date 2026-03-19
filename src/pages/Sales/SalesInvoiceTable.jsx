@@ -44,6 +44,10 @@ function SalesInvoiceTable({ orders, onEdit, onDelete,onView, onViewReceipt, cus
     const getCustomerById = (id) => {
         return customers.find(customer => customer.id === id);
     }
+    const formatDate = (dateString) => {
+      if (!dateString) return "—";
+      return new Date(dateString).toISOString().split("T")[0];
+    };
     return (
       
         <div className="overflow-x-auto pb-6 mt-4">
@@ -83,13 +87,13 @@ function SalesInvoiceTable({ orders, onEdit, onDelete,onView, onViewReceipt, cus
 
                         <td className="p-4">
                           <span className="text-sm text-slate-800 dark:text-white">
-                            {order.transaction_date}
+                            {formatDate(order.transaction_date)}
                           </span>
                         </td>
 
                         <td className="p-4">
                           <span className="text-sm text-slate-800 dark:text-white">
-                            {order.delivery_date}
+                            {formatDate(order.delivery_date)}
                           </span>
                         </td>
 

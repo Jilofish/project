@@ -1,25 +1,48 @@
-import React, { useState } from 'react';
+import React, { use, useEffect, useState } from 'react';
 import { Plus, Trash2, X, Pencil } from 'lucide-react'; 
 import CustomFormSelect from '../filter/CustomFormSelect'; 
 import AddSupplierPriceModal from './AddSupplierPriceModal'; 
 import EditSupplierModal from './EditSupplierModal'; 
+import AddVIPPriceModal from './AddVIPPriceModal';
 
 const warehouseData = [{ warehouse_id:1,warehouse: 'Pata Storage' }, { warehouse_id:2,warehouse: 'Saog' }, { warehouse_id:3,warehouse: 'Kalakal' }];
-
+const ItemTypeData = [{ item_type_id:1,item_type: 'Commissary' },
+     { item_type_id:2,item_type: 'Trading' }];
 function AddProductModal({ isOpen, onClose, supplierOptions }) {
+    const [brands, setBrands] = useState([]);
+    const fetchBrands = async () => {
+      try {
+        const res = await fetch('http://localhost:5000/api/inventory/brands');
+        const data = await res.json();
+
+        setBrands(data);
+      } catch (error) {
+        console.error("Error fetching brands:", error);
+      }
+    };
     const [formValues, setFormValues] = useState({
         name: '',
         threshold_count: '',
         price: '',
+        brand: null,
+        item_type: null,
         warehouse_id: null,
         remarks: '',
     });
 
     const [isPriceModalOpen, setIsPriceModalOpen] = useState(false);
+    const [isVIPPriceModalOpen, setIsVIPPriceModalOpen] = useState(false);
     const [supplierPrices, setSupplierPrices] = useState([]);
-    
+    const [VIPPrices, setVIPPrices] = useState([]);
+
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [selectedEntry, setSelectedEntry] = useState(null);
+    useEffect(() => {
+        if (isOpen) {
+            fetchBrands();
+        }
+    }, [isOpen]);
+
 
     if (!isOpen) return null;
 
@@ -38,14 +61,23 @@ function AddProductModal({ isOpen, onClose, supplierOptions }) {
         [name]: value,
         }));
     };
+
+   
     // --- TOGGLE MODAL HELPERS ---
     const handleOpenPriceModal = () => setIsPriceModalOpen(true);
     const handleClosePriceModal = () => setIsPriceModalOpen(false);
+
+    const handleOpenVIPPriceModal = () => setIsVIPPriceModalOpen(true);
+    const handleCloseVIPPriceModal = () => setIsVIPPriceModalOpen(false);
 
     // --- ADD LOGIC ---
     const handleAddPrice = (newEntry) => {
         setSupplierPrices(prev => [...prev, { ...newEntry, id: Date.now() }]);
         handleClosePriceModal();
+    };
+    const handleAddVIPPrice = (newEntry) => {
+        setVIPPrices(prev => [...prev, { ...newEntry, id: Date.now() }]);
+        handleCloseVIPPriceModal();
     };
 
     // --- EDIT LOGIC ---
@@ -69,7 +101,7 @@ function AddProductModal({ isOpen, onClose, supplierOptions }) {
     const handleFormSubmit = async(e) => {
         e.preventDefault();
         const newStocks={
-            ...formValues,pricing: supplierPrices 
+            ...formValues,pricing: supplierPrices, vip_pricing: VIPPrices 
         }
         try {
             const res = await fetch(
@@ -91,7 +123,8 @@ function AddProductModal({ isOpen, onClose, supplierOptions }) {
     };
 
     const warehouseOptions = warehouseData.map(d => ({ value: d.warehouse_id, label: d.warehouse }));
-
+    const brandOptions = brands.map(d => ({ value: d.id, label: d.brand_name }));
+    const itemTypeOptions = ItemTypeData.map(d => ({ value: d.item_type, label: d.item_type }));
     return (
         <>
             <div className="fixed inset-0 bg-black/40 z-40 flex items-center justify-center">
@@ -149,11 +182,26 @@ function AddProductModal({ isOpen, onClose, supplierOptions }) {
                                     initialValue={formValues.warehouse_id}
                                     onSelect={handleCustomForm}
                                 />
-                                <div className="space-y-2">
+                                 <CustomFormSelect 
+                                    label="Item Type"
+                                    name="item_type"
+                                    options={itemTypeOptions}
+                                    initialValue={formValues.item_type}
+                                    onSelect={handleCustomForm}
+                                />
+                                <CustomFormSelect 
+                                    label="Brand"
+                                    name="brand"
+                                    options={brandOptions}
+                                    initialValue={formValues.brand}
+                                    onSelect={handleCustomForm}
+                                />
+                            </div>
+
+                             <div className="space-y-2">
                                     <label className="block text-sm font-medium text-slate-700 dark:text-slate-300">Remarks</label>
                                     <textarea name="remarks" rows="4" value={formValues.remarks} onChange={(e) => handleCustomForm(e.target.value, e.target.name)} className="mt-1 p-2 block w-full rounded-md border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-700 dark:text-slate-200 resize-none outline-none focus:border-blue-500" />
                                 </div>
-                            </div>
                         </div>
 
                         {/* Supplier Pricing Table Section */}
@@ -197,6 +245,47 @@ function AddProductModal({ isOpen, onClose, supplierOptions }) {
                                 </tbody>
                             </table>
                         </div>
+                        {/* VIP Pricing Table Section */}
+                        <div className="overflow-x-auto pb-3">
+                            <div className="flex items-center justify-between mb-3">
+                                <h1 className="text-slate-800 dark:text-white text-xl font-bold">VIP Pricing</h1>
+                                <button type="button" onClick={handleOpenVIPPriceModal} className="flex items-center space-x-2 py-2 px-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all cursor-pointer">
+                                    <Plus className="w-4 h-4" />
+                                    <span className="text-sm font-medium">Add VIP Price</span>
+                                </button>
+                            </div>
+                            <table className="w-full">
+                                <thead>
+                                    <tr className="bg-slate-100 dark:bg-slate-700/50">
+                                        <th className="text-left p-4 text-sm font-semibold text-slate-600 dark:text-slate-200">Supplier Name</th>
+                                        <th className="text-left p-4 text-sm font-semibold text-slate-600 dark:text-slate-200">Price</th>
+                                        <th className="text-center p-4 text-sm font-semibold text-slate-600 dark:text-slate-200">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {VIPPrices.length > 0 ? (
+                                        VIPPrices.map((item) => (
+                                            <tr key={item.id} className="border-b border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
+                                                <td className="p-4 text-sm text-slate-700 dark:text-slate-200">{item.supplier}</td>
+                                                <td className="p-4 text-sm font-medium text-blue-600 dark:text-blue-400">₱{parseFloat(item.price).toFixed(2)}</td>
+                                                <td className="p-4 text-center space-x-2">
+                                                    <button type="button" onClick={() => handleOpenEdit(item)} className="text-blue-500 hover:text-blue-700 p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-full transition-colors cursor-pointer">
+                                                        <Pencil className="w-5 h-5" />
+                                                    </button>
+                                                    <button type="button" onClick={() => handleRemovePrice(item.id)} className="text-red-500 hover:text-red-700 p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-full transition-colors cursor-pointer">
+                                                        <Trash2 className="w-5 h-5" />
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        ))
+                                    ) : (
+                                        <tr className = "border-b border-slate-200 dark:border-slate-700">
+                                            <td colSpan="3" className="p-4 text-center text-sm text-slate-500 italic">No supplier pricing added yet.</td>
+                                        </tr>
+                                    )}
+                                </tbody>
+                            </table>
+                        </div>
 
                         <div className="pt-4 flex justify-end space-x-3">
                             <button type="button" onClick={onClose} className="cursor-pointer px-5 py-2 text-sm font-medium rounded-md text-slate-700 dark:text-slate-300 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors">Cancel</button>
@@ -213,6 +302,14 @@ function AddProductModal({ isOpen, onClose, supplierOptions }) {
                 onAdd={handleAddPrice} 
                 supplierOptions={supplierOptions} 
             />
+            {/* ADD VIP MODAL */}
+            <AddVIPPriceModal 
+                isOpen={isVIPPriceModalOpen} 
+                onClose={handleCloseVIPPriceModal} 
+                onAdd={handleAddVIPPrice} 
+                supplierOptions={supplierOptions} 
+            />
+
 
             {/* EDIT MODAL */}
             <EditSupplierModal 

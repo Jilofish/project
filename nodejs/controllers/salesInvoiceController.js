@@ -164,3 +164,41 @@ export const getProofOfPaymentHistory = async (req, res) => {
     res.status(500).json({ message: "Failed to fetch sales" });
   }
 };
+
+export const uploadProof = async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ message: "No file uploaded" });
+    }
+
+    const filePath = `uploads/proof-of-payment-images/${req.params.siNumber}/${req.file.filename}`;
+
+    await salesInvoiceService.updateProofOfPayment(
+      req.params.id,
+      filePath
+    );
+
+    res.json({ filePath });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
+export const uploadComputation = async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ message: "No file uploaded" });
+    }
+
+    const filePath = `uploads/computation-images/${req.params.siNumber}/${req.file.filename}`;
+
+    await salesInvoiceService.updateComputation(
+      req.params.id,
+      filePath
+    );
+
+    res.json({ filePath });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};

@@ -1,5 +1,6 @@
 import express from "express";
 import * as purchasingController from "../controllers/purchasingController.js";
+import { uploadReceipt } from "../config/storageHelpers.js";
 
 const router = express.Router();
 
@@ -57,5 +58,14 @@ router.patch(
 // Core CRUD (LAST – dynamic param)
 // ==============================
 router.post("/remove/:po", purchasingController.removePurchase);
+
+
+router.patch(
+  "/:id/filereceipt/:poNumber",
+  uploadReceipt.single("file"),
+  purchasingController.uploadReceipt
+);
+
+
 
 export default router;

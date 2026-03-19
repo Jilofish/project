@@ -1,69 +1,138 @@
-import { supabase } from "../config/supabaseClient.js";
+import pool from "../config/connection.js";
 
-export const getAllInvCounting = async () =>{
-    const {data, error} = await supabase
-    .from("inventory_counting")
-    .select("*")
-    .order("count_date", { ascending: true });
-    if (!data) throw new error;
-    return data;
+/* =======================================================
+   GET ALL INVENTORY COUNTING
+======================================================= */
+export const getAllInvCounting = async () => {
+  try {
+    const result = await pool.query(`
+      SELECT *
+      FROM inventory_counting
+      ORDER BY count_date ASC
+    `);
+
+    return result.rows;
+
+  } catch (error) {
+    console.error("❌ getAllInvCounting:", error.message);
+    throw error;
+  }
 };
+
+
+/* =======================================================
+   ADD INVENTORY COUNTING (WITH TRANSACTION)
+======================================================= */
 export const addInvCounting = async (countData) => {
-  // 1️⃣ Insert inventory_counting
-  const { data: invCount, error: invError } = await supabase
-    .from("inventory_counting")
-    .insert([
-      {
-        count_date: countData.CountDate,
-        warehouse: countData.Warehouse ?? null,
-        remarks: countData.remarks,
-        status: "Pending",
-      },
-    ])
-    .select()
-    .single();
+  const client = await pool.connect();
 
-  if (invError) throw invError;
+  try {
+    await client.query("BEGIN");
 
-  // 2️⃣ Prepare itemcount rows
-  const itemRows = countData.itemsToCount.map((item) => ({
-    inv_count_id: invCount.id,     // 🔑 foreign key
-    name: item.item,
-    counting_quantity: Number(item.quantity),
-  }));
+    // 1️⃣ Insert inventory_counting
+    const invResult = await client.query(
+      `
+      INSERT INTO inventory_counting
+      (count_date, warehouse, remarks, status)
+      VALUES ($1, $2, $3, $4)
+      RETURNING *
+      `,
+      [
+        countData.CountDate,
+        countData.Warehouse ?? null,
+        countData.remarks,
+        "Pending"
+      ]
+    );
 
-  // 3️⃣ Insert itemcount records
-  const { error: itemsError } = await supabase
-    .from("itemcount")
-    .insert(itemRows);
+    const invCount = invResult.rows[0];
 
-  if (itemsError) throw itemsError;
+    // 2️⃣ Prepare itemcount rows
+    const itemRows = countData.itemsToCount.map((item) => [
+      invCount.id,
+      item.item,
+      Number(item.quantity)
+    ]);
 
-  return invCount;
+    // 3️⃣ Bulk insert itemcount
+    for (const row of itemRows) {
+      await client.query(
+        `
+        INSERT INTO itemcount
+        (inv_count_id, name, counting_quantity)
+        VALUES ($1, $2, $3)
+        `,
+        row
+      );
+    }
+
+    await client.query("COMMIT");
+
+    return invCount;
+
+  } catch (error) {
+    await client.query("ROLLBACK");
+    console.error("❌ addInvCounting:", error.message);
+    throw error;
+  } finally {
+    client.release();
+  }
 };
+
+
+/* =======================================================
+   GET COUNTING STATS
+======================================================= */
 export const getCountingStats = async () => {
-  const { count, error } = await supabase
-    .from('inventory_counting')
-    .select('*', { count: 'exact', head: true });
+  try {
+    const result = await pool.query(`
+      SELECT COUNT(*)::int AS total
+      FROM inventory_counting
+    `);
 
-  if (error) throw error;
-  return count;
+    return result.rows[0].total;
+
+  } catch (error) {
+    console.error("❌ getCountingStats:", error.message);
+    throw error;
+  }
 };
 
-export const getBrands = async () => {
-  const { data, error } = await supabase
-    .from('brand_list')
-    .select('*')
-    .order('id', { ascending: false });
-  
-  if (error) throw error;
-  return data;
-}
 
+/* =======================================================
+   GET BRANDS
+======================================================= */
+export const getBrands = async () => {
+  try {
+    const result = await pool.query(`
+      SELECT *
+      FROM brand_list
+      ORDER BY id DESC
+    `);
+
+    return result.rows;
+
+  } catch (error) {
+    console.error("❌ getBrands:", error.message);
+    throw error;
+  }
+};
+
+
+/* =======================================================
+   GET BRAND STATS
+======================================================= */
 export const getBrandStats = async () => {
-  const { count, error } = await supabase
-    .from('brand_list')
-    .select('*', { count: 'exact', head: true });
-  if (error) throw error;
-  return count;
-}
+  try {
+    const result = await pool.query(`
+      SELECT COUNT(*)::int AS total
+      FROM brand_list
+    `);
+
+    return result.rows[0].total;
+
+  } catch (error) {
+    console.error("❌ getBrandStats:", error.message);
+    throw error;
+  }
+};

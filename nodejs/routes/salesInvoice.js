@@ -1,5 +1,10 @@
 import express from "express";
 import * as salesInvoiceController from "../controllers/salesInvoiceController.js";
+import {
+  uploadProofOfPayment,
+  uploadComputation
+} from "../config/storageHelpers.js";
+
 
 const router = express.Router();
 
@@ -29,6 +34,16 @@ router.patch(
   "/payment/:id",
   salesInvoiceController.updateProofOfPaymentHistory
 );
+router.patch(
+  "/:id/filepayment/:siNumber",
+  uploadProofOfPayment.single("file"),
+  salesInvoiceController.uploadProof
+);
 
+router.patch(
+  "/:id/filecomputation/:siNumber",
+  uploadComputation.single("file"),
+  salesInvoiceController.uploadComputation
+);
 
 export default router;

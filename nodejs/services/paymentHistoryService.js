@@ -1,22 +1,33 @@
-import {supabase} from "../config/supabaseClient.js";
+import pool from "../config/connection.js";
 
+/* =======================================================
+   GET PAYMENT HISTORY
+======================================================= */
 export const getPaymentHistoryCore = async (sourceType, sourceId) => {
-  const { data, error } = await supabase
-    .from("payment_history")
-    .select(`
-      id,
-      payment_method,
-      amount_paid,
-      created_at
-    `)
-    .eq("source_type", sourceType)
-    .eq("source_id", sourceId)
-    .order("created_at", { ascending: false });
+  try {
+    const result = await pool.query(
+      `
+      SELECT id, payment_method, amount_paid, created_at
+      FROM payment_history
+      WHERE source_type = $1
+        AND source_id = $2
+      ORDER BY created_at DESC
+      `,
+      [sourceType, sourceId]
+    );
 
-  if (error) throw error;
-  return data;
+    return result.rows;
+
+  } catch (error) {
+    console.error("❌ getPaymentHistoryCore:", error.message);
+    throw error;
+  }
 };
 
+
+/* =======================================================
+   APPLY PAYMENT (TRANSACTION SAFE)
+======================================================= */
 export const applyPaymentCore = async ({
   table,
   sourceType,
@@ -24,49 +35,83 @@ export const applyPaymentCore = async ({
   paymentMethod,
   amount,
 }) => {
-  // 1️⃣ Fetch authoritative totals
-  const { data: record, error: fetchError } = await supabase
-    .from(table)
-    .select("amount_paid, total")
-    .eq("id", sourceId)
-    .single();
 
-  if (fetchError) throw fetchError;
+  const allowedTables = ["sales_invoice", "purchased_order"];
 
-  const currentPaid = Number(record.amount_paid || 0);
-  const totalAmount = Number(record.total);
-  const updatedAmountPaid = currentPaid + amount;
+  if (!allowedTables.includes(table)) {
+    throw new Error("Invalid table name");
+  }
 
-  // 2️⃣ Determine status
-  const paymentStatus =
-    updatedAmountPaid >= totalAmount ? "Paid" : "Partially Paid";
+  const client = await pool.connect();
 
-  // 3️⃣ Update parent record
-  const { data: updated, error: updateError } = await supabase
-    .from(table)
-    .update({
-      amount_paid: updatedAmountPaid,
-      payment_status: paymentStatus,
-    })
-    .eq("id", sourceId)
-    .select()
-    .single();
+  try {
+    await client.query("BEGIN");
 
-  if (updateError) throw updateError;
+    /* 1️⃣ Lock row to prevent race condition */
+    const fetchResult = await client.query(
+      `
+      SELECT amount_paid, total
+      FROM ${table}
+      WHERE id = $1
+      FOR UPDATE
+      `,
+      [sourceId]
+    );
 
-  // 4️⃣ Append immutable history
-  const { data: history, error: historyError } = await supabase
-    .from("payment_history")
-    .insert({
-      source_type: sourceType,
-      source_id: sourceId,
-      payment_method: paymentMethod,
-      amount_paid: amount,
-    })
-    .select()
-    .single();
+    if (fetchResult.rows.length === 0) {
+      throw new Error("Record not found");
+    }
 
-  if (historyError) throw historyError;
+    const record = fetchResult.rows[0];
 
-  return { updated, history };
+    const currentPaid = Number(record.amount_paid || 0);
+    const totalAmount = Number(record.total);
+    const updatedAmountPaid = currentPaid + Number(amount);
+
+    /* 2️⃣ Determine payment status */
+    const paymentStatus =
+      updatedAmountPaid >= totalAmount
+        ? "Paid"
+        : "Partially Paid";
+
+    /* 3️⃣ Update parent record */
+    const updateResult = await client.query(
+      `
+      UPDATE ${table}
+      SET amount_paid = $1,
+          payment_status = $2,
+          updated_at = NOW()
+      WHERE id = $3
+      RETURNING *
+      `,
+      [updatedAmountPaid, paymentStatus, sourceId]
+    );
+
+    const updated = updateResult.rows[0];
+
+    /* 4️⃣ Insert immutable history */
+    const historyResult = await client.query(
+      `
+      INSERT INTO payment_history
+      (source_type, source_id, payment_method, amount_paid)
+      VALUES ($1, $2, $3, $4)
+      RETURNING *
+      `,
+      [sourceType, sourceId, paymentMethod, amount]
+    );
+
+    await client.query("COMMIT");
+
+    return {
+      updated,
+      history: historyResult.rows[0],
+    };
+
+  } catch (error) {
+    await client.query("ROLLBACK");
+    console.error("❌ applyPaymentCore:", error.message);
+    throw error;
+  } finally {
+    client.release();
+  }
 };

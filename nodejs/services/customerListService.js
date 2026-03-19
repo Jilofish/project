@@ -1,87 +1,85 @@
-import { supabase } from "../config/supabaseClient.js";
+import pool from "../config/connection.js";
 
 export const getAllCustomers = async () => {
-  const { data, error } = await supabase
-    .from("customer")
-    .select("*")
-    .order("id", { ascending: false });
-    if (error) throw error;
-    return data;
+  const result = await pool.query(
+    "SELECT * FROM customer ORDER BY id DESC"
+  );
+  return result.rows;
 };
 
 export const addCustomers = async (newCustomer) => {
-    const {data, error} = await supabase
-        .from("customer")
-        .insert([{
-            name:newCustomer.name,
-            facebook_name:newCustomer.facebook_name,
-            business_name:newCustomer.business_name,
-            address:newCustomer.address,
-            email:newCustomer.email,
-            contactno:newCustomer.contactno,
-            cus_type:newCustomer.cus_type,
-            bankaccount:'00000',
-            status:"Active"
-        }])
-        .select()
-        .single();
-    if(!data) throw error;
-    return data;
-}
+  const result = await pool.query(
+    `INSERT INTO customer 
+    (name, facebook_name, business_name, address, email, contactno, cus_type, bankaccount, status)
+    VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9)
+    RETURNING *`,
+    [
+      newCustomer.name,
+      newCustomer.facebook_name,
+      newCustomer.business_name,
+      newCustomer.address,
+      newCustomer.email,
+      newCustomer.contactno,
+      newCustomer.cus_type,
+      "00000",
+      "Active"
+    ]
+  );
 
-export const updateCustomer = async (id, updateData) =>{
-    const {data, error} = await supabase
-        .from("customer")
-        .update({
-            name:updateData.name,
-            facebook_name:updateData.facebook_name,
-            business_name:updateData.business_name,
-            address:updateData.address,
-            email:updateData.email,
-            contactno:updateData.contactno,
-            cus_type:updateData.cus_type,
-            bankaccount:updateData.bankaccount,
-            status:updateData.status
-        })
-        .eq("id", id)
-        .select();
-    if (error) throw error;
-    return data;
+  return result.rows[0];
+};
+
+export const updateCustomer = async (id, updateData) => {
+  const result = await pool.query(
+    `UPDATE customer SET
+      name=$1,
+      facebook_name=$2,
+      business_name=$3,
+      address=$4,
+      email=$5,
+      contactno=$6,
+      cus_type=$7,
+      bankaccount=$8,
+      status=$9
+     WHERE id=$10
+     RETURNING *`,
+    [
+      updateData.name,
+      updateData.facebook_name,
+      updateData.business_name,
+      updateData.address,
+      updateData.email,
+      updateData.contactno,
+      updateData.cus_type,
+      updateData.bankaccount,
+      updateData.status,
+      id
+    ]
+  );
+
+  return result.rows[0];
 };
 
 export const deleteCustomer = async (id) => {
-  const { error } = await supabase
-    .from("customer")
-    .delete()
-    .eq("id", id);
-  if (error) throw error;
+  await pool.query("DELETE FROM customer WHERE id=$1", [id]);
 };
 
+export const getCustomerStats = async () => {
+  const total = await pool.query(
+    "SELECT COUNT(*) FROM customer"
+  );
 
-export const getCustomerStats = async() =>{
-    const { count:totalCustomerCount, error: totalErr}= await supabase
-        .from("customer")
-        .select("*", {count:"exact", head:true});
-    if(totalErr) throw totalCountErr;
+  const active = await pool.query(
+    "SELECT COUNT(*) FROM customer WHERE status='Active'"
+  );
 
-    const {count:activeCustomerCount,error: activeErr} = await supabase
-        .from("customer")
-        .select("*", {count: "exact", head:true})
-        .eq("status","Active");
+  const inactive = await pool.query(
+    "SELECT COUNT(*) FROM customer WHERE status='Inactive'"
+  );
 
-    if (activeErr) throw activeErr;
-
-  // Inactive suppliers
-  const { count: inactiveCustomerCount, error: inactiveErr } = await supabase
-    .from("customer")
-    .select("*", { count: "exact", head: true })
-    .eq("status", "Inactive");
-
-  if (inactiveErr) throw inactiveErr;
   return {
-    total: totalCustomerCount,
-    active: activeCustomerCount,
-    inactive: inactiveCustomerCount,
+    total: parseInt(total.rows[0].count),
+    active: parseInt(active.rows[0].count),
+    inactive: parseInt(inactive.rows[0].count),
   };
-
 };

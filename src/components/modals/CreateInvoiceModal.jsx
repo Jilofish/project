@@ -4,7 +4,6 @@ import CustomFormSelect from '../filter/CustomFormSelect';
 import AddItemModal from './AddItemModal'; 
 import { fetchSIPreview  } from "../../utils/previewOrder";
 import { calculatePurchaseTotals } from "../../utils/paymentCalculator";
-import { uploadComputation,uploadProofOfPayment } from '../../utils/storageHelpers';
 import AddCustomerModal from './AddCustomerModal';
 
 const CustomerData = [
@@ -163,16 +162,31 @@ function CreateInvoiceModal({ isOpen, onClose, onAddSales,itemList}) {
             }
         
             const savedSales = await response.json();
-            // 2️⃣ UPLOAD RECEIPT (OPTIONAL)
-            if (receiptFile || computationFile) {
-                const computation = await uploadComputation(receiptFile, savedSales.si);
-                const receiptPath = await uploadProofOfPayment(receiptFile, savedSales.si);
-                // 3️⃣ UPDATE PURCHASE WITH RECEIPT PATH
-                await fetch(`http://localhost:5000/api/sales-invoice/${savedSales.id}/uploads`, {
+            // 🔥 UPLOAD FILES AFTER SALES CREATED
+            if (receiptFile) {
+            const formData = new FormData();
+            formData.append("file", receiptFile);
+
+            await fetch(
+                `http://localhost:5000/api/sales-invoice/${savedSales.id}/filepayment/${savedSales.si}`,
+                {
                 method: "PATCH",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ receipt_url: receiptPath, computation_url: computation}),
-                });
+                body: formData,
+                }
+            );
+            }
+
+            if (computationFile) {
+            const formData = new FormData();
+            formData.append("file", computationFile);
+
+            await fetch(
+                `http://localhost:5000/api/sales-invoice/${savedSales.id}/filecomputation/${savedSales.si}`,
+                {
+                method: "PATCH",
+                body: formData,
+                }
+            );
             }
             
             onAddSales(savedSales);
