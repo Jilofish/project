@@ -75,7 +75,7 @@ function EditPurchaseOrderModal({ isOpen, onClose, orderData, onSave }) {
     const fetchSuppliers = async () => {
         setLoadingSuppliers(true);
         try {
-        const res = await fetch("http://localhost:5000/api/supplier");
+        const res = await fetch("/api/supplier");
         const data = await res.json();
         setSuppliers(data);
         } catch (err) {

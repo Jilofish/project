@@ -15,12 +15,9 @@ function AddItemModal({ isOpen, onClose, onAddItem, loadItemList, type, isSuppli
     const item_id = Number(selectedItem?.id);
 
     try {
-      console.log(
-        `Fetching supplier price for supplierId: ${data}, itemId: ${item_id}`
-      );
 
       const res = await fetch(
-        `http://localhost:5000/api/pricing/supplier/${data}/item/${item_id}`
+        `/api/pricing/supplier/${data}/item/${item_id}`
       );
 
       const result = await res.json();
@@ -36,11 +33,8 @@ function AddItemModal({ isOpen, onClose, onAddItem, loadItemList, type, isSuppli
     if (!selectedItem) return;
     const item_id = Number(selectedItem?.id);
     try {
-      console.log(
-        `Fetching VIP price for customerId: ${data}, itemId: ${item_id}`
-      );
       const res = await fetch(
-        `http://localhost:5000/api/pricing/customer/${data}/item/${item_id}`
+        `/api/pricing/customer/${data}/item/${item_id}`
       );
       const result = await res.json();
       setPrice(result.vip_price ?? null);

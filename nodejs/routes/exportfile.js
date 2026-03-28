@@ -16,7 +16,11 @@ router.post("/", async (req, res) => {
     const browser = await puppeteer.launch({
       executablePath: "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
       headless: "new",
-      args: ["--no-sandbox", "--disable-setuid-sandbox"],
+      args: [
+        "--no-sandbox",
+        "--disable-setuid-sandbox",
+        "--ignore-certificate-errors", // 🔥 REQUIRED
+      ],
     });
 
     const page = await browser.newPage();
@@ -28,17 +32,18 @@ router.post("/", async (req, res) => {
 
     // 🔥 dynamic URL
     let url = "";
-
+    const base = process.env.BASE_URL || "https://192.168.1.5:5173";
     if (type === "si") {
-      url = `http://localhost:5173/print/si/${id}`;
+      url = `${base}/print/si/${id}`;
     } else if (type === "po") {
-      url = `http://localhost:5173/print/po/${id}`;
+      url = `${base}/print/po/${id}`;
     } else {
       throw new Error("Invalid export type");
     }
 
+    console.log("🌐 URL:", url);
     await page.goto(url, {
-      waitUntil: "domcontentloaded",
+      waitUntil: "networkidle0",
     });
     // ✅ WAIT FOR ACTUAL CONTENT (not timeout)
     await page.waitForSelector("#print-content");

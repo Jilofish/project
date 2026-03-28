@@ -30,7 +30,7 @@ function StocksTable({ rowLimit, currentPage, onTotalDataChange, onAddProductCli
     const [items, setItems] =useState([]);
     const fetchItems = async () => {
         try {
-            const res = await fetch("http://localhost:5000/api/stock");
+            const res = await fetch("/api/stock");
             const data = await res.json();
 
             const normalized = data.map(item => ({
@@ -136,7 +136,7 @@ function StocksTable({ rowLimit, currentPage, onTotalDataChange, onAddProductCli
     //     if (!confirm("Delete this stock?")) return;
     //     try {
     //         const res = await fetch(
-    //         `http://localhost:5000/api/stock/${id}`,
+    //         `/api/stock/${id}`,
     //         { method: "DELETE" }
     //         );
 

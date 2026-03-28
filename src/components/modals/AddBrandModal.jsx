@@ -20,7 +20,7 @@ function AddBrandModal({ isOpen, onClose }) {
         e.preventDefault();
         try {
             const res=await fetch(
-                "http://localhost:5000/api/inventory/brands",
+                "/api/inventory/brands",
                 {
                     method:"POST", 
                     headers:{"Content-Type": "application/json"},

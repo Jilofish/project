@@ -59,7 +59,7 @@ function CreatePurchase() {
 
     const fetchStats = async () => {
         try {
-            const res = await fetch("http://localhost:5000/api/purchasing/stats");
+            const res = await fetch("/api/purchasing/stats");
             const data = await res.json();
             setStats(data);
         } catch (err) {
@@ -69,7 +69,7 @@ function CreatePurchase() {
 
     const fetchPurchases = async () => {
         try {
-            const res = await fetch("http://localhost:5000/api/purchasing");
+            const res = await fetch("/api/purchasing");
             const data = await res.json();
 
             const ordersWithTotals = data.map(order => ({
@@ -95,7 +95,7 @@ function CreatePurchase() {
 
     const fetchSuppliers = async () => {
     try {
-        const res = await fetch("http://localhost:5000/api/supplier");
+        const res = await fetch("/api/supplier");
         const data = await res.json();
         setSuppliers(data);
     } catch (err) {
@@ -104,7 +104,7 @@ function CreatePurchase() {
     };
     const fetchBrands = async () =>{
         try {
-            const res = await fetch("http://localhost:5000/api/purchasing/items");
+            const res = await fetch("/api/purchasing/items");
             const data = await res.json();
             setItemList(data);
 
@@ -294,7 +294,7 @@ function CreatePurchase() {
 
     try {
         const res = await fetch(
-        `http://localhost:5000/api/purchasing/remove/${po}`,
+        `/api/purchasing/remove/${po}`,
         { method: "POST" }
         );
 

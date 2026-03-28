@@ -7,13 +7,12 @@ export default function PrintPO() {
   const [items, setItems] = useState([]);
 
   useEffect(() => {
-    fetch(`http://localhost:5000/api/purchasing/${po}`)
+    fetch(`/api/purchasing/${po}`)
       .then(res => {
         if (!res.ok) throw new Error("Failed to fetch PO");
         return res.json();
       })
       .then(res => {
-        console.log("FETCH RESULT:", res);
         setData(res);
       })
       .catch(console.error);
@@ -27,7 +26,6 @@ export default function PrintPO() {
 
   if (!data) return <div>Loading...</div>;
 
-  console.log("PO DATA:", JSON.stringify(data, null, 2));
 
   return (
     <div
@@ -96,22 +94,22 @@ export default function PrintPO() {
         <div className="w-64 text-sm">
           <div className="flex justify-between">
             <span>Merchandise:</span>
-            <span>{Number(data?.merchandiseSubtotal || 0).toFixed(2)}</span>
+            <span>{Number(data?.merchandise_subtotal || 0).toFixed(2)}</span>
           </div>
 
           <div className="flex justify-between">
             <span>Shipping:</span>
-            <span>{Number(data?.shippingSubtotal || 0).toFixed(2)}</span>
+            <span>{Number(data?.shipping_subtotal || 0).toFixed(2)}</span>
           </div>
 
           <div className="flex justify-between">
             <span>Discount:</span>
-            <span>{Number(data?.discountSubtotal || 0).toFixed(2)}</span>
+            <span>{Number(data?.discount_subtotal || 0).toFixed(2)}</span>
           </div>
 
           <div className="flex justify-between font-bold border-t mt-2 pt-2">
             <span>Total:</span>
-            <span>{Number(data?.totalPayment || 0).toFixed(2)}</span>
+            <span>{Number(data?.total || 0).toFixed(2)}</span>
           </div>
         </div>
       </div>

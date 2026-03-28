@@ -73,7 +73,7 @@ function EditStockDetailsModal({ isOpen, onClose, supplierOptions }) {
         }
         try {
             const res = await fetch(
-                "http://localhost:5000/api/stock",
+                "/api/stock",
                 {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },

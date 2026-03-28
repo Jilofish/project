@@ -1,6 +1,6 @@
 import React, { useState,useMemo, useEffect } from "react";
 import { Plus, Trash2, X , Pencil} from "lucide-react";
-
+import { v4 as uuidv4 } from "uuid";
 import CustomFormSelect from "../filter/CustomFormSelect";
 import AddItemModal from "./AddItemModal";
 import EditItemModal from "./EditItemModal";
@@ -55,7 +55,6 @@ function AddPurchaseOrderModal({ isOpen, onClose, onAddPurchase, itemList}) {
     warehouse: null,
     remarks: "",
   });
-
   /* ----------------------------- HANDLERS -------------------------------- */
 
   const handleInputChange = (value, name) => {
@@ -153,7 +152,7 @@ function AddPurchaseOrderModal({ isOpen, onClose, onAddPurchase, itemList}) {
       payment_status: "Unpaid",
       remarks: formValues.remarks
     };
-    const response = await fetch("http://localhost:5000/api/purchasing", {
+    const response = await fetch("/api/purchasing", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(newPurchase),
@@ -170,7 +169,7 @@ function AddPurchaseOrderModal({ isOpen, onClose, onAddPurchase, itemList}) {
       formData.append("file", receiptFile);
 
       await fetch(
-        `http://localhost:5000/api/purchasing/${savedPurchase.id}/filereceipt/${savedPurchase.po}`,
+        `/api/purchasing/${savedPurchase.id}/filereceipt/${savedPurchase.po}`,
         {
           method: "PATCH",
           body: formData, 
@@ -192,7 +191,7 @@ function AddPurchaseOrderModal({ isOpen, onClose, onAddPurchase, itemList}) {
     const handleAddLocalItem = (item) => {
       const restructuredItem = {
         id: item.id,
-        temp_id: crypto.randomUUID(), // Unique temp ID for local management
+        temp_id: uuidv4(),
         product_name: item.brand,
         type: item.type,
         quantity: Number(item.quantity),
@@ -301,7 +300,7 @@ function AddPurchaseOrderModal({ isOpen, onClose, onAddPurchase, itemList}) {
     const fetchSuppliers = async () => {
       setLoadingSuppliers(true);
       try {
-        const res = await fetch("http://localhost:5000/api/supplier");
+        const res = await fetch("/api/supplier");
         const data = await res.json();
         setSuppliers(data);
       } catch (err) {

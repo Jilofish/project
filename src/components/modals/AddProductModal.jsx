@@ -12,7 +12,7 @@ function AddProductModal({ isOpen, onClose, supplierOptions }) {
     const [brands, setBrands] = useState([]);
     const fetchBrands = async () => {
       try {
-        const res = await fetch('http://localhost:5000/api/inventory/brands');
+        const res = await fetch('/api/inventory/brands');
         const data = await res.json();
 
         setBrands(data);
@@ -122,7 +122,7 @@ function AddProductModal({ isOpen, onClose, supplierOptions }) {
         }
         try {
             const res = await fetch(
-                "http://localhost:5000/api/stock",
+                "/api/stock",
                 {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },

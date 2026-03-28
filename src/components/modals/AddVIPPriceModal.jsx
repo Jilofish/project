@@ -8,7 +8,7 @@ function AddVIPPriceModal({ isOpen, onClose, onAdd }) {
     const [customer,setCustomer] = useState([])
     const fetchCustomers = async () => {
       try {
-        const res = await fetch("http://localhost:5000/api/customers");
+        const res = await fetch("/api/customers");
         const object = await res.json();
         setCustomer(object);
       } catch (err) {

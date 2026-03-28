@@ -25,7 +25,7 @@ const warehouseData = [
 /*                             MAIN COMPONENT                                 */
 /* -------------------------------------------------------------------------- */
 
-function ViewSalesInvoiceModal({ isOpen, onClose, displayData }) {
+function ViewSalesInvoiceModal({ isOpen, onClose, displayData,itemList }) {
   /* ----------------------------- STATE ----------------------------------- */
     const [isPayOpen, setIsPayOpen] = useState(false);
     const [isEditingItems, setIsEditingItems] = useState(false);
@@ -44,10 +44,21 @@ function ViewSalesInvoiceModal({ isOpen, onClose, displayData }) {
 
     /* ----------------------------- HANDLERS -------------------------------- */
     useEffect(() => {
-    if (displayData?.sales_invoice_item) {
-        setPurchaseItems(displayData.sales_invoice_item);
-    }
-    }, [displayData]);
+        if (displayData?.sales_invoice_item && itemList.length) {
+            const normalizedItems = displayData.sales_invoice_item.map(item => {
+            const matchedProduct = itemList.find(
+                (p) => p.item_name === item.product_name
+            );
+
+            return {
+                ...item,
+                product_id: matchedProduct ? matchedProduct.id : null,
+            };
+            });
+
+            setPurchaseItems(normalizedItems);
+        }
+    }, [displayData, itemList]);
     const handleInputChange = (value, name) => {
         setFormValues((prev) => ({
         ...prev,
@@ -57,7 +68,7 @@ function ViewSalesInvoiceModal({ isOpen, onClose, displayData }) {
     const handleReject = async(id) => {
        try {
         const response = await fetch(
-            `http://localhost:5000/api/sales-invoice/reject/${id}`,
+            `/api/sales-invoice/reject/${id}`,
             {
             method: "PATCH",
             headers: {
@@ -76,7 +87,7 @@ function ViewSalesInvoiceModal({ isOpen, onClose, displayData }) {
     const handleApprove = async(id) => {
          try {
         const response = await fetch(
-            `http://localhost:5000/api/sales-invoice/approve/${id}`,
+            `/api/sales-invoice/approve/${id}`,
             {
             method: "PATCH",
             headers: {
@@ -91,14 +102,21 @@ function ViewSalesInvoiceModal({ isOpen, onClose, displayData }) {
         } catch (error) {
         console.error(error);
         }
-    };//http://localhost:5000/api
+    };///api
+
+    const getVipCustomerId = (customerId) => {
+
+        if (displayData?.customer?.cus_type === "VIP") {
+            return displayData.customer.id;
+        }
+        return 0;
+    };
     const handleExport = async (type) => {
         const id = type === "si" ? displayData.si : displayData.po;
 
-        console.log(`📤 Exporting ${type.toUpperCase()}:`, id);
 
         try {
-            const res = await fetch("http://localhost:5000/api/export-pdf", {
+            const res = await fetch("/api/export-pdf", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -123,7 +141,6 @@ function ViewSalesInvoiceModal({ isOpen, onClose, displayData }) {
 
             window.URL.revokeObjectURL(url);
 
-            console.log("✅ Export success:", id);
         } catch (err) {
             console.error("❌ Export error:", err);
         }
@@ -153,7 +170,7 @@ function ViewSalesInvoiceModal({ isOpen, onClose, displayData }) {
     const handleRemoveItem = (id) => {
     setPurchaseItems(prev => prev.filter(item => item.id !== id));
     };
-
+    console.log("Display Data:", displayData);
     /* ----------------------------- COMPUTED -------------------------------- */
     
     const paymentTotals = useMemo(() => {
@@ -165,15 +182,60 @@ function ViewSalesInvoiceModal({ isOpen, onClose, displayData }) {
         discountSubtotal,
         totalPayment
     } = paymentTotals;
-    
-
     const handleEditItems = () => {
         setIsEditingItems(true);
     };
+    const handleItemChange = (index, productId) => {
 
+        console.log("Selected product ID:", productId);
+        console.log("Available products:", itemList);
+        const selectedProduct = itemList.find(
+            (p) => p.id === productId
+        );
+        console.log("Selected product details:", selectedProduct);
+        if (!selectedProduct) return;
+
+        const updatedItems = [...purchaseItems];
+
+        updatedItems[index] = {
+            ...updatedItems[index],
+            product_id: selectedProduct.id, // ✅ correct
+            product_name: selectedProduct.item_name,
+            type: selectedProduct.item_type,
+            unit_price: Number(selectedProduct.suggested_retail_price),
+            quantity: 1,
+            line_total: Number(selectedProduct.suggested_retail_price),
+        };
+        console.log("Updated item:", updatedItems[index]);
+        setPurchaseItems(updatedItems);
+        console.log("Updated items array:", updatedItems);
+        console.log("Current purchaseItems state:", purchaseItems);
+        };
+    const handleQuantityChange = (index, value) => {
+    const updatedItems = [...purchaseItems];
+
+    const qty = Number(value);
+
+    updatedItems[index].quantity = qty;
+    updatedItems[index].line_total =
+      qty * Number(updatedItems[index].unit_price);
+
+    setPurchaseItems(updatedItems);
+  };
+  const handleUnitPriceChange = (index, value) => {
+        const updatedItems = [...purchaseItems];
+
+        const price = Number(value);
+
+        updatedItems[index].unit_price = price;
+        updatedItems[index].line_total =
+            Number(updatedItems[index].quantity) * price;
+
+        setPurchaseItems(updatedItems);
+    };
     const handleSaveChanges = async() => {
         try {
-            const res= await fetch("http://localhost:5000/api/received-items/view/bulk-save", {
+            const res= await fetch("/api/received-items/view/bulk-save", {
             method: "PUT",
             headers: {
                 "Content-Type": "application/json",
@@ -229,7 +291,6 @@ function ViewSalesInvoiceModal({ isOpen, onClose, displayData }) {
         const baseUrl = import.meta.env.VITE_API_BASE_URL;
         const proofUrl = `${baseUrl}/${displayData.computation_img_url}`;
 
-        console.log("Generating Gate Pass with QR URL:", proofUrl);
 
         const element = gatePassRef.current;
 
@@ -248,7 +309,6 @@ function ViewSalesInvoiceModal({ isOpen, onClose, displayData }) {
     const ProofPublicUrl = getProofUrl(displayData?.payment_image_url);
     const qrProofUrl = `${baseUrl}/${displayData?.payment_image_url}`;
     const ComputationImageURL = getComputationImageUrl(displayData?.computation_img_url);
-    console.log("displayData:", displayData);
     /* ----------------------------- GUARD ----------------------------------- */
     if (!isOpen) return null;
     /* ----------------------------- JSX ------------------------------------- */
@@ -408,28 +468,70 @@ function ViewSalesInvoiceModal({ isOpen, onClose, displayData }) {
 
                     <tbody>
                     {purchaseItems.length ? (
-                        purchaseItems.map(item => (
-                        <tr
+                        purchaseItems.map((item, index) => (
+                       <tr
                             key={item.id}
                             className="border-b border-slate-300 dark:border-slate-600"
-                        >
-                            <td className="p-4">{item.product_name}</td>
-                            <td className="p-4">{item.type}</td>
-                            <td className="p-4">{item.quantity}</td>
-                            <td className="p-4">{item.unit_price}</td>
-                            <td className="p-4">{item.line_total}</td>
+                        > 
+                            <td className="p-4">
+                                {isEditingItems ? (
+                                    <select
+                                    value={item.product_id || ""}
+                                    onChange={(e) => handleItemChange(index, e.target.value)}
+                                    className="w-full px-2 py-1 rounded-md border"
+                                    >
+                                    <option value="">Select Item</option>
+                                    {itemList.map((product) => (
+                                        <option key={product.id} value={product.id}>
+                                        {product.item_name}
+                                        </option>
+                                    ))}
+                                    </select>
+                                ) : (
+                                    item.product_name
+                                )}
+                            </td>
+
+                            <td className="p-4">
+                                {item.type || "N/A"}
+                            </td>
+
+                            <td className="p-4">
+                                {isEditingItems ? (
+                                    <input
+                                    type="number"
+                                    min="1"
+                                    value={item.quantity}
+                                    onChange={(e) => handleQuantityChange(index, e.target.value)}
+                                    className="w-20 px-2 py-1 border rounded"
+                                    />
+                                ) : (
+                                    item.quantity
+                                )}
+                            </td>
+
+                            <td className="p-4">
+                                {isEditingItems ? (
+                                    <input
+                                    type="number"
+                                    step="0.01"
+                                    value={item.unit_price}
+                                    onChange={(e) => handleUnitPriceChange(index, e.target.value)}
+                                    className="w-24 px-2 py-1 border rounded"
+                                    />
+                                ) : (
+                                    `₱${Number(item.unit_price).toFixed(2)}`
+                                )}
+                            </td>
+
+                            <td className="p-4">
+                                ₱{Number(item.line_total).toFixed(2)}
+                            </td>
 
                             {isEditingItems && displayData.approval_status !=="Rejected" && (
                             <td className="p-4 flex gap-3">
                                 <button
-                                onClick={() => handleOpenEditModal(item)}
-                                className="text-blue-500 hover:text-blue-700"
-                                >
-                                <Pencil className="h-4 w-4" />
-                                </button>
-
-                                <button
-                                onClick={() => handleRemoveItem(item.id)}
+                                onClick={() => handleRemoveItem(item.id || item.temp_id)}
                                 className="text-red-500 hover:text-red-700"
                                 >
                                 <Trash2 className="h-4 w-4" />
@@ -628,9 +730,13 @@ function ViewSalesInvoiceModal({ isOpen, onClose, displayData }) {
         </div>
 
         <AddItemModal
-        isOpen={isAddItemModalOpen}
-        onClose={handleCloseModals}
-        onAddItem={handleAddLocalItem}
+            isOpen={isAddItemModalOpen}
+            onClose={handleCloseModals}
+            onAddItem={handleAddLocalItem}
+            loadItemList={itemList}
+            type="Item"
+            isSupplier={false}
+            data={getVipCustomerId(displayData.customer.id)}
         />
 
         <EditItemModal

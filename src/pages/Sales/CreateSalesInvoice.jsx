@@ -231,7 +231,7 @@ function CreateSalesInvoice() {
     };
     const fetchStats = async () => {
         try {
-            const res = await fetch("http://localhost:5000/api/sales-invoice/stats");
+            const res = await fetch("/api/sales-invoice/stats");
             const data = await res.json();
             setStats(data);
         } catch (err) {
@@ -240,7 +240,7 @@ function CreateSalesInvoice() {
     };
     const fetchInvoice = async () => {
     try {
-        const res = await fetch("http://localhost:5000/api/sales-invoice");
+        const res = await fetch("/api/sales-invoice");
         const data = await res.json();
         const salesWithTotals = data.map(order => ({
         ...order,
@@ -258,7 +258,7 @@ function CreateSalesInvoice() {
 
     const fetchCustomers = async () => {
     try {
-        const res = await fetch("http://localhost:5000/api/customers");
+        const res = await fetch("/api/customers");
         const data = await res.json();
         setCustomers(data);
     } catch (err) {
@@ -267,7 +267,7 @@ function CreateSalesInvoice() {
     };
     const fetchBrands = async () =>{
         try {
-            const res = await fetch("http://localhost:5000/api/purchasing/items");
+            const res = await fetch("/api/purchasing/items");
             const data = await res.json();
             setItemList(data);
         } catch (err) {
@@ -371,7 +371,7 @@ function CreateSalesInvoice() {
     const handleDeleteSalesInvoice = async (si) => {
       if (!confirm("Remove this sale invoice?")) return;
       try {
-        const response = await fetch(`http://localhost:5000/api/sales-invoice/remove/${si}`, {
+        const response = await fetch(`/api/sales-invoice/remove/${si}`, {
           method: 'POST',
         });
         if (!response.ok) throw new Error("Remove failed");
@@ -519,6 +519,7 @@ function CreateSalesInvoice() {
           isOpen={isEditModalOpen} 
           onClose={handleCloseViewModal}
           displayData={dataView}
+          itemList={itemList}
       />
       {/* 
       <EditSalesInvoiceModal

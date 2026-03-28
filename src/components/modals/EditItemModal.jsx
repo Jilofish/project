@@ -10,6 +10,7 @@
     };
 
     function EditItemModal({isOpen, onClose, editingItem, onSaveLocalItem, loadItemList}) {
+        console.log("EditItemModal props:", { isOpen, editingItem, loadItemList });
         /* =======================
         ITEM FORM STATE
         ======================= */
@@ -120,6 +121,7 @@
 
         const finalItem = {
             id: editingItem.id,
+            purchased_order_id: editingItem.purchased_order_id,
             product_name: itemForm.brand,
             type: itemForm.type,
             quantity: Number(itemForm.quantity),

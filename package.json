@@ -12,8 +12,9 @@
   "dependencies": {
     "@supabase/supabase-js": "^2.89.0",
     "@tailwindcss/vite": "^4.1.17",
+    "@vitejs/plugin-basic-ssl": "^2.3.0",
     "daisyui": "^5.5.8",
-    "html2pdf.js": "^0.13.0",
+    "html2pdf.js": "^0.14.0",
     "lucide-react": "^0.554.0",
     "qrcode.react": "^4.2.0",
     "react": "^19.2.0",
@@ -21,7 +22,8 @@
     "react-is": "^19.2.1",
     "react-router-dom": "^7.10.1",
     "recharts": "^3.5.1",
-    "tailwindcss": "^4.1.17"
+    "tailwindcss": "^4.1.17",
+    "uuid": "^13.0.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.1",

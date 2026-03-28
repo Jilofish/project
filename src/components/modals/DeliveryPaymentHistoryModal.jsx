@@ -31,7 +31,7 @@ function DeliveryPaymentHistoryModal({ isOpen, onClose,displayData, transactType
             
             try {
                 const response = await fetch(
-                    `http://localhost:5000/api/${transactType}/payment-history/${displayData.id}`
+                    `/api/${transactType}/payment-history/${displayData.id}`
                 );
 
                 if (!response.ok) {

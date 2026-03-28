@@ -46,7 +46,7 @@ function CreateInvoiceModal({ isOpen, onClose, onAddSales,itemList}) {
         try {
             setLoadingCustomers(true);
 
-            const res = await fetch(`http://localhost:5000/api/customers`);
+            const res = await fetch(`/api/customers`);
             const data = await res.json();
 
             setCustomers(data);
@@ -72,14 +72,10 @@ function CreateInvoiceModal({ isOpen, onClose, onAddSales,itemList}) {
     loadPreview();
     }, [isOpen, formValues.transaction_date]);
     const getVipCustomerId = (customerId) => {
-        console.log("Determining VIP status for customer ID:", customerId);
-        console.log("Customer list:", customers);
 
         const foundCustomer = customers.find(
             (c) => Number(c.id) === Number(customerId)
         );
-
-        console.log("Matched customer:", foundCustomer);
 
         return foundCustomer?.cus_type === "VIP"
             ? foundCustomer.id
@@ -162,7 +158,7 @@ function CreateInvoiceModal({ isOpen, onClose, onAddSales,itemList}) {
               delivery_status: "Order Placed",
               payment_status: "Unpaid",
             };
-            const response = await fetch("http://localhost:5000/api/sales-invoice", {
+            const response = await fetch("/api/sales-invoice", {
               method: "POST",
               headers: { "Content-Type": "application/json" },
               body: JSON.stringify(newSales),
@@ -180,7 +176,7 @@ function CreateInvoiceModal({ isOpen, onClose, onAddSales,itemList}) {
             formData.append("file", receiptFile);
 
             await fetch(
-                `http://localhost:5000/api/sales-invoice/${savedSales.id}/filepayment/${savedSales.si}`,
+                `/api/sales-invoice/${savedSales.id}/filepayment/${savedSales.si}`,
                 {
                 method: "PATCH",
                 body: formData,
@@ -193,7 +189,7 @@ function CreateInvoiceModal({ isOpen, onClose, onAddSales,itemList}) {
             formData.append("file", computationFile);
 
             await fetch(
-                `http://localhost:5000/api/sales-invoice/${savedSales.id}/filecomputation/${savedSales.si}`,
+                `/api/sales-invoice/${savedSales.id}/filecomputation/${savedSales.si}`,
                 {
                 method: "PATCH",
                 body: formData,

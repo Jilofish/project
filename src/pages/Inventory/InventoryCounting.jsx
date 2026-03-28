@@ -68,7 +68,7 @@ function InventoryCounting() {
     // const [items,setItems]=useState([]);
     // const fetchInventoryItem = async () =>{
     //     try {
-    //          const res = await fetch("http://localhost:5000/api/inventory");
+    //          const res = await fetch("/api/inventory");
     //         const data = await res.json();
     //         setItems(data);
     //     } catch (error) {

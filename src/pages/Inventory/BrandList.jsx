@@ -17,7 +17,7 @@ function BrandList() {
     const [stats,setStats] = useState([]);
     const fetchBrands = async () => {
       try {
-        const res = await fetch('http://localhost:5000/api/inventory/brands');
+        const res = await fetch('/api/inventory/brands');
         const data = await res.json();
 
         setOrders(data);
@@ -27,7 +27,7 @@ function BrandList() {
     };
     const fetchStats = async () => {
     try {
-        const res = await fetch("http://localhost:5000/api/inventory/brands/stats");
+        const res = await fetch("/api/inventory/brands/stats");
         const data = await res.json();
         setStats(data);
     } catch (err) {
@@ -76,7 +76,7 @@ function BrandList() {
     const handleSaveEdit = async(updatedData) => {
         try {
           const res = await fetch(
-            `http://localhost:5000/api/brands/${updatedData.id}`,
+            `/api/brands/${updatedData.id}`,
             {
               method:"PUT",
               headers:{
@@ -105,7 +105,7 @@ function BrandList() {
 
       try {
           const res = await fetch(
-          `http://localhost:5000/api/brands/${id}`,
+          `/api/brands/${id}`,
           { method: "DELETE" }
           );
 

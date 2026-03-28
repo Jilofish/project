@@ -193,40 +193,115 @@ export const bulkSave = async (items, transaction) => {
   try {
     await client.query("BEGIN");
 
-    // Insert/update logic same as yours
-    // but replace all supabase calls with client.query()
+    if (transaction === "purchasing") {
+      const toInsert = [];
+      const toUpdate = [];
 
-    // After modifying line items:
-    const sumResult = await client.query(`
-      SELECT COALESCE(SUM(line_total),0) AS subtotal
-      FROM purchased_order_item
-      WHERE purchased_order_id = $1
-    `, [purchasedOrderId]);
+      let purchasedOrderId = null;
 
-    const merchandiseSubtotal = Number(sumResult.rows[0].subtotal);
+      for (const item of items) {
+        const {
+          id,
+          product_name,
+          purchased_order_id,
+          type,
+          quantity,
+          unit_price,
+          line_total
+        } = item;
 
-    const orderResult = await client.query(`
-      SELECT shipping_subtotal, discount_subtotal
-      FROM purchased_order
-      WHERE id = $1
-    `, [purchasedOrderId]);
+        purchasedOrderId = Number(purchased_order_id);
 
-    const shippingSubtotal = Number(orderResult.rows[0].shipping_subtotal || 0);
-    const discountSubtotal = Number(orderResult.rows[0].discount_subtotal || 0);
+        const data = {
+          product_name,
+          purchased_order_id: Number(purchased_order_id),
+          type,
+          quantity,
+          unit_price,
+          line_total
+        };
 
-    const total = merchandiseSubtotal + shippingSubtotal - discountSubtotal;
+        if (id) {
+          toUpdate.push({ id, ...data });
+        } else {
+          toInsert.push(data);
+        }
+      }
 
-    await client.query(`
-      UPDATE purchased_order
-      SET merchandise_subtotal = $1,
-          total = $2
-      WHERE id = $3
-    `, [merchandiseSubtotal, total, purchasedOrderId]);
+      /* ---------- INSERT ---------- */
+      for (const item of toInsert) {
+        await client.query(`
+          INSERT INTO purchased_order_item
+          (product_name, purchased_order_id, type, quantity, unit_price, line_total)
+          VALUES ($1,$2,$3,$4,$5,$6)
+        `, [
+          item.product_name,
+          item.purchased_order_id,
+          item.type,
+          item.quantity,
+          item.unit_price,
+          item.line_total
+        ]);
+      }
+
+      /* ---------- UPDATE ---------- */
+      for (const item of toUpdate) {
+        await client.query(`
+          UPDATE purchased_order_item
+          SET product_name = $1,
+              purchased_order_id = $2,
+              type = $3,
+              quantity = $4,
+              unit_price = $5,
+              line_total = $6
+          WHERE id = $7
+        `, [
+          item.product_name,
+          item.purchased_order_id,
+          item.type,
+          item.quantity,
+          item.unit_price,
+          item.line_total,
+          item.id
+        ]);
+      }
+
+      /* ---------- RECALCULATE ---------- */
+      const sumResult = await client.query(`
+        SELECT COALESCE(SUM(line_total),0) AS subtotal
+        FROM purchased_order_item
+        WHERE purchased_order_id = $1
+      `, [purchasedOrderId]);
+
+      const merchandiseSubtotal = Number(sumResult.rows[0].subtotal);
+
+      const orderResult = await client.query(`
+        SELECT shipping_subtotal, discount_subtotal
+        FROM purchased_order
+        WHERE id = $1
+      `, [purchasedOrderId]);
+
+      const shippingSubtotal = Number(orderResult.rows[0].shipping_subtotal || 0);
+      const discountSubtotal = Number(orderResult.rows[0].discount_subtotal || 0);
+
+      const total = merchandiseSubtotal + shippingSubtotal - discountSubtotal;
+
+      const updateResult = await client.query(`
+        UPDATE purchased_order
+        SET merchandise_subtotal = $1,
+            total = $2
+        WHERE id = $3
+        RETURNING *
+      `, [merchandiseSubtotal, total, purchasedOrderId]);
+
+      console.log("Updated rows:", updateResult.rowCount);
+    }
 
     await client.query("COMMIT");
 
   } catch (error) {
     await client.query("ROLLBACK");
+    console.error("BulkSave error:", error);
     throw error;
   } finally {
     client.release();

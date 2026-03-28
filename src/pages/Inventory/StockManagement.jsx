@@ -36,7 +36,7 @@ function StockManagement() {
     
     const fetchStats = async () => {
         try {
-            const res = await fetch("http://localhost:5000/api/stock/stats");
+            const res = await fetch("/api/stock/stats");
             const data = await res.json();
             setStats(data);
         } catch (err) {
@@ -98,7 +98,7 @@ function StockManagement() {
             try {
                 // Keep your backend logic exactly as it was
                 const res = await fetch(
-                    `http://localhost:5000/api/stock/${itemToDelete.id}`,
+                    `/api/stock/${itemToDelete.id}`,
                     { method: "DELETE" }
                 );
 

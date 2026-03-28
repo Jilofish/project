@@ -38,7 +38,7 @@ function SupplierList() {
   // -------------------- DATA FETCHING --------------------
   const fetchSuppliers = async () => {
     try {
-      const res = await fetch("http://localhost:5000/api/supplier");
+      const res = await fetch("/api/supplier");
       const data = await res.json();
       setSuppliers(data);
     } catch (err) {
@@ -48,7 +48,7 @@ function SupplierList() {
 
   const fetchSupplierStats = async () => {
     try {
-      const res = await fetch("http://localhost:5000/api/supplier/stats");
+      const res = await fetch("/api/supplier/stats");
       const data = await res.json();
       setStats(data);
     } catch (err) {
@@ -97,7 +97,7 @@ function SupplierList() {
   const handleSaveEdit = async (updatedSupplier) => {
     try {
       const res = await fetch(
-        `http://localhost:5000/api/supplier/${updatedSupplier.id}`,
+        `/api/supplier/${updatedSupplier.id}`,
         {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
@@ -129,7 +129,7 @@ function SupplierList() {
 
     try {
       const res = await fetch(
-        `http://localhost:5000/api/supplier/${id}`,
+        `/api/supplier/${id}`,
         { method: "DELETE" }
       );
 

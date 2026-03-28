@@ -18,7 +18,10 @@ import pricingManagementRouter from "./routes/pricingManagement.js";
 const app = express();
 const PORT = process.env.nodejs_port || 5000;
 
-app.use(cors());
+app.use(cors({
+  origin: true,
+  credentials: true
+}));
 app.use(express.json());
 
 // 🔥 ADD THIS
@@ -42,6 +45,6 @@ app.use("/api/sales-invoice",salesInvoiceRouter);
 app.use("/api/preview", previewOrderRouter);
 app.use("/api/export-pdf", exportPdfRouter);
 app.use("/api/pricing", pricingManagementRouter);
-app.listen(PORT,"0.0.0.0", () => {
+app.listen(PORT, "0.0.0.0", () => {
   console.log(`Server running on port ${PORT}`);
 });

@@ -16,7 +16,7 @@ function AddSupplierPriceModal({ isOpen, onClose, onAdd }) {
     const [supplier,setSupplier] = useState([])
     const fetchSuppliers = async () => {
       try {
-        const res = await fetch("http://localhost:5000/api/supplier");
+        const res = await fetch("/api/supplier");
         const object = await res.json();
         setSupplier(object);
       } catch (err) {

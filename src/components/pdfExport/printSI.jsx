@@ -8,7 +8,7 @@ export default function PrintSI() {
   const [purchaseItems, setPurchaseItems] = useState([]);
 
   useEffect(() => {
-    fetch(`http://localhost:5000/api/sales-invoice/${si}`)
+    fetch(`/api/sales-invoice/${si}`)
       .then(res => res.json())
       .then(setData)
       .catch(console.error);

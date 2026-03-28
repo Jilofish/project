@@ -22,7 +22,7 @@ function DeliveryStatusModal({
             setLoadingHistory(true);
             try {
             const response = await fetch(
-                `http://localhost:5000/api/${transactType}/delivery-status-history/${purchaseOrderId}`
+                `/api/${transactType}/delivery-status-history/${purchaseOrderId}`
             );
 
             const data = await response.json();
@@ -44,7 +44,7 @@ function DeliveryStatusModal({
         
         try {
             const response = await fetch(
-                `http://localhost:5000/api/${transactType}/update-delivery-status/${purchaseOrderId}`,
+                `/api/${transactType}/update-delivery-status/${purchaseOrderId}`,
                 {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },

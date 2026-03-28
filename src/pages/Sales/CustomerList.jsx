@@ -164,7 +164,7 @@ function CustomerList() {
     const [stats,setStats] = useState([]);
     const fetchCustomers = async () => {
       try {
-        const res = await fetch('http://localhost:5000/api/customers');
+        const res = await fetch('/api/customers');
         const data = await res.json();
         setOrders(data);
       } catch (error) {
@@ -173,7 +173,7 @@ function CustomerList() {
     };
     const fetchStats = async () => {
     try {
-        const res = await fetch("http://localhost:5000/api/customers/stats");
+        const res = await fetch("/api/customers/stats");
         const data = await res.json();
         setStats(data);
     } catch (err) {
@@ -239,7 +239,7 @@ function CustomerList() {
       console.log("Saving edit for customer ID:", updatedData.id, "with data:", updatedData);
         try {
           const res = await fetch(
-            `http://localhost:5000/api/customers/${updatedData.id}`,
+            `/api/customers/${updatedData.id}`,
             {
               method:"PUT",
               headers:{
@@ -268,7 +268,7 @@ function CustomerList() {
 
       try {
           const res = await fetch(
-          `http://localhost:5000/api/customers/${id}`,
+          `/api/customers/${id}`,
           { method: "DELETE" }
           );
 

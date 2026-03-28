@@ -3,7 +3,7 @@ export const fetchPoPreview = async (transactionDate) => {
 
   try {
     const res = await fetch(
-      `http://localhost:5000/api/preview/po?transaction_date=${transactionDate}`
+      `/api/preview/po?transaction_date=${transactionDate}`
     );
 
     if (!res.ok) throw new Error("Failed to fetch");
@@ -20,7 +20,7 @@ export const fetchSIPreview = async (transactionDate) => {
 
   try {
     const res = await fetch(
-      `http://localhost:5000/api/preview/si?transaction_date=${transactionDate}`
+      `/api/preview/si?transaction_date=${transactionDate}`
     );
 
     if (!res.ok) throw new Error("Failed to fetch");

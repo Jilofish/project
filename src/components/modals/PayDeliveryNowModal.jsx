@@ -26,7 +26,7 @@ function PayDeliveryNowModal({ isOpen, onClose , displayData, transactType}) {
     try {
         
         const response = await fetch(
-        `http://localhost:5000/api/${transactType}/payment/${displayData.id}`,
+        `/api/${transactType}/payment/${displayData.id}`,
         {
             method: "PATCH",
             headers: { "Content-Type": "application/json" },
