@@ -21,6 +21,7 @@ const TYPE_LABELS = {
   VIP: "Commissary Items",
   VACUUM: "Valuable Items",
 };
+
 /* -------------------------------------------------------------------------- */
 /*                             MAIN COMPONENT                                 */
 /* -------------------------------------------------------------------------- */
@@ -82,6 +83,7 @@ function AddPurchaseOrderModal({ isOpen, onClose, onAddPurchase, itemList}) {
     );
     setIsEditItemModalOpen(false);
     };
+    
   const handleClose = () => {
     resetForm();
     onClose(); // this is the parent's closeModal()
@@ -163,9 +165,6 @@ function AddPurchaseOrderModal({ isOpen, onClose, onAddPurchase, itemList}) {
     }
 
     const savedPurchase = await response.json(); 
-    // 👆 contains { id, po }
-
-    // 2️⃣ UPLOAD RECEIPT (OPTIONAL)
     if (receiptFile) {
       const formData = new FormData();
       formData.append("file", receiptFile);
@@ -248,9 +247,8 @@ function AddPurchaseOrderModal({ isOpen, onClose, onAddPurchase, itemList}) {
 
   const handleBrandChange = (index, productId) => {
     const selectedProduct = itemList.find(
-      (product) => product.id === Number(productId)
+      (product) => product.id === productId
     );
-
     if (!selectedProduct) return;
 
     const updatedItems = [...purchaseItems];
@@ -264,9 +262,8 @@ function AddPurchaseOrderModal({ isOpen, onClose, onAddPurchase, itemList}) {
       type: selectedProduct.item_type,
       unit_price: Number(selectedProduct.suggested_retail_price),
 
-      // 🔹 Reset quantity when brand changes
+      //reset quantity to 1 when brand changes
       quantity: 1,
-
       // 🔹 Recalculate line total
       line_total:
         1 * Number(selectedProduct.suggested_retail_price),
@@ -285,6 +282,17 @@ function AddPurchaseOrderModal({ isOpen, onClose, onAddPurchase, itemList}) {
 
     setPurchaseItems(updatedItems);
   };
+  const handleUnitPriceChange = (index, value) => {
+        const updatedItems = [...purchaseItems];
+
+        const price = Number(value);
+
+        updatedItems[index].unit_price = price;
+        updatedItems[index].line_total =
+            Number(updatedItems[index].quantity) * price;
+
+        setPurchaseItems(updatedItems);
+    };
   /* ----------------------------- EFFECTS --------------------------------- */
 
   useEffect(() => {
@@ -316,7 +324,6 @@ function AddPurchaseOrderModal({ isOpen, onClose, onAddPurchase, itemList}) {
     loadPreview();
   }, [isOpen, formValues.transaction_date]);
   /* ----------------------------- GUARD ----------------------------------- */
-
   if (!isOpen) return null;
 
   /* ----------------------------- JSX ------------------------------------- */
@@ -412,11 +419,18 @@ function AddPurchaseOrderModal({ isOpen, onClose, onAddPurchase, itemList}) {
                         <div className="overflow-x-auto pb-3">
                             <div className="flex items-center justify-between mb-3">
                                 <h1 className="text-[#535353] dark:text-white text-xl font-bold">Product List</h1>
-                                {/* BUTTON: Triggering the AddItemModal */}
+                               
                                 <button
                                     type="button"
-                                    onClick={handleOpenItemModal} // <-- NEW HANDLER
-                                    className="flex items-center space-x-2 py-2 px-4 bg-blue-500 text-white rounded-lg cursor-pointer hover:shadow-lg transition-all">
+                                    onClick={handleOpenItemModal}
+                                    disabled={!formValues.supplier}
+                                    className={`
+                                        flex items-center space-x-2 py-2 px-4 rounded-lg transition-all
+                                        ${!formValues.supplier 
+                                            ? "bg-gray-400 cursor-not-allowed opacity-60" 
+                                            : "bg-blue-500 text-white hover:shadow-lg cursor-pointer"}
+                                    `}
+                                >
                                     <Plus className="w-4 h-4" />
                                     <span className="text-sm font-medium">Add Brand</span>
                                 </button>
@@ -466,8 +480,15 @@ function AddPurchaseOrderModal({ isOpen, onClose, onAddPurchase, itemList}) {
                                                     className="w-24 px-2 py-1 rounded-md border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-sm"
                                                   />
                                                 </td>
-                                                <td className="p-4 text-sm text-slate-700 dark:text-slate-200">
-                                                  ₱{Number(item.unit_price).toFixed(2)}
+                                                <td className="p-4">
+                                                  <input
+                                                      type="number"
+                                                      step="0.01"
+                                                      min="0"
+                                                      value={item.unit_price}
+                                                      onChange={(e) => handleUnitPriceChange(index, e.target.value)}
+                                                      className="w-28 px-2 py-1 rounded-md border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-sm"
+                                                  />
                                                 </td>
                                                 <td className="p-4 text-sm text-slate-700 dark:text-slate-200">
                                                   ₱{Number(item.line_total).toFixed(2)}
@@ -602,6 +623,8 @@ function AddPurchaseOrderModal({ isOpen, onClose, onAddPurchase, itemList}) {
                 onAddItem={handleAddLocalItem} 
                 loadItemList={itemList}
                 type="Brand"
+                isSupplier={true}
+                data={Number(formValues.supplier)}
             />
             <EditItemModal
                 isOpen={isEditItemModalOpen}

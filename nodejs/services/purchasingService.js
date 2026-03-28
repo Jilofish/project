@@ -54,6 +54,57 @@ export const getAllPurchases = async () => {
     throw error;
   }
 };
+export const getPurchaseById = async (poNumber) => {
+  try {
+    const result = await pool.query(
+      `
+      SELECT 
+        po.*,
+        json_build_object(
+          'id', s.id,
+          'businessname', s.businessname
+        ) AS supplier,
+        json_agg(
+          json_build_object(
+            'id', poi.id,
+            'purchased_order_id', poi.purchased_order_id,
+            'product_name', poi.product_name,
+            'quantity', poi.quantity,
+            'unit_price', poi.unit_price,
+            'line_total', poi.line_total,
+            'type', poi.type,
+            'expected_quantity', poi.expected_quantity,
+            'status', poi.status,
+            'warehouse', poi.warehouse,
+            'item_code', poi.item_code,
+            'shipping', poi.shipping,
+            'discount', poi.discount
+          )
+        ) FILTER (WHERE poi.id IS NOT NULL) AS purchased_order_item
+      FROM purchased_order po
+      LEFT JOIN supplier s ON s.id = po.supplier_id
+      LEFT JOIN purchased_order_item poi
+        ON poi.purchased_order_id = po.id
+      WHERE po.transaction_status = 'Active'
+        AND po.po = $1
+      GROUP BY po.id, s.id
+      ORDER BY po.created_at DESC
+      `,
+      [poNumber]
+    );
+    if (result.rows.length === 0) {
+      return null;
+    }
+    const row = result.rows[0];
+    return {
+      ...row,
+      supplier_id: Number(row.supplier_id)
+    };
+  } catch (error) {
+    console.error("❌ getPurchaseById:", error.message);
+    throw error;
+  }
+};
 
 export const createPurchase = async (transaction) => {
   const client = await pool.connect();

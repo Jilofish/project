@@ -2,43 +2,35 @@ import React, { useEffect, useState } from 'react';
 import { X } from 'lucide-react';
 import CustomFormSelect from '../filter/CustomFormSelect';
 
-// 1. Data mapped to the standard value/label format
-const supplierData = [
-    { supplier: 'Earl Meats Inc.' },
-    { supplier: 'Javier Meats' },
-    { supplier: 'Betez Trading' }
-];
-
-
 
 function AddVIPPriceModal({ isOpen, onClose, onAdd }) {
-    const [data, setData] = useState({ supplier: '', price: '' });
-    const [supplier,setSupplier] = useState([])
-    const fetchSuppliers = async () => {
+    const [data, setData] = useState({ customer: '', vip_price: '' });
+    const [customer,setCustomer] = useState([])
+    const fetchCustomers = async () => {
       try {
-        const res = await fetch("http://localhost:5000/api/supplier");
+        const res = await fetch("http://localhost:5000/api/customers");
         const object = await res.json();
-        setSupplier(object);
+        setCustomer(object);
       } catch (err) {
-        console.error("Failed to load suppliers", err);
+        console.error("Failed to load customers", err);
       }
     };
     useEffect(()=>{
-        fetchSuppliers();
+        fetchCustomers();
     },[isOpen]);
 
-    const supplierOptions = supplier.map(item => ({
-        value: item.businessname, 
-        label: item.businessname 
+    const customerOptions = customer.map(item => ({
+        value: item.id, 
+        label: item.name 
     }));
     const handleSubmit = (e) => {
         e.preventDefault();
-        if (!data.supplier || !data.price) {
-            alert("Please select a supplier and enter a price.");
+        if (!data.customer || !data.vip_price) {
+            alert("Please select a customer and enter a VIP price.");
             return;
         }
         onAdd(data);
-        setData({ supplier: '', price: '' }); // Reset
+        setData({ customer: '', vip_price: '' }); // Reset
     };
    if (!isOpen) return null;
     return (
@@ -53,12 +45,20 @@ function AddVIPPriceModal({ isOpen, onClose, onAdd }) {
                 
                 <form onSubmit={handleSubmit} className="p-6 space-y-5">
                     <CustomFormSelect 
-                        label="Select Supplier"
-                        name="supplier"
-                        options={supplierOptions} // Now contains {value, label}
-                        initialValue={data.supplier}
-                        onSelect={(val) => setData({...data, supplier: val})}
-                        placeholder="Choose a supplier..."
+                        label="Select Customer"
+                        name="customer"
+                        options={customerOptions} // Now contains {value, label}
+                        initialValue={data.customer}
+                        onSelect={(value, name) => {
+                            const selected = customer.find(c => c.id === value);
+
+                            setData(prev => ({
+                                ...prev,
+                                [name]: value, // ID
+                                customer_name: selected?.name || ""
+                            }));
+                        }}
+                        placeholder="Choose a customer..."
                     />
 
                     <div>
@@ -66,8 +66,8 @@ function AddVIPPriceModal({ isOpen, onClose, onAdd }) {
                         <input 
                             type="number" 
                             step="0.01"
-                            value={data.price}
-                            onChange={(e) => setData({...data, price: e.target.value})}
+                            value={data.vip_price}
+                            onChange={(e) => setData({...data, vip_price: e.target.value})}
                             className="w-full px-3 py-1.5 rounded-md border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 dark:text-white outline-none focus:ring-2 focus:ring-blue-500"
                             placeholder="0.00"
                         />

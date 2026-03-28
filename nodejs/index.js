@@ -12,6 +12,8 @@ import inventoryRouter from "./routes/inventory.js";
 import dashboardRouter from "./routes/dashboard.js";
 import previewOrderRouter from "./routes/previewOrder.js";
 import salesInvoiceRouter from "./routes/salesInvoice.js";
+import exportPdfRouter from "./routes/exportfile.js";
+import pricingManagementRouter from "./routes/pricingManagement.js";
 
 const app = express();
 const PORT = process.env.nodejs_port || 5000;
@@ -38,7 +40,8 @@ app.use("/api/inventory",inventoryRouter);
 app.use("/api/dashboard",dashboardRouter);
 app.use("/api/sales-invoice",salesInvoiceRouter);
 app.use("/api/preview", previewOrderRouter);
-
+app.use("/api/export-pdf", exportPdfRouter);
+app.use("/api/pricing", pricingManagementRouter);
 app.listen(PORT,"0.0.0.0", () => {
   console.log(`Server running on port ${PORT}`);
 });

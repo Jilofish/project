@@ -9,6 +9,20 @@ export const getSales = async (req,res) =>{
         res.status(500).json({error:"Failed to get all sales"});
     }
 }
+export const getSalesInvoiceById = async (req, res) => {
+  try {
+    const siNumber = req.params.si;
+    const salesInvoice = await salesInvoiceService.getSalesInvoiceById(siNumber);
+    if (!salesInvoice) {
+      return res.status(404).json({ message: "Sales Invoice not found" });
+    }
+    res.json(salesInvoice);
+  }
+    catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Failed to fetch sales invoice" });
+  }
+};
 
 export const addSalesInvoice = async(req,res) =>{
     try {

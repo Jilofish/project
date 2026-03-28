@@ -2,16 +2,53 @@ import { useState, useMemo, useEffect } from 'react';
 import { X } from 'lucide-react';
 import CustomFormSelect from '../filter/CustomFormSelect';
 
-const TYPE_LABELS = {
-  UNPACK: "Trading Items",
-  VIP: "Commissary Items",
-  VACUUM: "Valuable Items",
-};
 
-function AddItemModal({ isOpen, onClose, onAddItem, loadItemList, type }) {
+function AddItemModal({ isOpen, onClose, onAddItem, loadItemList, type, isSupplier, data }) {
 
   const isSellingItem = type === "Item";
+  const [price,setPrice] = useState(0);
+  const [isPriceManuallyEdited, setIsPriceManuallyEdited] = useState(false);
+  console.log("AddItemModal received data:", { isOpen, type, isSupplier, data });
+  const selectedSupplierPrice = async () => {
+    if (!selectedItem) return;
 
+    const item_id = Number(selectedItem?.id);
+
+    try {
+      console.log(
+        `Fetching supplier price for supplierId: ${data}, itemId: ${item_id}`
+      );
+
+      const res = await fetch(
+        `http://localhost:5000/api/pricing/supplier/${data}/item/${item_id}`
+      );
+
+      const result = await res.json();
+      setPrice(result.supp_price ?? null);
+
+    } catch (err) {
+      console.error("Error fetching supplier price:", err);
+      setPrice(null); // ← fallback
+    }
+  };
+
+  const selectedVIPPrice = async() => {
+    if (!selectedItem) return;
+    const item_id = Number(selectedItem?.id);
+    try {
+      console.log(
+        `Fetching VIP price for customerId: ${data}, itemId: ${item_id}`
+      );
+      const res = await fetch(
+        `http://localhost:5000/api/pricing/customer/${data}/item/${item_id}`
+      );
+      const result = await res.json();
+      setPrice(result.vip_price ?? null);
+    } catch (err) {
+      console.error("Error fetching VIP price:", err);
+      setPrice(null); // ← fallback
+    }
+  };
   /* =======================
      ITEM FORM STATE
   ======================= */
@@ -51,25 +88,38 @@ function AddItemModal({ isOpen, onClose, onAddItem, loadItemList, type }) {
     ) || null;
 
   }, [itemForm.brand, loadItemList]);
+  useEffect(() => {
+    if (!isOpen) return;
+    if (!selectedItem) return;
+
+    if (isSupplier) {
+      selectedSupplierPrice();
+    } else if (!isSupplier && type === "Item") {
+      selectedVIPPrice();
+    } 
+  }, [isSupplier, selectedItem]);
 
   /* =======================
      AUTO POPULATE PRICE + TYPE
   ======================= */
-  useEffect(() => {
-    if (!selectedItem) return;
 
-    setItemForm((prev) => ({
-      ...prev,
-      id: selectedItem.id,
-      unitPrice: isSellingItem
-        ? selectedItem.selling_price ?? 0
-        : selectedItem.suggested_retail_price ?? 0,
-      type: TYPE_LABELS[selectedItem.item_type] ?? selectedItem.item_type,
-    }));
 
-  }, [selectedItem, isSellingItem]);
+    useEffect(() => {
+      if (!selectedItem) return;
 
-  /* =======================
+      const fallbackPrice =
+        Number(selectedItem.suggested_retail_price) || 0;
+
+      setItemForm((prev) => ({
+        ...prev,
+        id: selectedItem.id,
+        unitPrice: isPriceManuallyEdited
+          ? prev.unitPrice
+          : (price ?? fallbackPrice),
+        type: selectedItem.item_type,
+      }));
+    }, [selectedItem, price, isPriceManuallyEdited]);
+      /* =======================
      AUTO TOTAL CALCULATION
   ======================= */
   useEffect(() => {
@@ -89,6 +139,10 @@ function AddItemModal({ isOpen, onClose, onAddItem, loadItemList, type }) {
     itemForm.shipping,
     itemForm.discount,
   ]);
+  useEffect(() => {
+    setIsPriceManuallyEdited(false);
+  }, [selectedItem]);
+ 
 
   /* =======================
      MODAL GUARD
@@ -107,6 +161,10 @@ function AddItemModal({ isOpen, onClose, onAddItem, loadItemList, type }) {
           ? ""
           : parseFloat(value)
         : value;
+
+    if (name === "unitPrice") {
+      setIsPriceManuallyEdited(true); // 👈 IMPORTANT
+    }
 
     setItemForm((prev) => ({
       ...prev,
@@ -169,7 +227,6 @@ function AddItemModal({ isOpen, onClose, onAddItem, loadItemList, type }) {
       total: 0,
     });
   };
-
   /* =======================
      RENDER
   ======================= */
@@ -276,18 +333,16 @@ function AddItemModal({ isOpen, onClose, onAddItem, loadItemList, type }) {
 
             <div>
               <label className="block text-sm font-medium text-slate-700 dark:text-slate-300">
-                {isSellingItem ? "Selling Price" : "Unit Price"}
+                {isSellingItem ? "Selling Price" : "Item Price"}
               </label>
               <input
                 type="number"
                 step="0.01"
                 min="0"
                 name="unitPrice"
-                value={itemForm.unitPrice}
+                value={itemForm.unitPrice ?? ""}
                 onChange={handleItemChange}
-                disabled={!isSellingItem}
-                className={`w-full mt-1 px-3 py-1.5 rounded-md border border-slate-300 dark:border-slate-600
-                  ${!isSellingItem ? "bg-slate-200 dark:bg-slate-800 cursor-not-allowed" : ""}`}
+                className="w-full mt-1 px-3 py-1.5 rounded-md border border-slate-300 dark:border-slate-600"
                 required
               />
             </div>

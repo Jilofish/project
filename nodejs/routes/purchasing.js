@@ -66,6 +66,6 @@ router.patch(
   purchasingController.uploadReceipt
 );
 
-
+router.get("/:po", purchasingController.getPurchaseById);
 
 export default router;

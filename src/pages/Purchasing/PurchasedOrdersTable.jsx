@@ -46,7 +46,6 @@ function PurchasedOrdersTable({ orders, onViewReceipt, onDelete ,suppliers, onVi
       if (!dateString) return "—";
       return new Date(dateString).toISOString().split("T")[0];
     };
-    
     return (
         <div className="overflow-x-auto pb-6 mt-4">
           <table className="w-full">
@@ -114,6 +113,7 @@ function PurchasedOrdersTable({ orders, onViewReceipt, onDelete ,suppliers, onVi
                   };
                   };
                     return (
+                      
                       <tr key={order.po} className="border-b border-slate-200/50 dark:border-slate-700/50 hover:bg-slate-50/50 dark:hover:bg-slate-800/50 transition-colors">
                         <td className="p-4" key={index}>
                           <span className="text-sm font-medium text-blue-500">
@@ -122,7 +122,7 @@ function PurchasedOrdersTable({ orders, onViewReceipt, onDelete ,suppliers, onVi
                         </td>
                         <td className="p-4">
                           <span className="text-sm text-slate-800 dark:text-white">
-                            {order.supplier.businessname ?? "—"}
+                            {order.supplier.businessname ?? order.businessname ?? "—"}
                           </span>
                         </td>
                         <td className="p-4">

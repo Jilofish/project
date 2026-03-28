@@ -107,7 +107,9 @@ function SupplierList() {
 
       if (!res.ok) throw new Error("Update failed");
 
-      const savedSupplier = await res.json();
+      // ✅ check if response has content
+      const text = await res.text();
+      const savedSupplier = text ? JSON.parse(text) : null;
 
       setSuppliers((prev) =>
         prev.map((s) => (s.id === savedSupplier.id ? savedSupplier : s))

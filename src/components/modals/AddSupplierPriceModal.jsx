@@ -28,7 +28,7 @@ function AddSupplierPriceModal({ isOpen, onClose, onAdd }) {
     },[isOpen]);
 
     const supplierOptions = supplier.map(item => ({
-        value: item.businessname, 
+        value: item.id, 
         label: item.businessname 
     }));
     const handleSubmit = (e) => {
@@ -57,7 +57,14 @@ function AddSupplierPriceModal({ isOpen, onClose, onAdd }) {
                         name="supplier"
                         options={supplierOptions} // Now contains {value, label}
                         initialValue={data.supplier}
-                        onSelect={(val) => setData({...data, supplier: val})}
+                        onSelect={(value, name) => {
+                        const selected = supplier.find(s => s.id === value);
+                            setData(prev => ({
+                                ...prev,
+                                [name]: value, // ID
+                                supplier_name: selected?.businessname || ""
+                            }));
+                        }}
                         placeholder="Choose a supplier..."
                     />
 

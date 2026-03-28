@@ -9,7 +9,7 @@ export const getAllCustomers = async (req, res) => {
     }
 };
 
-export const addCustomer = async (req, res) => {
+export const addCustomerController = async (req, res) => {
   try {
     const data = await customerListService.addCustomers(req.body);
     res.status(201).json(data);
@@ -19,15 +19,15 @@ export const addCustomer = async (req, res) => {
   }
 };
 
-export const updateCustomer = async(req ,res)=> {
+export const updateCustomerController = async(req ,res)=> {
     try {
         const updateData = req.body;
         const data = await customerListService.updateCustomer(req.params.id, updateData);
 
-        if (!data || data.length === 0) {
+        if (!data) {
             return res.status(404).json({message: "Customers not found"});
         }
-        res.json(data[0]);
+        res.json(data); 
     } catch (error) {
         res.status(500).json({message:"Failed to update customers"})
     }
@@ -42,7 +42,7 @@ export const deleteCustomerData = async(req,res)=>{
     }
 };
 
-export const getCustomerStats = async (req,res) => {
+export const getCustomerStatsController = async (req,res) => {
   try {
     const stats = await customerListService.getCustomerStats();
     res.json(stats);

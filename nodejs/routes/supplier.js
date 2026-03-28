@@ -7,7 +7,7 @@ const router = express.Router();
 router.get("/", supplierController.getAllSuppliers);
 router.get("/stats", supplierController.getSupplierStats);
 router.post("/", supplierController.addSupplier);
-router.put("/:id", supplierController.updateSupplier);
+router.put("/:id", supplierController.updateSupplierController);
 router.delete("/:id", supplierController.deleteSupplier);
 
 export default router;

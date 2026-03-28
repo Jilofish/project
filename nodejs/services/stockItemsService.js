@@ -10,7 +10,6 @@ export const getAllStockItems = async () => {
       i.quantity,
       i.threshold_count,
       i.suggested_retail_price,
-      i.selling_price,
       i.status,
       i.item_code,
       w.id AS warehouse_id,
@@ -30,9 +29,7 @@ export const getAllStockItems = async () => {
 ============================================================ */
 export const createStockItem = async (stock) => {
   console.log("Creating stock item with data:", stock);
-  if (!stock?.name) throw new Error("Item name is required.");
-
-  const query = `
+  const insertItemQuery = `
     INSERT INTO items (
       item_name,
       quantity,
@@ -42,27 +39,53 @@ export const createStockItem = async (stock) => {
       threshold_count,
       status,
       item_type,
-      selling_price
+      brand
     )
-    VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+    VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9,$10)
     RETURNING *
   `;
 
-  const values = [
+  const insertValues = [
     stock.name,
-    Number(stock.quantity) || 0,
+    Number(stock.quantity) || 100,
     Number(stock.price) || 0,
-    stock.item_code ?? "ITM-" + String(stock.id).padStart(3, "0"),
+    "ITM-0000",
     stock.warehouse_id,
     Number(stock.threshold_count) || 0,
     "In Stock",
     stock.item_type,
-    Number(stock.price) || 0
+    Number(stock.price) || 0,
+    Number(stock.brand)
   ];
 
-  const { rows } = await pool.query(query, values);
+  const { rows } = await pool.query(insertItemQuery, insertValues);
   console.log("Inserted stock item:", rows[0]);
-  return rows[0];
+  const item = rows[0];
+
+  const managePricingQuery = `
+    INSERT INTO item_supplier_price (item_id, supp_id, supp_price)
+    VALUES ($1, $2, $3)
+  `;
+  const manageVIPQuery = `
+    INSERT INTO item_vip_price (item_id, cust_id, vip_price)
+    VALUES ($1, $2, $3)
+  `;
+  for (const price of stock.pricing) {
+    await pool.query(managePricingQuery, [item.id, price.supplier, price.price]);
+  }
+  for (const price of stock.vip_pricing) {
+    await pool.query(manageVIPQuery, [item.id, price.customer, price.vip_price]);
+  }
+  const itemCode = "ITM-" + String(item.id).padStart(4, "0");
+
+  await pool.query(
+    `UPDATE items SET item_code = $1 WHERE id = $2`,
+    [itemCode, item.id]
+  );
+
+  item.item_code = itemCode;
+
+  return item;
 };
 
 

@@ -50,6 +50,7 @@ function StockManagement() {
         }
     }, [isAddProductModalOpen]);
 
+
     const handleDataChange = useCallback((count) => {
         setTotalItems(count);
         setCurrentPage(1); 
@@ -155,6 +156,8 @@ function StockManagement() {
                                     iconProps={iconProps}
                                     onEditStockClick={handleEditClick}
                                     onDeleteClick={handleDeleteClick}
+                                    onAddProductClose={isAddProductModalOpen}
+                                    onDeleteProductClose={isDeleteModalOpen}
                                 />
                             </div>
                         )}

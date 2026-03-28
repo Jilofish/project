@@ -10,7 +10,20 @@ export const getAllPurchases = async (req, res) => {
     res.status(500).json({ message: "Failed to fetch purchases" });
   }
 };
-
+export const getPurchaseById = async (req, res) => {
+  try {
+    const po = req.params.po;
+    const data = await purchasingService.getPurchaseById(po);
+    if (!data) {
+      return res.status(404).json({ message: "Purchase not found" });
+    }
+    res.json(data);
+  }
+    catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Failed to fetch purchase" });
+  }
+};
 export const createPurchase = async (req, res) => {
   try {
     const result = await purchasingService.createPurchase(req.body);

@@ -68,21 +68,29 @@ function CreatePurchase() {
     };
 
     const fetchPurchases = async () => {
-    try {
-        const res = await fetch("http://localhost:5000/api/purchasing");
-        const data = await res.json();
-        const ordersWithTotals = data.map(order => ({
-        ...order,
-        total_quantity: order.purchased_order_item?.reduce(
-            (sum, item) => sum + Number(item.quantity || 0),
-            0
-        )
-        }));
+        try {
+            const res = await fetch("http://localhost:5000/api/purchasing");
+            const data = await res.json();
 
-        setOrders(ordersWithTotals);
-    } catch (err) {
-        console.error("Failed to fetch purchased orders", err);
-    }
+            const ordersWithTotals = data.map(order => ({
+            ...order,
+
+            // ✅ Fix the date here
+            transaction_date: order.transaction_date
+                ? order.transaction_date.split("T")[0]
+                : null,
+
+            total_quantity: order.purchased_order_item?.reduce(
+                (sum, item) => sum + Number(item.quantity || 0),
+                0
+            )
+            }));
+
+            setOrders(ordersWithTotals);
+
+        } catch (err) {
+            console.error("Failed to fetch purchased orders", err);
+        }
     };
 
     const fetchSuppliers = async () => {
@@ -99,6 +107,7 @@ function CreatePurchase() {
             const res = await fetch("http://localhost:5000/api/purchasing/items");
             const data = await res.json();
             setItemList(data);
+
         } catch (err) {
             console.error("Failed to fetch item list", err);
         }
@@ -130,7 +139,6 @@ function CreatePurchase() {
     };
 
     const handleAddNewPurchase = (newPurchase) => {
-    setOrders((prev) => [...prev, newPurchase]);
     fetchPurchases();
     fetchSuppliers();
     fetchStats();
@@ -311,8 +319,9 @@ function CreatePurchase() {
         fetchStats();
         fetchBrands();
     }
-    }, [isEditModalOpen, isViewModalOpen, isModalOpen]);
     
+    }, [isEditModalOpen, isViewModalOpen, isModalOpen]);
+    console.log("Orders after fetch:", orders); // Debugging log
     return (
         <div>
             <PurchasedStatsGrid stats={stats}/>

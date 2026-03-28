@@ -61,7 +61,6 @@ function CreateInvoiceModal({ isOpen, onClose, onAddSales,itemList}) {
         fetchCustomers();
     }, []);
 
-
     useEffect(() => {
     if (!isOpen) return;
 
@@ -72,7 +71,20 @@ function CreateInvoiceModal({ isOpen, onClose, onAddSales,itemList}) {
 
     loadPreview();
     }, [isOpen, formValues.transaction_date]);
+    const getVipCustomerId = (customerId) => {
+        console.log("Determining VIP status for customer ID:", customerId);
+        console.log("Customer list:", customers);
 
+        const foundCustomer = customers.find(
+            (c) => Number(c.id) === Number(customerId)
+        );
+
+        console.log("Matched customer:", foundCustomer);
+
+        return foundCustomer?.cus_type === "VIP"
+            ? foundCustomer.id
+            : 0;
+    };
     const paymentTotals = useMemo(() => {
         return calculatePurchaseTotals(purchaseItems);
     }, [purchaseItems]);
@@ -282,7 +294,7 @@ function CreateInvoiceModal({ isOpen, onClose, onAddSales,itemList}) {
     };
     const handleItemChange = (index, productId) => {
         const selectedProduct = itemList.find(
-        (product) => product.id === Number(productId)
+        (product) => product.id === productId
         );
 
         if (!selectedProduct) return;
@@ -296,14 +308,14 @@ function CreateInvoiceModal({ isOpen, onClose, onAddSales,itemList}) {
         id: selectedProduct.id,
         product_name: selectedProduct.item_name,
         type: selectedProduct.item_type,
-        unit_price: Number(selectedProduct.selling_price),
+        unit_price: Number(selectedProduct.suggested_retail_price),
 
         // 🔹 Reset quantity when item changes
         quantity: 1,
 
         // 🔹 Recalculate line total
         line_total:
-            1 * Number(selectedProduct.selling_price),
+            1 * Number(selectedProduct.suggested_retail_price),
         };
 
         setPurchaseItems(updatedItems);
@@ -498,8 +510,15 @@ function CreateInvoiceModal({ isOpen, onClose, onAddSales,itemList}) {
                                 {/* BUTTON: Triggering the AddItemModal */}
                                 <button
                                     type="button"
-                                    onClick={handleOpenItemModal} // <-- NEW HANDLER
-                                    className="flex items-center space-x-2 py-2 px-4 bg-blue-500 text-white rounded-lg cursor-pointer hover:shadow-lg transition-all">
+                                    onClick={handleOpenItemModal}
+                                    disabled={!formValues.customer}
+                                    className={`
+                                        flex items-center space-x-2 py-2 px-4 rounded-lg transition-all
+                                        ${!formValues.customer 
+                                            ? "bg-gray-400 cursor-not-allowed opacity-60" 
+                                            : "bg-blue-500 text-white hover:shadow-lg cursor-pointer"}
+                                    `}
+                                    >
                                     <Plus className="w-4 h-4" />
                                     <span className="text-sm font-medium">Add Item</span>
                                 </button>
@@ -599,7 +618,8 @@ function CreateInvoiceModal({ isOpen, onClose, onAddSales,itemList}) {
                                         {computationFileName}
                                     </span>
                                     
-                                    <input type="file" id="file_input" className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" onChange={handleComputationFileChange}/>
+                                    <input type="file" id="file_input" className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" onChange={handleComputationFileChange} required/>
+                                    
                                 </div>
                                 {/* PROOF UPLOAD FIELD */}
                                 <label className="block mb-3 text-sm font-medium text-slate-700 dark:text-slate-300" htmlFor="file_input">Delivery Receipt</label>
@@ -612,7 +632,7 @@ function CreateInvoiceModal({ isOpen, onClose, onAddSales,itemList}) {
                                         {receiptFileName}
                                     </span>
                                     
-                                    <input type="file" id="file_input" className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" onChange={handlePaymentFileChange}/>
+                                    <input type="file" id="file_input" className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" onChange={handlePaymentFileChange} required/>
                                 </div>
                             </div>
                             
@@ -701,6 +721,8 @@ function CreateInvoiceModal({ isOpen, onClose, onAddSales,itemList}) {
                 onAddItem={handleAddLocalItem} 
                 loadItemList={itemList}
                 type="Item"
+                isSupplier={false}
+                data={getVipCustomerId(formValues.customer)}
             />
             <AddCustomerModal
                 isOpen={isAddModalOpen} 

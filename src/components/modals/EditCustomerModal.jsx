@@ -25,13 +25,26 @@ function EditCustomerModal({ isOpen, onClose, customerData, onSave }) {
         status:'',
         bankaccount:''
     });
-    
+    const defaultForm = {
+        name: '',
+        business_name: '',
+        address: '',
+        email: '',
+        contactno: '',
+        facebook_name: '',
+        cus_type: '',
+        status: '',
+        bankaccount: ''
+    };
     // Sync state when supplierData changes
     useEffect(() => {
         if (customerData) {
-            setFormData(customerData);
+            setFormData({
+                ...defaultForm,
+                ...customerData
+            });
         } else {
-            setFormData({});
+            setFormData(defaultForm);
         }
     }, [customerData]);
 
@@ -131,7 +144,12 @@ function EditCustomerModal({ isOpen, onClose, customerData, onSave }) {
 
                     <div className = "mt-5">
                         <label htmlFor="Address" className="block text-sm font-medium text-slate-700 dark:text-slate-300">Address</label>
-                            <input type= "text" id="Address" name="Address" rows="2" value={formData.address} onChange={handleInputChange} placeholder="123 Main Street, Quezon City"
+                            <input
+                            type="text"
+                            id="Address"
+                            name="address" // ✅ FIXED
+                            value={formData.address || ""}
+                            onChange={handleInputChange}
                             className="w-full mt-1 px-3 py-1.5 rounded-md border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 shadow-xs focus:outline-none focus:border-blue-500 dark:focus:border-blue-500 text-slate-700 dark:text-slate-200" />
                     </div>
 

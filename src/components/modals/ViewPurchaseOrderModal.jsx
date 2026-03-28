@@ -81,22 +81,39 @@ function ViewPurchaseOrderModal({ isOpen, onClose, displayData, itemList}) {
         console.error(error);
         }
     };
-    const handleExport = () => {
-    if (!exportRef.current) return;
-        // ✅ TEMPORARILY FORCE RGB COLORS
-    exportRef.current.classList.add("force-export");
-    html2pdf()
-        .set({
-        margin: 10,
-        filename: `${displayData.po}.pdf`,
-        html2canvas: { scale: 2 },
-        jsPDF: { unit: "mm", format: "a4" },
-        })
-        .from(exportRef.current)
-        .save()
-        .finally(() => {
-        exportRef.current.classList.remove("force-export");
-        });
+    const handleExport = async (type) => {
+        const id = type === "si" ? displayData.si : displayData.po;
+
+
+        try {
+            const res = await fetch("http://localhost:5000/api/export-pdf", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                type,   // "si" or "po"
+                id,     // actual value
+            }),
+            });
+
+            if (!res.ok) {
+            throw new Error("Export failed");
+            }
+
+            const blob = await res.blob();
+            const url = window.URL.createObjectURL(blob);
+
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = `${id}.pdf`;
+            a.click();
+
+            window.URL.revokeObjectURL(url);
+
+        } catch (err) {
+            console.error("❌ Export error:", err);
+        }
     };
     const handleClose = () => {
         onClose();
@@ -196,7 +213,6 @@ function ViewPurchaseOrderModal({ isOpen, onClose, displayData, itemList}) {
 
     handleCloseModals();
     };
-
     /* ----------------------------- EFFECTS --------------------------------- */
     const receiptPublicUrl = getReceiptPublicUrl(displayData?.receipt_url);
     /* ----------------------------- GUARD ----------------------------------- */
@@ -494,7 +510,7 @@ function ViewPurchaseOrderModal({ isOpen, onClose, displayData, itemList}) {
             <div className="flex justify-end gap-3">
                 {/* Export is always allowed */}
                 <button
-                    onClick={handleExport}
+                    onClick={() => handleExport("po")}
                     className="rounded-md bg-blue-600 px-4 py-2 text-white"
                 >
                     Export

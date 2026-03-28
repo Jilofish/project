@@ -91,23 +91,42 @@ function ViewSalesInvoiceModal({ isOpen, onClose, displayData }) {
         } catch (error) {
         console.error(error);
         }
-    };
-    const handleExport = () => {
-    if (!exportRef.current) return;
-        // ✅ TEMPORARILY FORCE RGB COLORS
-    exportRef.current.classList.add("force-export");
-    html2pdf()
-        .set({
-        margin: 10,
-        filename: `${displayData.po}.pdf`,
-        html2canvas: { scale: 2 },
-        jsPDF: { unit: "mm", format: "a4" },
-        })
-        .from(exportRef.current)
-        .save()
-        .finally(() => {
-        exportRef.current.classList.remove("force-export");
-        });
+    };//http://localhost:5000/api
+    const handleExport = async (type) => {
+        const id = type === "si" ? displayData.si : displayData.po;
+
+        console.log(`📤 Exporting ${type.toUpperCase()}:`, id);
+
+        try {
+            const res = await fetch("http://localhost:5000/api/export-pdf", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                type,   // "si" or "po"
+                id,     // actual value
+            }),
+            });
+
+            if (!res.ok) {
+            throw new Error("Export failed");
+            }
+
+            const blob = await res.blob();
+            const url = window.URL.createObjectURL(blob);
+
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = `${id}.pdf`;
+            a.click();
+
+            window.URL.revokeObjectURL(url);
+
+            console.log("✅ Export success:", id);
+        } catch (err) {
+            console.error("❌ Export error:", err);
+        }
     };
     const handleClose = () => {
         onClose();
@@ -135,7 +154,6 @@ function ViewSalesInvoiceModal({ isOpen, onClose, displayData }) {
     setPurchaseItems(prev => prev.filter(item => item.id !== id));
     };
 
-    
     /* ----------------------------- COMPUTED -------------------------------- */
     
     const paymentTotals = useMemo(() => {
@@ -208,6 +226,11 @@ function ViewSalesInvoiceModal({ isOpen, onClose, displayData }) {
     handleCloseModals();
     };
     const handleGenerateGatePass = () => {
+        const baseUrl = import.meta.env.VITE_API_BASE_URL;
+        const proofUrl = `${baseUrl}/${displayData.computation_img_url}`;
+
+        console.log("Generating Gate Pass with QR URL:", proofUrl);
+
         const element = gatePassRef.current;
 
         const options = {
@@ -221,8 +244,11 @@ function ViewSalesInvoiceModal({ isOpen, onClose, displayData }) {
         html2pdf().set(options).from(element).save();
     };
     /* ----------------------------- EFFECTS --------------------------------- */
+    const baseUrl = import.meta.env.VITE_API_BASE_URL;
     const ProofPublicUrl = getProofUrl(displayData?.payment_image_url);
+    const qrProofUrl = `${baseUrl}/${displayData?.payment_image_url}`;
     const ComputationImageURL = getComputationImageUrl(displayData?.computation_img_url);
+    console.log("displayData:", displayData);
     /* ----------------------------- GUARD ----------------------------------- */
     if (!isOpen) return null;
     /* ----------------------------- JSX ------------------------------------- */
@@ -539,10 +565,10 @@ function ViewSalesInvoiceModal({ isOpen, onClose, displayData }) {
 
             </div>
 
-            <div className="flex justify-end gap-3">
+            <div className="flex justify-end gap-3 print:hidden">
                 {/* Export is always allowed */}
                 <button
-                    onClick={handleExport}
+                    onClick={() => handleExport("si")}
                     className="rounded-md bg-blue-600 px-4 py-2 text-white"
                 >
                     Export
@@ -592,10 +618,11 @@ function ViewSalesInvoiceModal({ isOpen, onClose, displayData }) {
         </div>
         <div className="hidden">
             <div ref={gatePassRef}>
+                
                 <GatePass
                 data={displayData}
                 items={purchaseItems}
-                proofUrl={ProofPublicUrl}
+                proofUrl={qrProofUrl}
                 />
             </div>
         </div>

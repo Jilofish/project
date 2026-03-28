@@ -24,6 +24,10 @@ import Warehouse from "./pages/Warehouse";
 import ActivityLog from "./pages/ActivityLog";
 import Settings from "./pages/Settings";
 
+//Export PDF
+import PrintPO from "./components/pdfExport/printPO";
+import PrintSI from "./components/pdfExport/printSI";
+
 function App() {
   return (
     <Routes>
@@ -50,7 +54,12 @@ function App() {
         <Route path="warehouse" element={<Warehouse />} />
         <Route path="activityLog" element={<ActivityLog />} />
         <Route path="settings" element={<Settings />} />
+
+     
       </Route>
+         {/* PDF Print */}
+      <Route path="/print/po/:po" element={<PrintPO />} />
+      <Route path="/print/si/:si" element={<PrintSI />} />
     </Routes>
   );
 }

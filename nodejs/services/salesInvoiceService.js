@@ -131,6 +131,34 @@ export const addSales = async (transaction) => {
   }
 };
 
+export const getSalesInvoiceById = async (si) => {
+  const query = `
+    SELECT
+      si.*,
+      row_to_json(c) AS customer,
+      COALESCE(
+        json_agg(sii.*) FILTER (WHERE sii.id IS NOT NULL),
+        '[]'
+      ) AS sales_invoice_item
+    FROM sales_invoice si
+    LEFT JOIN customer c ON c.id = si.cust_id
+    LEFT JOIN sales_invoice_item sii
+      ON sii.sales_invoice_id = si.id
+    WHERE si.si = $1
+    GROUP BY si.id, c.id
+  `;
+
+  try {
+    const { rows } = await pool.query(query, [si]);
+    if (rows.length === 0) {
+      return null; // Not found
+    }
+    return rows[0];
+  } catch (err) {
+    console.error("Error fetching sales invoice by ID:", err);
+    throw new Error("Failed to fetch sales invoice");
+  }
+};
 /* ============================================================
    SALES STATS
 ============================================================ */

@@ -45,5 +45,6 @@ router.patch(
   uploadComputation.single("file"),
   salesInvoiceController.uploadComputation
 );
+router.get("/:si", salesInvoiceController.getSalesInvoiceById);
 
 export default router;

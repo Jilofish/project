@@ -31,18 +31,23 @@ export const addSupplier = async (req, res) => {
   }
 };
 
-export const updateSupplier = async (req, res) => {
+export const updateSupplierController = async (req, res) => {
   try {
-    const updatedSupplier = req.body;
-    const data = await supplierService.updateSupplier(req.params.id, updatedSupplier);
+    console.log("🔥 Update Supplier Controller hit with id:", req.params.id, "and body:", req.body);
+    const { id } = req.params;
 
-    if (!data || data.length === 0) {
+    const updatedSupplier = await supplierService.updateSupplier(id, req.body);
+
+    if (!updatedSupplier) {
       return res.status(404).json({ message: "Supplier not found" });
     }
-    res.json(data[0]);
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: "Failed to update supplier" });
+
+    // ✅ IMPORTANT: send JSON response
+    res.json(updatedSupplier);
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server error" });
   }
 };
 export const deleteSupplier = async (req, res) => {

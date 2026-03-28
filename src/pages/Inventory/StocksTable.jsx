@@ -22,13 +22,12 @@ const StocksData = [
 
 const ALL_OPTION = 'All';
 
-function StocksTable({ rowLimit, currentPage, onTotalDataChange, onAddProductClick, onEditStockClick, iconProps, onDeleteClick, onAddProductClose}) {
+function StocksTable({ rowLimit, currentPage, onTotalDataChange, onAddProductClick, onEditStockClick, iconProps, onDeleteClick, onAddProductClose, onDeleteProductClose }) {
     // These values match the first item in the options array below
     const [warehouseFilter, setWarehouseFilter] = useState('warehouse');
     const [statusFilter, setStatusFilter] = useState('status');
     
     const [items, setItems] =useState([]);
-    
     const fetchItems = async () => {
         try {
             const res = await fetch("http://localhost:5000/api/stock");
@@ -40,7 +39,6 @@ function StocksTable({ rowLimit, currentPage, onTotalDataChange, onAddProductCli
             quantity: item.quantity,
             threshold_count: item.threshold_count,
             suggested_retail_price: item.suggested_retail_price,
-            selling_price:item.selling_price,
             status: item.status,
             item_code: item.item_code,
             warehouse_id: item.warehouse_id ?? null,
@@ -57,10 +55,10 @@ function StocksTable({ rowLimit, currentPage, onTotalDataChange, onAddProductCli
 
     
     useEffect(() => {
-        if (!onAddProductClose) {
+        if (!onAddProductClose && !onDeleteProductClose) {
             fetchItems();
         }
-    }, [onAddProductClose]);
+    }, [onAddProductClose, onDeleteProductClose]);
 
     // 1. Extract Options (Strings only to match your CustomSelect components)
 
@@ -193,13 +191,12 @@ function StocksTable({ rowLimit, currentPage, onTotalDataChange, onAddProductCli
                         <th className="p-4 text-sm font-semibold text-slate-600 dark:text-slate-200 text-center">Item Code</th>
                         <th className="p-4 text-sm font-semibold text-slate-600 dark:text-slate-200 text-center">Qty (KG)</th>
                         <th className="p-4 text-sm font-semibold text-slate-600 dark:text-slate-200 text-center">Unit Price</th>
-                        <th className="p-4 text-sm font-semibold text-slate-600 dark:text-slate-200 text-center">Selling Price</th>
                         <th className="p-4 text-sm font-semibold text-slate-600 dark:text-slate-200 text-center">Total Value</th>
                         <th className="p-4 text-sm font-semibold text-slate-600 dark:text-slate-200 text-center">Status</th>
                         <th className="p-4 text-sm font-semibold text-slate-600 dark:text-slate-200">Actions</th>
                     </tr>
                 </thead>
-                 <tbody>
+                {/*  <tbody>
                     {paginatedData.length > 0 ? (
                         paginatedData.map((item, index) => (
                             <tr key={`${item.id}`} className="border-b border-slate-200/50 dark:border-slate-700/50 hover:bg-slate-50/50 dark:hover:bg-slate-800/50 transition-colors">
@@ -208,7 +205,6 @@ function StocksTable({ rowLimit, currentPage, onTotalDataChange, onAddProductCli
                                 <td className="p-4 text-sm text-center text-slate-800 dark:text-white">{item.item_code}</td>
                                 <td className="p-4 text-sm text-center text-slate-800 dark:text-white">{item.quantity}</td>
                                 <td className="p-4 text-sm text-center text-slate-800 dark:text-white">{item.suggested_retail_price}</td>
-                                <td className="p-4 text-sm text-center text-slate-800 dark:text-white">{item.selling_price}</td>
                                 <td className="p-4 text-sm text-center text-slate-800 dark:text-white">{item.quantity * item.suggested_retail_price}</td>
 
                                 <td className="p-4 text-center">
@@ -235,9 +231,9 @@ function StocksTable({ rowLimit, currentPage, onTotalDataChange, onAddProductCli
                             </td>
                         </tr>
                     )}
-                </tbody>
+                </tbody> */}
 
-                {/* <tbody>
+                {<tbody>
                     {paginatedData.length > 0 ? (
                         paginatedData.map((item, index) => (
                             <tr key={`${item.id}`} className="border-b border-slate-200/50 dark:border-slate-700/50 hover:bg-slate-50/50 dark:hover:bg-slate-800/50 transition-colors">
@@ -275,7 +271,7 @@ function StocksTable({ rowLimit, currentPage, onTotalDataChange, onAddProductCli
                             </td>
                         </tr>
                     )}
-                </tbody> */}
+                </tbody>}
             </table>
         </div>
     );
