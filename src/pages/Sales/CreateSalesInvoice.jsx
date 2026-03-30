@@ -8,7 +8,7 @@ import TablePagination from '../../components/pagination/TablePagination';
 
 import CreateInvoiceModal from '../../components/modals/CreateInvoiceModal';
 import EditSalesInvoiceModal from '../../components/modals/EditSalesInvoiceModal';
-import ViewDeliveryReceiptModal from '../../components/modals/ViewDeliveryReceiptModal';
+import ViewSalesReceiptModal from '../../components/modals/ViewSalesReceiptModal';
 import ViewSalesInvoiceModal from '../../components/modals/ViewSalesInvoiceModal';
 import { View } from 'lucide-react';
 
@@ -519,6 +519,7 @@ function CreateSalesInvoice() {
           isOpen={isEditModalOpen} 
           onClose={handleCloseViewModal}
           displayData={dataView}
+          setDisplayData={setDataView}
           itemList={itemList}
       />
       {/* 
@@ -529,7 +530,7 @@ function CreateSalesInvoice() {
           onSave={handleSaveEdit}
       />
        */}
-      <ViewDeliveryReceiptModal
+      <ViewSalesReceiptModal
           isOpen={isViewModalOpen}
           onClose={closeViewModal}
           displayData={dataView}

@@ -4,7 +4,7 @@ services:
 
   postgres:
     image: postgres:15
-    container_name: project_postgres
+    container_name: project_postgres_prod
     restart: always
     environment:
       POSTGRES_USER: ${DB_USER}
@@ -13,38 +13,31 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - postgres_data:/var/lib/postgresql/data
-      - ./database:/docker-entrypoint-initdb.d
+      - postgres_data_prod:/var/lib/postgresql/data
 
   backend:
     build:
       context: ./nodejs
-      dockerfile: Dockerfile
-    container_name: project_backend
+    container_name: project_backend_prod
     restart: always
     ports:
       - "5000:5000"
     depends_on:
       - postgres
     env_file:
-      - .env
-    volumes:
-      - ./nodejs:/app
-      - /app/node_modules
+      - .env.production
+    environment:
+      NODE_ENV: staging
 
   frontend:
     build:
       context: .
-      dockerfile: Dockerfile
-    container_name: project_frontend
+    container_name: project_frontend_prod
     restart: always
     ports:
       - "5173:5173"
     depends_on:
       - backend
-    volumes:
-      - .:/app
-      - /app/node_modules
 
 volumes:
-  postgres_data:
+  postgres_data_prod:

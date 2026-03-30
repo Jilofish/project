@@ -25,7 +25,7 @@ const warehouseData = [
 /*                             MAIN COMPONENT                                 */
 /* -------------------------------------------------------------------------- */
 
-function ViewSalesInvoiceModal({ isOpen, onClose, displayData,itemList }) {
+function ViewSalesInvoiceModal({ isOpen, onClose, displayData, setDisplayData, itemList }) {
   /* ----------------------------- STATE ----------------------------------- */
     const [isPayOpen, setIsPayOpen] = useState(false);
     const [isEditingItems, setIsEditingItems] = useState(false);
@@ -38,8 +38,8 @@ function ViewSalesInvoiceModal({ isOpen, onClose, displayData,itemList }) {
     // Local editable copy
     const [purchaseItems, setPurchaseItems] = useState([]);
 
-    const [receiptFileName, setReceiptFileName] = useState("No file chosen");
-
+    const [selectedComputationFile, setSelectedComputationFile] = useState(null);
+    const [selectedProofFile, setSelectedProofFile] = useState(null);
     const [formValues, setFormValues] = useState([]);
 
     /* ----------------------------- HANDLERS -------------------------------- */
@@ -254,7 +254,49 @@ function ViewSalesInvoiceModal({ isOpen, onClose, displayData,itemList }) {
         }
     };
 
-   
+    const handleComputationUpload = async (file) => {
+        if (!file) return;
+
+        const formData = new FormData();
+        formData.append("file", file);
+
+        const res = await fetch(
+            `/api/sales-invoice/${displayData.id}/filecomputation/${displayData.si}`,
+            {
+            method: "PATCH",
+            body: formData,
+            }
+        );
+
+        const data = await res.json();
+
+        setDisplayData((prev) => ({
+            ...prev,
+            computation_img_url: data.filePath,
+        }));
+        };
+
+        const handleProofUpload = async (file) => {
+        if (!file) return;
+
+        const formData = new FormData();
+        formData.append("file", file);
+
+        const res = await fetch(
+            `/api/sales-invoice/${displayData.id}/filepayment/${displayData.si}`,
+            {
+            method: "PATCH",
+            body: formData,
+            }
+        );
+
+        const data = await res.json();
+
+        setDisplayData((prev) => ({
+            ...prev,
+            payment_image_url: data.filePath,
+        }));
+        };
     const handleSaveLocalItem = (item) => {
     setPurchaseItems(prev =>
         prev.map(i => (i.id === item.id ? item : i))
@@ -560,63 +602,132 @@ function ViewSalesInvoiceModal({ isOpen, onClose, displayData,itemList }) {
 
             {/* LEFT COLUMN */}
             <div className="space-y-4">
-                 {/* FILE (VIEW ONLY) */}
-                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300">
-                Computation
-                </label>
 
-                {ComputationImageURL ? (
-                <a
-                    href={ComputationImageURL}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center rounded-lg
-                    w-full max-w-xs px-4 py-2
-                    bg-slate-100 dark:bg-slate-800
-                    border border-slate-300 dark:border-slate-600
-                    text-blue-600 dark:text-blue-400
-                    hover:underline"
-                >
-                    📎 {displayData.computation_img_url.split("/").pop()}
-                </a>
-                ) : (
-                <div className="w-full max-w-xs rounded-lg px-4 py-2
-                    bg-slate-100 dark:bg-slate-800
-                    border border-slate-300 dark:border-slate-600
-                    text-sm italic text-slate-500 dark:text-slate-400">
-                    No file uploaded
+                {/* ================= COMPUTATION ================= */}
+                <div className="space-y-2 w-full max-w-xs">
+                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300">
+                    Computation
+                    </label>
+
+                    <div className="flex items-center gap-2">
+
+                    {ComputationImageURL ? (
+                        <a
+                        href={ComputationImageURL}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex-1 px-3 py-2 rounded-lg
+                        bg-slate-100 dark:bg-slate-800
+                        border border-slate-300 dark:border-slate-600
+                        text-blue-600 dark:text-blue-400 hover:underline truncate"
+                        >
+                        📎 {displayData.computation_img_url?.split("/").pop()}
+                        </a>
+                    ) : (
+                        <div className="flex-1 px-3 py-2 rounded-lg
+                        bg-slate-100 dark:bg-slate-800
+                        border border-slate-300 dark:border-slate-600
+                        text-sm italic text-slate-500 dark:text-slate-400">
+                        No file uploaded
+                        </div>
+                    )}
+
+                    <label className="cursor-pointer px-3 py-2 rounded-lg
+                        bg-blue-600 text-white text-sm hover:bg-blue-700">
+                        
+                        {(selectedComputationFile || displayData?.computation_img_url)
+                        ? "Replace File"
+                        : "Choose File"}
+
+                        <input
+                        type="file"
+                        accept=".jpg,.jpeg,.png,.pdf"
+                        className="hidden"
+                        onChange={(e) => {
+                            const file = e.target.files[0];
+                            setSelectedComputationFile(file);
+                            handleComputationUpload(file);
+                        }}
+                        />
+                    </label>
+
+                    </div>
+
+                    {(selectedComputationFile || displayData?.computation_img_url) && (
+                    <p className="text-sm text-slate-600 dark:text-slate-300">
+                        Chosen file:{" "}
+                        <span className="font-medium">
+                        {selectedComputationFile
+                            ? selectedComputationFile.name
+                            : displayData.computation_img_url.split("/").pop()}
+                        </span>
+                    </p>
+                    )}
                 </div>
-                )}
-                
-                {/* FILE (VIEW ONLY) */}
-                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300">
-                Delivery Receipt
-                </label>
 
-                {ProofPublicUrl ? (
-                <a
-                    href={ProofPublicUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center rounded-lg
-                    w-full max-w-xs px-4 py-2
-                    bg-slate-100 dark:bg-slate-800
-                    border border-slate-300 dark:border-slate-600
-                    text-blue-600 dark:text-blue-400
-                    hover:underline"
-                >
-                    📎 {displayData.payment_image_url.split("/").pop()}
-                </a>
-                ) : (
-                <div className="w-full max-w-xs rounded-lg px-4 py-2
-                    bg-slate-100 dark:bg-slate-800
-                    border border-slate-300 dark:border-slate-600
-                    text-sm italic text-slate-500 dark:text-slate-400">
-                    No file uploaded
+
+                {/* ================= DELIVERY RECEIPT ================= */}
+                <div className="space-y-2 w-full max-w-xs">
+                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300">
+                    Delivery Receipt
+                    </label>
+
+                    <div className="flex items-center gap-2">
+
+                    {ProofPublicUrl ? (
+                        <a
+                        href={ProofPublicUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex-1 px-3 py-2 rounded-lg
+                        bg-slate-100 dark:bg-slate-800
+                        border border-slate-300 dark:border-slate-600
+                        text-blue-600 dark:text-blue-400 hover:underline truncate"
+                        >
+                        📎 {displayData.payment_image_url?.split("/").pop()}
+                        </a>
+                    ) : (
+                        <div className="flex-1 px-3 py-2 rounded-lg
+                        bg-slate-100 dark:bg-slate-800
+                        border border-slate-300 dark:border-slate-600
+                        text-sm italic text-slate-500 dark:text-slate-400">
+                        No file uploaded
+                        </div>
+                    )}
+
+                    <label className="cursor-pointer px-3 py-2 rounded-lg
+                        bg-blue-600 text-white text-sm hover:bg-blue-700">
+                        
+                        {(selectedProofFile || displayData?.payment_image_url)
+                        ? "Replace File"
+                        : "Choose File"}
+
+                        <input
+                        type="file"
+                        accept=".jpg,.jpeg,.png,.pdf"
+                        className="hidden"
+                        onChange={(e) => {
+                            const file = e.target.files[0];
+                            setSelectedProofFile(file);
+                            handleProofUpload(file);
+                        }}
+                        />
+                    </label>
+
+                    </div>
+
+                    {(selectedProofFile || displayData?.payment_image_url) && (
+                    <p className="text-sm text-slate-600 dark:text-slate-300">
+                        Chosen file:{" "}
+                        <span className="font-medium">
+                        {selectedProofFile
+                            ? selectedProofFile.name
+                            : displayData.payment_image_url.split("/").pop()}
+                        </span>
+                    </p>
+                    )}
                 </div>
-                )}
 
-                
             </div>
 
             {/* RIGHT COLUMN – PAYMENT DETAILS */}
@@ -704,7 +815,7 @@ function ViewSalesInvoiceModal({ isOpen, onClose, displayData,itemList }) {
                         </button>
                     </>
                 )}
-                 {displayData.approval_status === "Approved" && displayData.delivery_status === "Delivered" && (
+                 {displayData.approval_status === "Approved" && displayData.delivery_status === "Delivered" && displayData.payment_image_url && (
                     <>
                         <button
                         onClick={handleGenerateGatePass}

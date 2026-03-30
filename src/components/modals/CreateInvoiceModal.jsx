@@ -614,7 +614,7 @@ function CreateInvoiceModal({ isOpen, onClose, onAddSales,itemList}) {
                                         {computationFileName}
                                     </span>
                                     
-                                    <input type="file" id="file_input" className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" onChange={handleComputationFileChange} required/>
+                                    <input type="file" id="file_input" className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" onChange={handleComputationFileChange}/>
                                     
                                 </div>
                                 {/* PROOF UPLOAD FIELD */}
@@ -628,7 +628,7 @@ function CreateInvoiceModal({ isOpen, onClose, onAddSales,itemList}) {
                                         {receiptFileName}
                                     </span>
                                     
-                                    <input type="file" id="file_input" className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" onChange={handlePaymentFileChange} required/>
+                                    <input type="file" id="file_input" className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" onChange={handlePaymentFileChange}/>
                                 </div>
                             </div>
                             

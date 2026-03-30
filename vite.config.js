@@ -3,7 +3,7 @@ import react from '@vitejs/plugin-react';
 import tailwindcss from '@tailwindcss/vite';
 import basicSsl from '@vitejs/plugin-basic-ssl';
 import fs from 'fs';
-// https://vite.dev/config/
+const backendTarget = process.env.VITE_API_TARGET || 'http://localhost:5000';
 export default defineConfig({
   plugins: [react(), tailwindcss(), basicSsl()],  server: {
     host: true,
@@ -13,15 +13,15 @@ export default defineConfig({
     },
     proxy: {
       '/api': {
-        target: 'http://localhost:5000',
+        target: backendTarget,
         changeOrigin: true,
         secure: false,
       },
-        '/uploads': {
-          target: 'http://localhost:5000',
-          changeOrigin: true,
-          secure: false,
-        }
+      '/uploads': {
+        target: backendTarget,
+        changeOrigin: true,
+        secure: false,
+      }
     }
   }
 });

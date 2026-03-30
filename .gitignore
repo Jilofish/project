@@ -23,6 +23,9 @@ dist-ssr
 *.sln
 *.sw?
 .env*
+nodejs/database/backups/*
+nodejs/database/migrations/*
+nodejs/database/seeds/*
 database/*.sql
 nodejs/uploads/computation-images/*
 nodejs/uploads/proof-of-payment-images/*

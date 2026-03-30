@@ -24,7 +24,7 @@ const warehouseData = [
 /*                             MAIN COMPONENT                                 */
 /* -------------------------------------------------------------------------- */
 
-function ViewPurchaseOrderModal({ isOpen, onClose, displayData, itemList}) {
+function ViewPurchaseOrderModal({ isOpen, onClose, displayData, setDisplayData, itemList}) {
   /* ----------------------------- STATE ----------------------------------- */
     const [isPayOpen, setIsPayOpen] = useState(false);
     const [isEditingItems, setIsEditingItems] = useState(false);
@@ -36,7 +36,7 @@ function ViewPurchaseOrderModal({ isOpen, onClose, displayData, itemList}) {
     // Local editable copy
     const [purchaseItems, setPurchaseItems] = useState([]);
 
-
+    const [selectedFile, setSelectedFile] = useState(null);
     /* ----------------------------- HANDLERS -------------------------------- */
     useEffect(() => {
     if (displayData?.purchased_order_item && itemList.length) {
@@ -129,6 +129,7 @@ function ViewPurchaseOrderModal({ isOpen, onClose, displayData, itemList}) {
     const handleClose = () => {
         onClose();
         setIsEditingItems(false);
+        setSelectedFile(null);
     };
     const handleOpenAddModal = () => {
     setEditingItem(null);
@@ -237,7 +238,37 @@ function ViewPurchaseOrderModal({ isOpen, onClose, displayData, itemList}) {
             alert("Failed to save changes");
         }
     };
+    const handleReceiptUpload = async (file) => {
+        if (!file) return;
 
+        try {
+            const formData = new FormData();
+            formData.append("file", file);
+
+            const res = await fetch(
+            `/api/purchasing/${displayData.id}/filereceipt/${displayData.po}`,
+            {
+                method: "PATCH",
+                body: formData,
+            }
+            );
+
+            if (!res.ok) {
+            throw new Error("Upload failed");
+            }
+
+            const data = await res.json();
+
+            // ✅ Update UI immediately
+            setDisplayData((prev) => ({
+            ...prev,
+            receipt_url: data.filePath, // backend should return this
+            }));
+        } catch (err) {
+            console.error("Upload error:", err);
+        }
+
+    };
    
     const handleSaveLocalItem = (item) => {
     setPurchaseItems(prev =>
@@ -532,33 +563,68 @@ function ViewPurchaseOrderModal({ isOpen, onClose, displayData, itemList}) {
                     resize-none cursor-not-allowed"
                 />
 
-                {/* FILE (VIEW ONLY) */}
+             <div className="w-full max-w-xs space-y-2">
                 <label className="block text-sm font-medium text-slate-700 dark:text-slate-300">
-                Delivery Receipt
+                    Delivery Receipt
                 </label>
 
-                {receiptPublicUrl ? (
-                <a
-                    href={receiptPublicUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center rounded-lg
-                    w-full max-w-xs px-4 py-2
-                    bg-slate-100 dark:bg-slate-800
-                    border border-slate-300 dark:border-slate-600
-                    text-blue-600 dark:text-blue-400
-                    hover:underline"
-                >
-                    📎 {displayData.receipt_url.split("/").pop()}
-                </a>
-                ) : (
-                <div className="w-full max-w-xs rounded-lg px-4 py-2
-                    bg-slate-100 dark:bg-slate-800
-                    border border-slate-300 dark:border-slate-600
-                    text-sm italic text-slate-500 dark:text-slate-400">
-                    No file uploaded
+                <div className="flex items-center gap-2">
+
+                    {/* FILE DISPLAY */}
+                    {receiptPublicUrl ? (
+                    <a
+                        href={receiptPublicUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex-1 px-3 py-2 rounded-lg
+                        bg-slate-100 dark:bg-slate-800
+                        border border-slate-300 dark:border-slate-600
+                        text-blue-600 dark:text-blue-400 hover:underline truncate"
+                    >
+                        📎 {displayData.receipt_url?.split("/").pop()}
+                    </a>
+                    ) : (
+                    <div className="flex-1 px-3 py-2 rounded-lg
+                        bg-slate-100 dark:bg-slate-800
+                        border border-slate-300 dark:border-slate-600
+                        text-sm italic text-slate-500 dark:text-slate-400">
+                        No file uploaded
+                    </div>
+                    )}
+
+                    {/* CUSTOM BUTTON */}
+                    <label className="cursor-pointer px-3 py-2 rounded-lg
+                    bg-blue-600 text-white text-sm hover:bg-blue-700">
+                    
+                        {(selectedFile || displayData?.receipt_url) ? "Replace File" : "Choose File"}
+
+                        <input
+                            type="file"
+                            accept=".jpg,.jpeg,.png,.pdf"
+                            className="hidden"
+                            onChange={(e) => {
+                            const file = e.target.files[0];
+                            setSelectedFile(file);
+                            handleReceiptUpload(file);
+                            }}
+                        />
+                    </label>
+
                 </div>
+
+                {/* CHOSEN FILE TEXT */}
+               {(selectedFile || displayData?.receipt_url) && (
+                <p className="text-sm text-slate-600 dark:text-slate-300">
+                    Existing file:{" "}
+                    <span className="font-medium">
+                    {selectedFile
+                        ? selectedFile.name
+                        : displayData.receipt_url.split("/").pop()}
+                    </span>
+                </p>
                 )}
+
+                </div>
             </div>
 
             {/* RIGHT COLUMN – PAYMENT DETAILS */}

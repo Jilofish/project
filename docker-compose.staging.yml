@@ -1,0 +1,43 @@
+version: "3.9"
+
+services:
+
+  postgres:
+    image: postgres:15
+    container_name: project_postgres_staging
+    restart: always
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}_staging
+    ports:
+      - "5433:5432"  # different port
+    volumes:
+      - postgres_data_staging:/var/lib/postgresql/data
+
+  backend:
+    build:
+      context: ./nodejs
+    container_name: project_backend_staging
+    restart: always
+    ports:
+      - "5001:5000"
+    depends_on:
+      - postgres
+    env_file:
+      - .env.staging
+    environment:
+      NODE_ENV: staging
+
+  frontend:
+    build:
+      context: .
+    container_name: project_frontend_staging
+    restart: always
+    ports:
+      - "5174:5173"
+    depends_on:
+      - backend
+
+volumes:
+  postgres_data_staging:

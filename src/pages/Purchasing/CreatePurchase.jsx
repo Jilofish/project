@@ -394,6 +394,7 @@ function CreatePurchase() {
                 isOpen={isEditModalOpen}
                 onClose={handleCloseViewModal}
                 displayData={dataView}
+                setDisplayData={setDataView}
                 itemList={itemList}
             /> 
             <ViewDeliveryReceiptModal
