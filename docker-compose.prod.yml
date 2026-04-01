@@ -12,10 +12,6 @@ services:
       POSTGRES_USER: ${DB_USER}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
       POSTGRES_DB: ${DB_NAME}
-    ports:
-      - "5432:5432"
-    env_file:
-      - .env.production
     volumes:
       - postgres_data_prod:/var/lib/postgresql/data
 
@@ -31,7 +27,7 @@ services:
     env_file:
       - .env.production
     environment:
-      NODE_ENV: staging
+      NODE_ENV: production
 
   frontend:
     build:
@@ -42,6 +38,21 @@ services:
       - "5173:5173"
     depends_on:
       - backend
-
+  backup:
+    image: postgres:15
+    container_name: project_backup_prod
+    depends_on:
+      - postgres
+    env_file:
+      - .env.production
+    volumes:
+      - ./nodejs/database/backups:/backups
+    entrypoint: >
+      bash -c "
+      while true; do
+        pg_dump -h postgres -U ${DB_USER} ${DB_NAME} > /backups/backup_$(date +%Y-%m-%d_%H-%M-%S).sql;
+        sleep 86400;
+      done
+      "
 volumes:
   postgres_data_prod:
