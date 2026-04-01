@@ -8,7 +8,11 @@ const pool = new Pool({
   password: process.env.DB_PASSWORD,
   port: process.env.DB_PORT,
 });
-
+console.log("User:", process.env.DB_USER)
+console.log("Host:", process.env.DB_HOST)
+console.log("Database:", process.env.DB_NAME)
+console.log("Password:", process.env.DB_PASSWORD)
+console.log("Port:", process.env.DB_PORT)
 // ✅ Test connection on startup
 pool.connect()
   .then(() => {

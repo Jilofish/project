@@ -1,7 +1,8 @@
 FROM node:20
 
 WORKDIR /app
-# Install dependencies for Puppeteer
+
+# Install dependencies for Puppeteer + tools
 RUN apt-get update && apt-get install -y \
     ca-certificates \
     fonts-liberation \
@@ -35,11 +36,18 @@ RUN apt-get update && apt-get install -y \
     libxtst6 \
     wget \
     xdg-utils \
+    netcat-openbsd \
+    dos2unix \
     && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y chromium
+# Copy everything
+COPY . .
 
-COPY package*.json ./
-RUN apt-get update && apt-get install -y netcat-openbsd
-COPY entrypoint.sh /entrypoint.sh
-RUN chmod +x /entrypoint.sh
+RUN dos2unix /app/entrypoint.sh && chmod +x /app/entrypoint.sh
 
-CMD ["/entrypoint.sh"]
+
+
+# Install dependencies
+RUN npm install
+
+CMD ["/app/entrypoint.sh"]

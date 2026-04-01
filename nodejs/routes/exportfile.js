@@ -14,15 +14,12 @@ router.post("/", async (req, res) => {
     }
 
     const browser = await puppeteer.launch({
-      executablePath: "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
-      headless: "new",
-      args: [
-        "--no-sandbox",
-        "--disable-setuid-sandbox",
-        "--ignore-certificate-errors", // 🔥 REQUIRED
-      ],
+      headless: 'new',
+      executablePath: '/usr/bin/chromium',
+      ignoreHTTPSErrors: true, // 👈 IMPORTANT
+      args: ['--no-sandbox', '--disable-setuid-sandbox',
+    '--ignore-certificate-errors']
     });
-
     const page = await browser.newPage();
 
     // 🔥 capture console logs from React (VERY USEFUL)
@@ -32,7 +29,7 @@ router.post("/", async (req, res) => {
 
     // 🔥 dynamic URL
     let url = "";
-    const base = process.env.BASE_URL || "https://192.168.1.5:5173";
+    const base = process.env.BASE_URL ;
     if (type === "si") {
       url = `${base}/print/si/${id}`;
     } else if (type === "po") {
