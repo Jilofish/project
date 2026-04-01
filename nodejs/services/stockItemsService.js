@@ -41,7 +41,7 @@ export const createStockItem = async (stock) => {
       item_type,
       brand
     )
-    VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9,$10)
+    VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
     RETURNING *
   `;
 
@@ -54,7 +54,6 @@ export const createStockItem = async (stock) => {
     Number(stock.threshold_count) || 0,
     "In Stock",
     stock.item_type,
-    Number(stock.price) || 0,
     Number(stock.brand)
   ];
 
