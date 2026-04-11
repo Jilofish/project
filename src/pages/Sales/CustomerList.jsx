@@ -236,7 +236,6 @@ function CustomerList() {
     };
 
     const handleSaveEdit = async(updatedData) => {
-      console.log("Saving edit for customer ID:", updatedData.id, "with data:", updatedData);
         try {
           const res = await fetch(
             `/api/customers/${updatedData.id}`,
