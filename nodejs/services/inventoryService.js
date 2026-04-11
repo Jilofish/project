@@ -136,3 +136,17 @@ export const getBrandStats = async () => {
     throw error;
   }
 };
+export const getWarehouses = async () => {
+    try {
+        const result = await pool.query(` 
+            SELECT id,whouse_name
+            FROM warehouse
+            ORDER BY id DESC
+        `);
+
+        return result.rows; 
+    } catch (error) {
+        console.error("❌ getWarehouses:", error.message);
+        throw error;
+    } 
+};

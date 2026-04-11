@@ -16,9 +16,6 @@ export const getAllSuppliers = async () => {
 /* ============================================================
    SUPPLIER STATS (Optimized)
 ============================================================ */
-/* ============================================================
-   SUPPLIER STATS (Optimized)
-============================================================ */
 export const getSupplierStats = async () => {
   const query = `
     SELECT

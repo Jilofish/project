@@ -22,8 +22,6 @@ export default function PrintSI() {
       return calculatePurchaseTotals(purchaseItems);
   }, [purchaseItems]);
   if (!data) return <div>Loading...</div>;
-    console.log("DATA RECEIVED:", JSON.stringify(data, null, 2));
-    console.log("Calculated Totals:", paymentTotals);
   return (
     <div
       id="print-content"

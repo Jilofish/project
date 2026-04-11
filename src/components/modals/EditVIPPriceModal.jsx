@@ -1,41 +1,41 @@
 import React, { useState, useEffect } from 'react';
-import { X } from 'lucide-react';
+import { Edit, X } from 'lucide-react';
 import CustomFormSelect from '../filter/CustomFormSelect';
 
 
-function EditSupplierModal({ isOpen, onClose, onUpdate, initialData }) {
-    console.log("Initial data for EditSupplierModal:", initialData);
+function EditVIPPriceModal({ isOpen, onClose, onUpdate, initialData }) {
     // 1. Initialize state with initialData values if they exist
     const [data, setData] = useState({ 
-        supplier: initialData?.supplier || '', 
-        price: initialData?.price || '' 
+        customer_name: initialData?.customer || '',  // ✅ use ID
+        price: initialData?.vip_price || ''          // also fix this
     });
-    const [supplier,setSupplier] = useState([])
-    const fetchSuppliers = async () => {
-        try {
-        const res = await fetch("/api/supplier");
-        const object = await res.json();
-        setSupplier(object);
-        } catch (err) {
-        console.error("Failed to load suppliers", err);
-        }
-        console.log("Fetched suppliers:", supplier);
-    };
-    useEffect(()=>{
-        fetchSuppliers();
-    },[isOpen]);
+    const [customer,setCustomer] = useState([])
+    const fetchCustomers = async () => {
+          try {
+            const res = await fetch("/api/customers");
+            const object = await res.json();
 
-    const supplierOptions = supplier.map(item => ({
-        value: item.id, 
-        label: item.businessname 
+
+            setCustomer(object);
+            
+          } catch (err) {
+            console.error("Failed to load customers", err);
+          }
+        };
+    useEffect(()=>{
+        fetchCustomers();
+    },[isOpen]);
+    useEffect(() => {
+    }, [customer]);
+    const customerOptions = customer.map(item => ({
+        value: String(item.id), 
+        label: item.name 
     }));
-    
-    // 2. Sync state when the modal opens or initialData changes
     useEffect(() => {
         if (initialData && isOpen) {
             setData({ 
-                supplier: initialData.supplier, 
-                price: initialData.price 
+                customer_name: initialData.customer,   // ✅ ID again
+                price: initialData.vip_price           // ✅ correct field
             });
         }
     }, [initialData, isOpen]);
@@ -45,18 +45,20 @@ function EditSupplierModal({ isOpen, onClose, onUpdate, initialData }) {
     const handleSubmit = (e) => {
         e.preventDefault();
 
-        if (!data.supplier || !data.price) {
+        if (!data.customer_name || !data.price) {
             return alert("Please fill in all fields");
         }
 
-        // 🔍 Find the selected supplier object
-        const selectedSupplier = supplierOptions.find(
-            opt => opt.value == data.supplier
+        // 🔍 Find the selected customer object
+        const selectedCustomer = customerOptions.find(
+            opt => opt.value == data.customer_name
         );
 
         const payload = {
             ...data,
-            supplier_name: selectedSupplier?.label || '',
+            vip_price: Number(data.price), // ✅ rename here
+            customer_name: selectedCustomer?.label || '',
+            customer_id: selectedCustomer?.value || null, // ✅ include ID for backend
             id: initialData.id
         };
 
@@ -68,21 +70,23 @@ function EditSupplierModal({ isOpen, onClose, onUpdate, initialData }) {
         <div className="fixed inset-0 bg-black/60 z-[60] flex items-center justify-center p-4">
             <div className="bg-white dark:bg-slate-800 rounded-xl shadow-xl w-full max-w-md" onClick={e => e.stopPropagation()}>
                 <div className="flex items-center justify-between p-4 border-b dark:border-slate-700">
-                    <h3 className="font-bold text-slate-800 dark:text-white">Edit Supplier Pricing</h3>
+                    <h3 className="font-bold text-slate-800 dark:text-white">Edit VIP Pricing</h3>
                     <button onClick={onClose} className="hover:bg-slate-100 dark:hover:bg-slate-700 rounded-full p-1 transition-colors">
                         <X className="w-5 h-5 text-slate-500" />
                     </button>
                 </div>
                 
                 <form onSubmit={handleSubmit} className="p-6 space-y-5">
-                    {supplierOptions.length > 0 && (
+                    {customerOptions.length > 0 && (
                         <CustomFormSelect 
-                            label="Select Supplier"
-                            name="supplier"
-                            options={supplierOptions}
-                            initialValue={data.supplier} 
-                            onSelect={(val) => setData({...data, supplier: val})}
-                            required
+                            label="Select Customer"
+                            name="customer_name"
+                            options={customerOptions}
+                            initialValue={data.customer_name} 
+                            onSelect={(val) => {
+                                console.log("✅ Selected value:", val);
+                                setData({...data, customer_name: val});
+                            }}
                         />
                     )}
 
@@ -94,7 +98,13 @@ function EditSupplierModal({ isOpen, onClose, onUpdate, initialData }) {
                                 type="number" 
                                 step="0.01"
                                 value={data.price}
-                                onChange={(e) => setData({...data, price: e.target.value})}
+                                onChange={(e) => {
+                                    const val = e.target.value;
+                                    setData({
+                                        ...data,
+                                        price: val === "" ? "" : Number(val)
+                                    });
+                                }}
                                 className="w-full pl-7 pr-3 py-2 rounded-md border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 dark:text-white outline-none focus:ring-2 focus:ring-blue-500"
                                 placeholder="0.00"
                             />
@@ -113,4 +123,4 @@ function EditSupplierModal({ isOpen, onClose, onUpdate, initialData }) {
     );
 }
 
-export default EditSupplierModal;
+export default EditVIPPriceModal;

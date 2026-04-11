@@ -3,12 +3,13 @@ import { Plus, Trash2, X, Pencil } from 'lucide-react';
 import CustomFormSelect from '../filter/CustomFormSelect'; 
 import AddSupplierPriceModal from './AddSupplierPriceModal'; 
 import EditSupplierModal from './EditSupplierModal'; 
+import EditVIPPriceModal from './EditVIPPriceModal'
 import AddVIPPriceModal from './AddVIPPriceModal';
 
-const warehouseData = [{ warehouse_id:1,warehouse: 'Pata Storage' }, { warehouse_id:2,warehouse: 'Saog' }, { warehouse_id:3,warehouse: 'Kalakal' }];
+
 const ItemTypeData = [{ item_type_id:1,item_type: 'Commissary' },
      { item_type_id:2,item_type: 'Trading' }];
-function AddProductModal({ isOpen, onClose, supplierOptions }) {
+function AddProductModal({ isOpen, onClose }) {
     const [brands, setBrands] = useState([]);
     const fetchBrands = async () => {
       try {
@@ -46,9 +47,11 @@ function AddProductModal({ isOpen, onClose, supplierOptions }) {
     const [isVIPPriceModalOpen, setIsVIPPriceModalOpen] = useState(false);
     const [supplierPrices, setSupplierPrices] = useState([]);
     const [VIPPrices, setVIPPrices] = useState([]);
-
+    const [warehouseOptions, setWarehouseOptions] = useState([]);
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+    const [isEditVIPModalOpen, setIsEditVIPModalOpen] = useState(false);
     const [selectedEntry, setSelectedEntry] = useState(null);
+    const [selectedVIPEntry, setSelectedVIPEntry] = useState(null);
     useEffect(() => {
         if (isOpen) {
             fetchBrands();
@@ -56,7 +59,6 @@ function AddProductModal({ isOpen, onClose, supplierOptions }) {
     }, [isOpen]);
 
 
-    if (!isOpen) return null;
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
@@ -89,10 +91,32 @@ function AddProductModal({ isOpen, onClose, supplierOptions }) {
 
     // --- ADD LOGIC ---
     const handleAddPrice = (newEntry) => {
-        setSupplierPrices(prev => [...prev, { ...newEntry, id: Date.now() }]);
+        const exists = supplierPrices.some(
+            item => Number(item.supplier) === Number(newEntry.supplier)
+        );
+
+        if (exists) {
+            alert("Supplier already added!");
+            return;
+        }
+
+        setSupplierPrices(prev => [
+            ...prev, 
+            { ...newEntry, id: Date.now() }
+        ]);
+
         handleClosePriceModal();
     };
     const handleAddVIPPrice = (newEntry) => {
+        const exists = VIPPrices.some(
+            item => Number(item.customer_name) === Number(newEntry.customer_name)
+        );
+
+        if (exists) {
+            alert("VIP Customer already added!");
+            return;
+        }
+
         setVIPPrices(prev => [...prev, { ...newEntry, id: Date.now() }]);
         handleCloseVIPPriceModal();
     };
@@ -102,14 +126,51 @@ function AddProductModal({ isOpen, onClose, supplierOptions }) {
         setSelectedEntry(item);
         setIsEditModalOpen(true);
     };
+    const handleOpenEditVIP = (item) => {
+        setSelectedVIPEntry(item);
+        setIsEditVIPModalOpen(true);
+    };
 
     const handleUpdatePrice = (updatedEntry) => {
-        setSupplierPrices(prev => prev.map(item => 
-            item.id === updatedEntry.id ? updatedEntry : item
-        ));
+        const exists = supplierPrices.some(
+            item =>
+                item.id !== updatedEntry.id && // exclude itself
+                Number(item.supplier) === Number(updatedEntry.supplier)
+        );
+
+        if (exists) {
+            alert("Supplier already exists!");
+            return;
+        }
+
+        setSupplierPrices(prev =>
+            prev.map(item =>
+                item.id === updatedEntry.id ? updatedEntry : item
+            )
+        );
+
         setIsEditModalOpen(false);
         setSelectedEntry(null);
     };
+    const handleUpdateVIPPrice = (updatedEntry) => {
+        const exists = VIPPrices.some(
+            item =>
+                item.id !== updatedEntry.id && // exclude itself
+                Number(item.customer_name) === Number(updatedEntry.customer_name)
+        );
+
+        if (exists) {
+            alert("VIP Customer already exists!");
+            return;
+        }
+        setVIPPrices(prev =>
+            prev.map(item =>
+                item.id === updatedEntry.id ? updatedEntry : item
+            )
+        );
+        setIsEditVIPModalOpen(false);
+        setSelectedVIPEntry(null);
+    }
 
     const handleRemovePrice = (id) => {
         setSupplierPrices(prev => prev.filter(item => item.id !== id));
@@ -120,6 +181,7 @@ function AddProductModal({ isOpen, onClose, supplierOptions }) {
         const newStocks={
             ...formValues,pricing: supplierPrices, vip_pricing: VIPPrices 
         }
+        console.log("Submitting new stock:", newStocks);
         try {
             const res = await fetch(
                 "/api/stock",
@@ -142,9 +204,31 @@ function AddProductModal({ isOpen, onClose, supplierOptions }) {
         resetForm();
         onClose();
     };
-    const warehouseOptions = warehouseData.map(d => ({ value: d.warehouse_id, label: d.warehouse }));
+
+    useEffect(() => {
+    const fetchWarehouses = async () => {
+        try {
+        const res = await fetch("/api/inventory/warehouse");
+        const data = await res.json();
+
+        const options = data.map(w => ({
+            value: w.id,
+            label: w.whouse_name
+        }));
+
+        setWarehouseOptions(options);
+        } catch (err) {
+        console.error("Error fetching warehouses:", err);
+        }
+    };
+
+    fetchWarehouses();
+    }, []);
+    
     const brandOptions = brands.map(d => ({ value: d.id, label: d.brand_name }));
     const itemTypeOptions = ItemTypeData.map(d => ({ value: d.item_type, label: d.item_type }));
+    
+    if (!isOpen) return null;
     return (
         <>
             <div className="fixed inset-0 bg-black/40 z-40 flex items-center justify-center">
@@ -289,7 +373,7 @@ function AddProductModal({ isOpen, onClose, supplierOptions }) {
                                                 <td className="p-4 text-sm text-slate-700 dark:text-slate-200">{item.customer_name}</td>
                                                 <td className="p-4 text-sm font-medium text-blue-600 dark:text-blue-400">₱{parseFloat(item.vip_price).toFixed(2)}</td>
                                                 <td className="p-4 text-center space-x-2">
-                                                    <button type="button" onClick={() => handleOpenEdit(item)} className="text-blue-500 hover:text-blue-700 p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-full transition-colors cursor-pointer">
+                                                    <button type="button" onClick={() => handleOpenEditVIP(item)} className="text-blue-500 hover:text-blue-700 p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-full transition-colors cursor-pointer">
                                                         <Pencil className="w-5 h-5" />
                                                     </button>
                                                     <button type="button" onClick={() => handleRemovePrice(item.id)} className="text-red-500 hover:text-red-700 p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-full transition-colors cursor-pointer">
@@ -320,14 +404,14 @@ function AddProductModal({ isOpen, onClose, supplierOptions }) {
                 isOpen={isPriceModalOpen} 
                 onClose={handleClosePriceModal} 
                 onAdd={handleAddPrice} 
-                supplierOptions={supplierOptions} 
+                existingSuppliers={supplierPrices}
             />
             {/* ADD VIP MODAL */}
             <AddVIPPriceModal 
                 isOpen={isVIPPriceModalOpen} 
                 onClose={handleCloseVIPPriceModal} 
                 onAdd={handleAddVIPPrice} 
-                supplierOptions={supplierOptions} 
+                existingSuppliers={VIPPrices}
             />
 
 
@@ -342,6 +426,18 @@ function AddProductModal({ isOpen, onClose, supplierOptions }) {
                 onUpdate={handleUpdatePrice} 
                 initialData={selectedEntry} 
             />
+            {/* EDIT MODAL */}
+            <EditVIPPriceModal 
+                key={selectedVIPEntry?.id || 'vip-edit-modal'} 
+                isOpen={isEditVIPModalOpen} 
+                onClose={() => {
+                    setIsEditVIPModalOpen(false);
+                    setSelectedVIPEntry(null);
+                }} 
+                onUpdate={handleUpdateVIPPrice} 
+                initialData={selectedVIPEntry} 
+            />
+            
         </>
     );
 }

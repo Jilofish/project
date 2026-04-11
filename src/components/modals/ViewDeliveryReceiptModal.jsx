@@ -20,6 +20,7 @@ function ViewDeliveryReceiptModal({isOpen, displayData, onClose, transactType}) 
         setIsPayOpen(false);
         onClose();
     }
+    const isPDF = receiptPublicUrl?.includes(".pdf");
     if (!isOpen) return null;
 
   return (
@@ -32,28 +33,32 @@ function ViewDeliveryReceiptModal({isOpen, displayData, onClose, transactType}) 
                 </button>
             </div>
 
-            <div className="flex flex-col items-center space-y-1">
-                <p className="text-sm text-slate-500 dark:text-slate-400">
-                    Proof of Payment as of: {displayData.transaction_date}
-                </p>
-                <div className="w-full overflow-hidden rounded-xl border border-slate-300 dark:border-slate-700">
-                    {receiptPublicUrl ? (
-                        <img
+            <div className="w-full overflow-hidden rounded-xl border border-slate-300 dark:border-slate-700">
+                {receiptPublicUrl ? (
+                    isPDF ? (
+                    <iframe
+                        src={receiptPublicUrl}
+                        title="PDF Receipt"
+                        className="w-full h-[60vh]"
+                    />
+                    ) : (
+                    <img
                         src={receiptPublicUrl}
                         alt="Uploaded Receipt"
                         className="w-full h-auto object-contain max-h-[60vh]"
                         onError={(e) => {
-                            e.currentTarget.src = "";
-                            e.currentTarget.alt = "Failed to load receipt";
+                        console.error("Image failed:", receiptPublicUrl);
+                        e.currentTarget.src = "";
+                        e.currentTarget.alt = "Failed to load receipt";
                         }}
-                        />
-                    ) : (
-                        <div className="p-6 text-center text-sm text-slate-500 dark:text-slate-400">
-                        No receipt uploaded
-                        </div>
-                    )}
+                    />
+                    )
+                ) : (
+                    <div className="p-6 text-center text-sm text-slate-500 dark:text-slate-400">
+                    No receipt uploaded
                     </div>
-            </div>
+                )}
+                </div>
 
             <div className="pt-5 flex justify-end space-x-3">
                 <button type="button" 

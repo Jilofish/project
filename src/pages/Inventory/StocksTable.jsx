@@ -22,7 +22,7 @@ const StocksData = [
 
 const ALL_OPTION = 'All';
 
-function StocksTable({ rowLimit, currentPage, onTotalDataChange, onAddProductClick, onEditStockClick, iconProps, onDeleteClick, onAddProductClose, onDeleteProductClose }) {
+function StocksTable({ rowLimit, currentPage, onTotalDataChange, onAddProductClick, onEditStockClick, iconProps, onDeleteClick, onAddProductClose, onDeleteProductClose,onEditStockClose }) {
     // These values match the first item in the options array below
     const [warehouseFilter, setWarehouseFilter] = useState('warehouse');
     const [statusFilter, setStatusFilter] = useState('status');
@@ -34,25 +34,34 @@ function StocksTable({ rowLimit, currentPage, onTotalDataChange, onAddProductCli
             const data = await res.json();
 
             const normalized = data.map(item => ({
-            id: item.id,
-            item_name: item.item_name,
-            quantity: item.quantity,
-            threshold_count: item.threshold_count,
-            suggested_retail_price: item.suggested_retail_price,
-            status: item.status,
-            item_code: item.item_code,
-            warehouse_id: item.warehouse_id ?? null,
-            warehouse_name: item.whouse_name ?? "—",
-            warehouse_address: item.whouse_address ?? "—",
-            purchased_order_item: item.purchased_order_item ?? []
+                id: item.id,
+                item_name: item.item_name,
+                quantity: item.quantity,
+                threshold_count: item.threshold_count,
+                suggested_retail_price: item.suggested_retail_price,
+                status: item.status,
+                item_code: item.item_code,
+
+                warehouse_id: item.warehouse_id ?? null,
+                warehouse_name: item.whouse_name ?? "—",
+                warehouse_address: item.whouse_address ?? "—",
+
+                item_type: item.item_type ?? "—",
+                brand: item.brand ?? "—",
+                remarks: item.remarks ?? "—",
+
+                purchased_order_item: item.purchased_order_item ?? [],
+
+                // ✅ DIRECT (no parsing needed anymore)
+                vip_prices: item.vip_prices || [],
+                supplier_prices: item.supplier_prices || []
             }));
 
             setItems(normalized);
         } catch (err) {
             console.error("Failed to fetch received items", err);
         }
-        };
-
+    };
     
     useEffect(() => {
         if (!onAddProductClose && !onDeleteProductClose) {
@@ -127,7 +136,6 @@ function StocksTable({ rowLimit, currentPage, onTotalDataChange, onAddProductCli
         const start = (currentPage - 1) * rowLimit;
         return filteredData.slice(start, start + rowLimit);
     }, [filteredData, rowLimit, currentPage]);
-
     // ------------------------------------------------------------------------------------------ //
 
     //  I MOVED THIS DELETE FUNCTION TO StockManagement.jsx TO HANDLE THE MODAL THERE

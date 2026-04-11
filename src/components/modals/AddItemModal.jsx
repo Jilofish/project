@@ -3,12 +3,12 @@ import { X } from 'lucide-react';
 import CustomFormSelect from '../filter/CustomFormSelect';
 
 
-function AddItemModal({ isOpen, onClose, onAddItem, loadItemList, type, isSupplier, data }) {
+function AddItemModal({ isOpen, onClose, onAddItem, loadItemList, type, isSupplier, data, brandList }) {
 
   const isSellingItem = type === "Item";
   const [price,setPrice] = useState(0);
   const [isPriceManuallyEdited, setIsPriceManuallyEdited] = useState(false);
-  console.log("AddItemModal received data:", { isOpen, type, isSupplier, data });
+
   const selectedSupplierPrice = async () => {
     if (!selectedItem) return;
 
@@ -57,31 +57,54 @@ function AddItemModal({ isOpen, onClose, onAddItem, loadItemList, type, isSuppli
   });
 
   /* =======================
-     BRAND OPTIONS
+     ITEM OPTIONS
   ======================= */
+const ITEM_OPTIONS = [
+  ...new Map(
+    loadItemList?.map(item => [
+      item.id,
+      {
+        value: item.id,        // ✅ FIX
+        label: item.item_name,
+      }
+    ])
+  ).values()
+];
+  const FILTERED_ITEM_OPTIONS = itemForm.brand
+    ? loadItemList
+        ?.filter(item => Number(item.brand) === Number(itemForm.brand))
+        .map(item => ({
+          value: item.id,
+          label: item.item_name,
+        }))
+    : [];
+  const FINAL_ITEM_OPTIONS =
+  FILTERED_ITEM_OPTIONS.length > 0
+    ? FILTERED_ITEM_OPTIONS
+    : [{ value: "", label: "No items available" }];
+
   const BRAND_OPTIONS = [
     ...new Map(
-      loadItemList?.map(item => [
-        item.item_name,
+      brandList?.map(brand => [
+        brand.id,
         {
-          value: item.item_name,
-          label: item.item_name,
+          value: brand.id, // ✅ must be ID
+          label: brand.brand_name,
         }
       ])
     ).values()
   ];
-
   /* =======================
      SELECTED ITEM
   ======================= */
   const selectedItem = useMemo(() => {
-    if (!itemForm.brand) return null;
+    if (!itemForm.item) return null;
 
     return loadItemList?.find(
-      (item) => item.item_name === itemForm.brand
+      (item) => Number(item.id) === Number(itemForm.item)
     ) || null;
 
-  }, [itemForm.brand, loadItemList]);
+  }, [itemForm.item, loadItemList]);
   useEffect(() => {
     if (!isOpen) return;
     if (!selectedItem) return;
@@ -166,13 +189,17 @@ function AddItemModal({ isOpen, onClose, onAddItem, loadItemList, type, isSuppli
     }));
   };
 
-  const handleSelectChange = (value, name) => {
-    setItemForm((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
-
+const handleSelectChange = (value, name) => {
+  setItemForm(prev => ({
+    ...prev,
+    [name]: value,
+    ...(name === "brand" && {
+      item: "",
+      type: "",
+      unitPrice: 0
+    })
+  }));
+};
   /* =======================
      SAVE HANDLER
   ======================= */
@@ -181,7 +208,9 @@ function AddItemModal({ isOpen, onClose, onAddItem, loadItemList, type, isSuppli
 
     const finalItem = {
       ...itemForm,
-      product_name: itemForm.brand,
+      product_name: selectedItem?.item_name,
+      item_id: selectedItem?.id,
+      brand_id: itemForm.brand,
       quantity: Number(itemForm.quantity) || 0,
       unitPrice: Number(itemForm.unitPrice) || 0,
       shipping: Number(itemForm.shipping) || 0,
@@ -189,7 +218,7 @@ function AddItemModal({ isOpen, onClose, onAddItem, loadItemList, type, isSuppli
       total: Number(itemForm.total) || 0,
     };
 
-    if (!finalItem.brand) {
+    if (!finalItem.brand && type === "Brand") {
       alert("Please select a brand.");
       return;
     }
@@ -208,7 +237,6 @@ function AddItemModal({ isOpen, onClose, onAddItem, loadItemList, type, isSuppli
       alert("Price must be greater than 0.");
       return;
     }
-
     onAddItem(finalItem);
 
     setItemForm({
@@ -232,7 +260,7 @@ function AddItemModal({ isOpen, onClose, onAddItem, loadItemList, type, isSuppli
       >
         <div className="w-full flex items-center justify-between mb-6 pb-6 border-b border-slate-300 dark:border-slate-700">
           <h2 className="text-2xl font-bold text-slate-800 dark:text-white">
-            Add Product {type}
+            Add Item
           </h2>
           <button
             onClick={onClose}
@@ -243,17 +271,44 @@ function AddItemModal({ isOpen, onClose, onAddItem, loadItemList, type, isSuppli
         </div>
 
         <form onSubmit={handleSave} className="space-y-4">
+          {type === "Brand" && (
+            <>
+              {/* Brand */}
+              <CustomFormSelect
+                label="Brand"
+                name="brand"
+                options={BRAND_OPTIONS}
+                initialValue={itemForm.brand}
+                onSelect={handleSelectChange}
+                placeholder="Select Brand..."
+              />
 
-          {/* Brand */}
-          <CustomFormSelect
-            label={`${type}`}
-            name="brand"
-            options={BRAND_OPTIONS}
-            initialValue={itemForm.brand}
-            onSelect={handleSelectChange}
-            placeholder={`Select ${type.toLowerCase()}...`}
-          />
-
+              {/* Item */}
+              <CustomFormSelect
+                key={itemForm.brand} // 👈 forces reset when brand changes
+                label="Item"
+                name="item"
+                options={FINAL_ITEM_OPTIONS}
+                initialValue={itemForm.item}
+                onSelect={handleSelectChange}
+                placeholder={
+                  itemForm.brand ? "Select Item..." : "Select brand first"
+                }
+                isDisabled={!itemForm.brand}
+              />
+            </>
+          )}  
+          {type === "Item" && (
+            <CustomFormSelect
+              label='Item'
+              name="item"
+              options={ITEM_OPTIONS}
+              initialValue={itemForm.item}
+              onSelect={handleSelectChange}
+              placeholder={`Select Items...`}
+            />
+           )
+          }
           {/* Type */}
           <div>
             <label className="block text-sm font-medium text-slate-700 dark:text-slate-300">

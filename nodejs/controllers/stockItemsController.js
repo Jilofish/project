@@ -19,7 +19,17 @@ export const addStockItems = async (req, res) => {
     res.status(500).json({ message: "Failed to add supplier" });
   }
 };
-
+export const updateStockItem = async (req, res) => {
+  try {
+    const id = req.params.id;
+    const updatedData = req.body;
+    const data = await stockItemsService.updateStockItem(id, updatedData);
+    res.json(data);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Failed to update supplier" });
+  }
+};
 export const deleteStockItems = async (req, res) => {
   try {
     await stockItemsService.deleteStockItem(req.params.id);

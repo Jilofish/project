@@ -85,7 +85,6 @@ function StockManagement() {
 
     // const handleConfirmDelete = async () => {
     //     // Logic for backend deletion goes here
-    //     console.log("Deleting item:", itemToDelete);
     //     setIsDeleteModalOpen(false);
     //     setItemToDelete(null);
     // };
@@ -158,6 +157,7 @@ function StockManagement() {
                                     onDeleteClick={handleDeleteClick}
                                     onAddProductClose={isAddProductModalOpen}
                                     onDeleteProductClose={isDeleteModalOpen}
+                                    onEditStockClose={isEditStockDetailsModalOpen}
                                 />
                             </div>
                         )}
@@ -213,6 +213,7 @@ function StockManagement() {
                 isOpen={isEditStockDetailsModalOpen}
                 onClose={() => { setIsEditStockDetailsModalOpen(false); setSelectedStock(null); }}
                 initialData={selectedStock}
+                onEditStockClose={isEditStockDetailsModalOpen}
             />
             <EditStockTransferDetailsModal
                 isOpen={isEditTransferDetailsModalOpen}

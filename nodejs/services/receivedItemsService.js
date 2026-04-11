@@ -187,7 +187,8 @@ export const getReceivedItemsStats = async () => {
     throw error;
   }
 };
-export const bulkSave = async (items, transaction) => {
+
+export const bulkSave = async (items, deletedItems, transaction) => {
   const client = await pool.connect();
 
   try {
@@ -265,7 +266,12 @@ export const bulkSave = async (items, transaction) => {
           item.id
         ]);
       }
-
+      if (deletedItems && deletedItems.length > 0) {
+        await client.query(`
+          DELETE FROM purchased_order_item
+          WHERE id = ANY($1::int[])
+        `, [deletedItems]);
+      }
       /* ---------- RECALCULATE ---------- */
       const sumResult = await client.query(`
         SELECT COALESCE(SUM(line_total),0) AS subtotal
@@ -296,7 +302,109 @@ export const bulkSave = async (items, transaction) => {
 
       console.log("Updated rows:", updateResult.rowCount);
     }
+    else if (transaction === "sales") {
+      const toInsert = [];
+      const toUpdate = [];
 
+      let salesInvoiceId = null;
+
+      for (const item of items) {
+        const {
+          id,
+          product_name,
+          sales_invoice_id,
+          type,
+          quantity,
+          unit_price,
+          line_total
+        } = item;
+
+        salesInvoiceId = Number(sales_invoice_id);
+
+        const data = {
+          product_name,
+          sales_invoice_id: Number(sales_invoice_id),
+          type,
+          quantity,
+          unit_price,
+          line_total
+        };
+
+        if (id) {
+          toUpdate.push({ id, ...data });
+        } else {
+          toInsert.push(data);
+        }
+      }
+
+      /* ---------- INSERT ---------- */
+      for (const item of toInsert) {
+        await client.query(`
+          INSERT INTO sales_invoice_item
+          (product_name, sales_invoice_id, type, quantity, unit_price, line_total)
+          VALUES ($1,$2,$3,$4,$5,$6)
+        `, [
+          item.product_name,
+          item.sales_invoice_id,
+          item.type,
+          item.quantity,
+          item.unit_price,
+          item.line_total
+        ]);
+      }
+
+      /* ---------- UPDATE ---------- */
+      for (const item of toUpdate) {
+        await client.query(`
+          UPDATE sales_invoice_item
+          SET product_name = $1,
+              sales_invoice_id = $2,
+              type = $3,
+              quantity = $4,
+              unit_price = $5,
+              line_total = $6
+          WHERE id = $7
+        `, [
+          item.product_name,
+          item.sales_invoice_id,
+          item.type,
+          item.quantity,
+          item.unit_price,
+          item.line_total,
+          item.id
+        ]);
+      }
+
+      /* ---------- RECALCULATE ---------- */
+      const sumResult = await client.query(`
+        SELECT COALESCE(SUM(line_total),0) AS subtotal
+        FROM sales_invoice_item
+        WHERE sales_invoice_id = $1
+      `, [salesInvoiceId]);
+
+      const merchandiseSubtotal = Number(sumResult.rows[0].subtotal);
+
+      const orderResult = await client.query(`
+        SELECT shipping_subtotal, discount_subtotal
+        FROM sales_invoice
+        WHERE id = $1
+      `, [salesInvoiceId]);
+
+      const shippingSubtotal = Number(orderResult.rows[0].shipping_subtotal || 0);
+      const discountSubtotal = Number(orderResult.rows[0].discount_subtotal || 0);
+
+      const total = merchandiseSubtotal + shippingSubtotal - discountSubtotal;
+
+      const updateResult = await client.query(`
+        UPDATE sales_invoice
+        SET merchandise_subtotal = $1,
+            total = $2
+        WHERE id = $3
+        RETURNING *
+      `, [merchandiseSubtotal, total, salesInvoiceId]);
+
+      console.log("Updated rows:", updateResult.rowCount);
+    }
     await client.query("COMMIT");
 
   } catch (error) {
@@ -306,6 +414,7 @@ export const bulkSave = async (items, transaction) => {
   } finally {
     client.release();
   }
+  
 };
 
 export const markAsDelivered = async (purchasedOrderId) => {

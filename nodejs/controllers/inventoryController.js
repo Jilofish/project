@@ -43,3 +43,13 @@ export const getBrandStats = async (req, res) => {
         res.status(500).json({ error: 'Failed to fetch brand stats' });
     }
 };
+
+export const getWarehouses = async (req, res) => {
+    try {
+        const warehouses = await inventoryService.getWarehouses();
+        res.status(200).json(warehouses);
+    }
+    catch (error) {
+        res.status(500).json({ error: 'Failed to fetch warehouses' });
+    }
+};

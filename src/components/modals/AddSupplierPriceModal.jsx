@@ -2,16 +2,10 @@ import React, { useEffect, useState } from 'react';
 import { X } from 'lucide-react';
 import CustomFormSelect from '../filter/CustomFormSelect';
 
-// 1. Data mapped to the standard value/label format
-const supplierData = [
-    { supplier: 'Earl Meats Inc.' },
-    { supplier: 'Javier Meats' },
-    { supplier: 'Betez Trading' }
-];
 
 
 
-function AddSupplierPriceModal({ isOpen, onClose, onAdd }) {
+function AddSupplierPriceModal({ isOpen, onClose, onAdd, existingSuppliers}) {
     const [data, setData] = useState({ supplier: '', price: '' });
     const [supplier,setSupplier] = useState([])
     const fetchSuppliers = async () => {
@@ -27,10 +21,14 @@ function AddSupplierPriceModal({ isOpen, onClose, onAdd }) {
         fetchSuppliers();
     },[isOpen]);
 
-    const supplierOptions = supplier.map(item => ({
-        value: item.id, 
-        label: item.businessname 
-    }));
+    const usedIds = existingSuppliers.map(s => Number(s.supplier));
+
+    const supplierOptions = supplier
+        .filter(item => !usedIds.includes(item.id))
+        .map(item => ({
+            value: item.id,
+            label: item.businessname
+        }));
     const handleSubmit = (e) => {
         e.preventDefault();
         if (!data.supplier || !data.price) {
@@ -43,7 +41,7 @@ function AddSupplierPriceModal({ isOpen, onClose, onAdd }) {
    if (!isOpen) return null;
     return (
         <div className="fixed inset-0 bg-black/60 z-[60] flex items-center justify-center p-4">
-            <div className="bg-white dark:bg-slate-800 rounded-xl shadow-xl w-full max-w-md overflow-hidden">
+            <div className="bg-white dark:bg-slate-800 rounded-xl shadow-xl w-full max-w-md">
                 <div className="flex items-center justify-between p-4 border-b border-slate-200 dark:border-slate-700">
                     <h3 className="font-bold text-slate-800 dark:text-white">Add Supplier Pricing</h3>
                     <button onClick={onClose} className="cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-700 rounded-full p-2 transition-colors">

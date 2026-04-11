@@ -10,7 +10,6 @@
     };
 
     function EditItemModal({isOpen, onClose, editingItem, onSaveLocalItem, loadItemList}) {
-        console.log("EditItemModal props:", { isOpen, editingItem, loadItemList });
         /* =======================
         ITEM FORM STATE
         ======================= */

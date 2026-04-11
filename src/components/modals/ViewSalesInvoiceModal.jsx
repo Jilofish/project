@@ -170,7 +170,6 @@ function ViewSalesInvoiceModal({ isOpen, onClose, displayData, setDisplayData, i
     const handleRemoveItem = (id) => {
     setPurchaseItems(prev => prev.filter(item => item.id !== id));
     };
-    console.log("Display Data:", displayData);
     /* ----------------------------- COMPUTED -------------------------------- */
     
     const paymentTotals = useMemo(() => {
@@ -187,12 +186,9 @@ function ViewSalesInvoiceModal({ isOpen, onClose, displayData, setDisplayData, i
     };
     const handleItemChange = (index, productId) => {
 
-        console.log("Selected product ID:", productId);
-        console.log("Available products:", itemList);
         const selectedProduct = itemList.find(
             (p) => p.id === productId
         );
-        console.log("Selected product details:", selectedProduct);
         if (!selectedProduct) return;
 
         const updatedItems = [...purchaseItems];
@@ -206,10 +202,7 @@ function ViewSalesInvoiceModal({ isOpen, onClose, displayData, setDisplayData, i
             quantity: 1,
             line_total: Number(selectedProduct.suggested_retail_price),
         };
-        console.log("Updated item:", updatedItems[index]);
         setPurchaseItems(updatedItems);
-        console.log("Updated items array:", updatedItems);
-        console.log("Current purchaseItems state:", purchaseItems);
         };
     const handleQuantityChange = (index, value) => {
     const updatedItems = [...purchaseItems];
@@ -234,6 +227,7 @@ function ViewSalesInvoiceModal({ isOpen, onClose, displayData, setDisplayData, i
         setPurchaseItems(updatedItems);
     };
     const handleSaveChanges = async() => {
+        console.log("Saving changes...", purchaseItems);
         try {
             const res= await fetch("/api/received-items/view/bulk-save", {
             method: "PUT",
@@ -304,19 +298,20 @@ function ViewSalesInvoiceModal({ isOpen, onClose, displayData, setDisplayData, i
     handleCloseModals();
     };
     const handleAddLocalItem = (item) => {
-    const restructuredItem = {
-        product_name: item.brand,
-        purchased_order_id:displayData.id,
-        type: item.type,
-        quantity: Number(item.quantity),
-        unit_price: Number(item.unitPrice),
-        line_total:
-        Number(item.quantity) * Number(item.unitPrice),
+        const restructuredItem = {
+            product_id: item.item_id || item.id, // ✅ IMPORTANT
+            product_name: item.product_name,
+            sales_invoice_id:displayData.id,
+            type: item.type,
+            quantity: Number(item.quantity),
+            unit_price: Number(item.unitPrice),
+            line_total:
+            Number(item.quantity) * Number(item.unitPrice),
 
-        // frontend-only fields (NOT sent to DB)
-        shipping: Number(item.shipping ?? 0),
-        discount: Number(item.discount ?? 0),
-    };
+            // frontend-only fields (NOT sent to DB)
+            shipping: Number(item.shipping ?? 0),
+            discount: Number(item.discount ?? 0),
+        };
 
 
     setPurchaseItems(prev => [
@@ -351,6 +346,8 @@ function ViewSalesInvoiceModal({ isOpen, onClose, displayData, setDisplayData, i
     const ProofPublicUrl = getProofUrl(displayData?.payment_image_url);
     const qrProofUrl = `${baseUrl}/${displayData?.payment_image_url}`;
     const ComputationImageURL = getComputationImageUrl(displayData?.computation_img_url);
+
+    console.log("Display Data in Sales:", displayData);
     /* ----------------------------- GUARD ----------------------------------- */
     if (!isOpen) return null;
     /* ----------------------------- JSX ------------------------------------- */

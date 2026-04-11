@@ -6,7 +6,8 @@ const router = express.Router();
 //Stock Display
 router.get("/", stockItemsController.getAllStockItems);
 router.post("/", stockItemsController.addStockItems);
-router.delete("/:id", stockItemsController.deleteStockItems)
+router.delete("/:id", stockItemsController.deleteStockItems);
+router.put("/:id", stockItemsController.updateStockItem);
 router.get("/stats", stockItemsController.getStockItemsStats);
 //Stock Transfer
 // router.get("/", stockTransferController.getAllStockItems);

@@ -35,6 +35,7 @@ function CreatePurchase() {
     const [orders, setOrders] = useState([]);
     const [suppliers, setSuppliers] = useState([]);
     const [itemList,setItemList] = useState([]);
+    const [brandList, setBrandList] = useState([]);
     const [dataView, setDataView] = useState([]);
     
     const [isViewModalOpen, setIsViewModalOpen] = useState(false);
@@ -102,7 +103,7 @@ function CreatePurchase() {
         console.error("Failed to fetch suppliers", err);
     }
     };
-    const fetchBrands = async () =>{
+    const fetchItems = async () =>{
         try {
             const res = await fetch("/api/purchasing/items");
             const data = await res.json();
@@ -110,6 +111,16 @@ function CreatePurchase() {
 
         } catch (err) {
             console.error("Failed to fetch item list", err);
+        }
+    };
+    const fetchBrands = async () =>{
+        try {
+            const res = await fetch("/api/inventory/brands");
+            const data = await res.json();
+            setBrandList(data);
+
+        } catch (err) {
+            console.error("Failed to fetch brand list", err);
         }
     };
     /* =======================
@@ -317,11 +328,11 @@ function CreatePurchase() {
         fetchPurchases();
         fetchSuppliers();
         fetchStats();
+        fetchItems();
         fetchBrands();
     }
     
     }, [isEditModalOpen, isViewModalOpen, isModalOpen]);
-    console.log("Orders after fetch:", orders); // Debugging log
     return (
         <div>
             <PurchasedStatsGrid stats={stats}/>
@@ -380,6 +391,7 @@ function CreatePurchase() {
                 onClose={closeModal} 
                 onAddPurchase={handleAddNewPurchase}
                 itemList={itemList}
+                brandList={brandList}
             />
 
             {/* Edit Purchase Order Modal */}
@@ -396,6 +408,7 @@ function CreatePurchase() {
                 displayData={dataView}
                 setDisplayData={setDataView}
                 itemList={itemList}
+                brandList={brandList}
             /> 
             <ViewDeliveryReceiptModal
                 isOpen={isViewModalOpen}

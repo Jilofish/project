@@ -26,7 +26,7 @@ const TYPE_LABELS = {
 /*                             MAIN COMPONENT                                 */
 /* -------------------------------------------------------------------------- */
 
-function AddPurchaseOrderModal({ isOpen, onClose, onAddPurchase, itemList}) {
+function AddPurchaseOrderModal({ isOpen, onClose, onAddPurchase, itemList, brandList}) {
   /* ----------------------------- STATE ----------------------------------- */
 
   const [suppliers, setSuppliers] = useState([]);
@@ -431,7 +431,7 @@ function AddPurchaseOrderModal({ isOpen, onClose, onAddPurchase, itemList}) {
                                     `}
                                 >
                                     <Plus className="w-4 h-4" />
-                                    <span className="text-sm font-medium">Add Brand</span>
+                                    <span className="text-sm font-medium">Add Item</span>
                                 </button>
                             </div>
                             <table className="w-full">
@@ -621,6 +621,7 @@ function AddPurchaseOrderModal({ isOpen, onClose, onAddPurchase, itemList}) {
                 onClose={handleCloseItemModal} 
                 onAddItem={handleAddLocalItem} 
                 loadItemList={itemList}
+                brandList={brandList}
                 type="Brand"
                 isSupplier={true}
                 data={Number(formValues.supplier)}

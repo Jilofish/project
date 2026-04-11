@@ -62,12 +62,12 @@ export const getReceivedItemsStats = async (req, res) => {
 
 export const bulkSaveItems = async (req, res) => {
   try {
-    const { items,transaction } = req.body;
+    const { items, deletedItems, transaction } = req.body;
     if (!Array.isArray(items)) {
       return res.status(400).json({ message: "Items must be an array" });
     }
 
-    await receivedItemsService.bulkSave(items, transaction);
+    await receivedItemsService.bulkSave(items, deletedItems, transaction);
 
     res.status(200).json({ message: "Items saved successfully" });
   } catch (err) {

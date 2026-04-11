@@ -24,7 +24,7 @@ const warehouseData = [
 /*                             MAIN COMPONENT                                 */
 /* -------------------------------------------------------------------------- */
 
-function ViewPurchaseOrderModal({ isOpen, onClose, displayData, setDisplayData, itemList}) {
+function ViewPurchaseOrderModal({ isOpen, onClose, displayData, setDisplayData, itemList,brandList}) {
   /* ----------------------------- STATE ----------------------------------- */
     const [isPayOpen, setIsPayOpen] = useState(false);
     const [isEditingItems, setIsEditingItems] = useState(false);
@@ -32,7 +32,7 @@ function ViewPurchaseOrderModal({ isOpen, onClose, displayData, setDisplayData, 
     const [isAddItemModalOpen, setIsAddItemModalOpen] = useState(false);
     const [isEditItemModalOpen, setIsEditItemModalOpen] = useState(false);
     const [editingItem, setEditingItem] = useState(null);
-
+    const [deletedItems, setDeletedItems] = useState([]);
     // Local editable copy
     const [purchaseItems, setPurchaseItems] = useState([]);
 
@@ -149,8 +149,16 @@ function ViewPurchaseOrderModal({ isOpen, onClose, displayData, setDisplayData, 
     const handleDeliveryStatusModal = () =>{
         setIsPayOpen(true);
     };
+
     const handleRemoveItem = (id) => {
-    setPurchaseItems(prev => prev.filter(item => item.id !== id));
+        setPurchaseItems(prev => prev.filter(item => item.id !== id));
+
+        // only track if it exists in DB
+        if (id) {
+            setDeletedItems(prev => [...prev, id]);
+        }
+
+        console.log("Removing item with id:", id);
     };
 
     
@@ -172,12 +180,9 @@ function ViewPurchaseOrderModal({ isOpen, onClose, displayData, setDisplayData, 
     };
     const handleBrandChange = (index, productId) => {
 
-        console.log("Selected product ID:", productId);
-        console.log("Available products:", itemList);
         const selectedProduct = itemList.find(
             (p) => p.id === productId
         );
-        console.log("Selected product details:", selectedProduct);
         if (!selectedProduct) return;
 
         const updatedItems = [...purchaseItems];
@@ -191,10 +196,7 @@ function ViewPurchaseOrderModal({ isOpen, onClose, displayData, setDisplayData, 
             quantity: 1,
             line_total: Number(selectedProduct.suggested_retail_price),
         };
-        console.log("Updated item:", updatedItems[index]);
         setPurchaseItems(updatedItems);
-        console.log("Updated items array:", updatedItems);
-        console.log("Current purchaseItems state:", purchaseItems);
         };
     const handleQuantityChange = (index, value) => {
     const updatedItems = [...purchaseItems];
@@ -219,18 +221,19 @@ function ViewPurchaseOrderModal({ isOpen, onClose, displayData, setDisplayData, 
         setPurchaseItems(updatedItems);
     };
     const handleSaveChanges = async() => {
+        console.log("Saving changes...", purchaseItems);
         try {
-            const res= await fetch("/api/received-items/view/bulk-save", {
-            method: "PUT",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-                items: purchaseItems,
-                transaction: "purchasing",
-            }),
+           const res = await fetch("/api/received-items/view/bulk-save", {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    items: purchaseItems,
+                    deletedItems, // 👈 ADD THIS
+                    transaction: "purchasing",
+                }),
             });
-
             setIsEditingItems(false);
             setEditingItem(null);
         } catch (err) {
@@ -277,34 +280,32 @@ function ViewPurchaseOrderModal({ isOpen, onClose, displayData, setDisplayData, 
     handleCloseModals();
     };
     const handleAddLocalItem = (item) => {
-    const restructuredItem = {
-        product_name: item.brand,
-        purchased_order_id:displayData.id,
-        type: item.type,
-        quantity: Number(item.quantity),
-        unit_price: Number(item.unitPrice),
-        line_total:
-        Number(item.quantity) * Number(item.unitPrice),
+        const restructuredItem = {
+            product_id: item.item_id || item.id, // ✅ IMPORTANT
+            product_name: item.product_name,
+            purchased_order_id: displayData.id,
+            type: item.type,
+            quantity: Number(item.quantity),
+            unit_price: Number(item.unitPrice),
+            line_total: Number(item.quantity) * Number(item.unitPrice),
 
-        // frontend-only fields (NOT sent to DB)
-        shipping: Number(item.shipping ?? 0),
-        discount: Number(item.discount ?? 0),
-    };
+            shipping: Number(item.shipping ?? 0),
+            discount: Number(item.discount ?? 0),
+        };
 
-
-    setPurchaseItems(prev => [
-        ...prev,
-        {
-        ...restructuredItem,
-        _tempId: crypto.randomUUID(),
-        }
-    ]);
-
-    handleCloseModals();
+        setPurchaseItems(prev => [
+            ...prev,
+            {
+            ...restructuredItem,
+            _tempId: crypto.randomUUID(),
+            }
+        ]);
+        handleCloseModals();
     };
    
     /* ----------------------------- EFFECTS --------------------------------- */
     const receiptPublicUrl = getReceiptPublicUrl(displayData?.receipt_url);
+
     /* ----------------------------- GUARD ----------------------------------- */
     if (!isOpen) return null;
     /* ----------------------------- JSX ------------------------------------- */
@@ -436,7 +437,7 @@ function ViewPurchaseOrderModal({ isOpen, onClose, displayData, setDisplayData, 
                 <table className="w-full">
                     <thead>
                     <tr className="bg-slate-200/50 dark:bg-slate-700/50">
-                        <th className="p-4 text-left text-sm font-semibold">Brand</th>
+                        <th className="p-4 text-left text-sm font-semibold">Item</th>
                         <th className="p-4 text-left text-sm font-semibold">Type</th>
                         <th className="p-4 text-left text-sm font-semibold">Quantity</th>
                         <th className="p-4 text-left text-sm font-semibold">Unit Price</th>
@@ -457,13 +458,13 @@ function ViewPurchaseOrderModal({ isOpen, onClose, displayData, setDisplayData, 
                             className="border-b border-slate-300 dark:border-slate-600"
                         > 
                             <td className="p-4">
-                                {isEditingItems ? (
+                                { isEditingItems ? (
                                     <select
                                     value={item.product_id || ""}
                                     onChange={(e) => handleBrandChange(index, e.target.value)}
                                     className="w-full px-2 py-1 rounded-md border"
                                     >
-                                    <option value="">Select Brand</option>
+                                    <option value="">Select Item</option>
                                     {itemList.map((product) => (
                                         <option key={product.id} value={product.id}>
                                         {product.item_name}
@@ -514,7 +515,10 @@ function ViewPurchaseOrderModal({ isOpen, onClose, displayData, setDisplayData, 
                             {isEditingItems && displayData.approval_status !=="Rejected" && (
                             <td className="p-4 flex gap-3">
                                 <button
-                                onClick={() => handleRemoveItem(item.id || item.temp_id)}
+                                onClick={() => {
+                                    console.log("Removing item id:", item.id);
+                                    handleRemoveItem(item.id || item.temp_id);
+                                }}
                                 className="text-red-500 hover:text-red-700"
                                 >
                                 <Trash2 className="h-4 w-4" />
@@ -725,6 +729,7 @@ function ViewPurchaseOrderModal({ isOpen, onClose, displayData, setDisplayData, 
         type="Brand"
         isSupplier={true}
         data={Number(displayData.supplier.id)}
+        brandList={brandList}
         />
 
         <EditItemModal

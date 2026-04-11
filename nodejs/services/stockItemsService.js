@@ -12,18 +12,59 @@ export const getAllStockItems = async () => {
       i.suggested_retail_price,
       i.status,
       i.item_code,
+      i.item_type,
+      i.brand,
+      i.remarks,
+
       w.id AS warehouse_id,
       w.whouse_name,
-      w.whouse_address
+      w.whouse_address,
+
+      -- ✅ VIP PRICES (NO DUPLICATES)
+      COALESCE(vp_data.vip_prices, '[]') AS vip_prices,
+
+      -- ✅ SUPPLIER PRICES (NO DUPLICATES)
+      COALESCE(sp_data.supplier_prices, '[]') AS supplier_prices
+
     FROM items i
     LEFT JOIN warehouse w ON i.whouse_id = w.id
+
+    -- 🔥 VIP PRICES LATERAL
+    LEFT JOIN LATERAL (
+      SELECT JSON_AGG(
+        JSONB_BUILD_OBJECT(
+          'id', vp.id,
+          'item_id', vp.item_id,
+          'cust_id', vp.cust_id,
+          'customer_name', c.name, -- ✅ from your table
+          'vip_price', vp.vip_price
+        )
+      ) AS vip_prices
+      FROM item_vip_price vp
+      LEFT JOIN customer c ON vp.cust_id = c.id
+      WHERE vp.item_id = i.id
+    ) vp_data ON true
+
+    -- 🔥 SUPPLIER PRICES LATERAL
+    LEFT JOIN LATERAL (
+      SELECT JSON_AGG(
+        JSONB_BUILD_OBJECT(
+          'id', sp.id,
+          'item_id', sp.item_id,
+          'supplier_id', sp.supp_id,
+          'supplier_name', s.name, -- ✅ from your table
+          'price', sp.supp_price
+        )
+      ) AS supplier_prices
+      FROM item_supplier_price sp
+      LEFT JOIN supplier s ON sp.supp_id = s.id
+      WHERE sp.item_id = i.id
+    ) sp_data ON true
   `;
 
   const { rows } = await pool.query(query);
-
   return rows;
 };
-
 /* ============================================================
    CREATE STOCK ITEM
 ============================================================ */
@@ -39,9 +80,10 @@ export const createStockItem = async (stock) => {
       threshold_count,
       status,
       item_type,
-      brand
+      brand,
+      remarks
     )
-    VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+    VALUES ($1, $2, $3, $4, $5, $6, $7, $8,$9,$10)
     RETURNING *
   `;
 
@@ -54,7 +96,8 @@ export const createStockItem = async (stock) => {
     Number(stock.threshold_count) || 0,
     "In Stock",
     stock.item_type,
-    Number(stock.brand)
+    Number(stock.brand),
+    stock.remarks || "—"
   ];
 
   const { rows } = await pool.query(insertItemQuery, insertValues);
@@ -85,6 +128,161 @@ export const createStockItem = async (stock) => {
   item.item_code = itemCode;
 
   return item;
+};
+
+export const updateStockItem = async (id, updatedData) => {
+  console.log("Updating stock item with ID:", id, "and data:", updatedData);
+  const client = await pool.connect();
+
+  try {
+    await client.query('BEGIN');
+
+    // =========================
+    // 1. UPDATE MAIN ITEM
+    // =========================
+    const updateItemQuery = `
+      UPDATE items SET
+        item_name = $1,
+        suggested_retail_price = $2,
+        whouse_id = $3,
+        threshold_count = $4,
+        item_type = $5,
+        brand = $6,
+        remarks = $7
+      WHERE id = $8
+      RETURNING *
+    `;
+
+    const itemValues = [
+      updatedData.name,
+      updatedData.price ? Number(updatedData.price) : null,
+      updatedData.warehouse_id ? Number(updatedData.warehouse_id) : null,
+      updatedData.threshold_count ? Number(updatedData.threshold_count) : 0,
+      updatedData.item_type || null,
+      updatedData.brand ? Number(updatedData.brand) : null,
+      updatedData.remarks || 'N/A',
+      id
+    ];
+
+    const { rows } = await client.query(updateItemQuery, itemValues);
+    const updatedItem = rows[0];
+
+    // =========================
+    // 2. SUPPLIER PRICING
+    // =========================
+    const supplierPrices = updatedData.pricing || [];
+
+    const supplierIds = supplierPrices
+      .filter(p => p.id)
+      .map(p => Number(p.id));
+
+    // ✅ Correct soft delete (delete NOT in list)
+    if (supplierIds.length > 0) {
+      await client.query(`
+        UPDATE item_supplier_price
+        SET is_deleted = true
+        WHERE item_id = $1
+        AND id <> ALL($2::int[])
+      `, [id, supplierIds]);
+    } else {
+      await client.query(`
+        UPDATE item_supplier_price
+        SET is_deleted = true
+        WHERE item_id = $1
+      `, [id]);
+    }
+
+    // ✅ Upsert supplier pricing
+    for (const p of supplierPrices) {
+      if (p.id) {
+        await client.query(`
+          UPDATE item_supplier_price
+          SET supp_id = $1,
+              supp_price = $2,
+              is_deleted = false
+          WHERE id = $3
+        `, [
+          Number(p.supplier),   // ✅ FIXED
+          Number(p.price),      // ✅ FIXED
+          p.id
+        ]);
+      } else {
+        await client.query(`
+          INSERT INTO item_supplier_price (item_id, supp_id, supp_price)
+          VALUES ($1, $2, $3)
+        `, [
+          id,
+          Number(p.supplier),   // ✅ FIXED
+          Number(p.price)       // ✅ FIXED
+        ]);
+      }
+    }
+
+    // =========================
+    // 3. VIP PRICING
+    // =========================
+    const vipPrices = updatedData.vip_pricing || [];
+
+    const vipIds = vipPrices
+      .filter(v => v.id)
+      .map(v => Number(v.id));
+
+    // ✅ Safe + consistent soft delete
+    if (vipIds.length > 0) {
+      await client.query(`
+        UPDATE item_vip_price
+        SET is_deleted = true
+        WHERE item_id = $1
+        AND id <> ALL($2::int[])
+      `, [id, vipIds]);
+    } else {
+      await client.query(`
+        UPDATE item_vip_price
+        SET is_deleted = true
+        WHERE item_id = $1
+      `, [id]);
+    }
+
+    // ✅ Upsert VIP pricing
+    for (const v of vipPrices) {
+      if (v.id) {
+        await client.query(`
+          UPDATE item_vip_price
+          SET cust_id = $1,
+              vip_price = $2,
+              is_deleted = false
+          WHERE id = $3
+        `, [
+          Number(v.customer_id), // ideally rename to customer_id
+          Number(v.price ?? v.price),
+          v.id
+        ]);
+      } else {
+        await client.query(`
+          INSERT INTO item_vip_price (item_id, cust_id, vip_price)
+          VALUES ($1, $2, $3)
+        `, [
+          id,
+          Number(v.customer_name),
+          Number(v.price ?? v.vip_price)
+        ]);
+      }
+    }
+
+    // =========================
+    // COMMIT
+    // =========================
+    await client.query('COMMIT');
+
+    return updatedItem;
+
+  } catch (error) {
+    await client.query('ROLLBACK');
+    console.error("Transaction failed:", error);
+    throw error;
+  } finally {
+    client.release();
+  }
 };
 
 
