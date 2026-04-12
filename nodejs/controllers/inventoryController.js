@@ -53,3 +53,11 @@ export const getWarehouses = async (req, res) => {
         res.status(500).json({ error: 'Failed to fetch warehouses' });
     }
 };
+export const addBrand = async (req, res) => {
+    try {
+        const newBrand = await inventoryService.addBrand(req.body);
+        res.status(201).json(newBrand);
+    } catch (error) {
+        res.status(500).json({ error: 'Failed to add brand' });
+    }
+};

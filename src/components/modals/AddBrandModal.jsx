@@ -18,6 +18,7 @@ function AddBrandModal({ isOpen, onClose }) {
     };
     const handleSubmit =async (e) => {
         e.preventDefault();
+        console.log("Submitting form with values:", formValues);
         try {
             const res=await fetch(
                 "/api/inventory/brands",

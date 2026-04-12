@@ -9,5 +9,6 @@ router.post("/", inventoryController.addinventory);
 router.get("/brands", inventoryController.getBrands);
 router.get("/brands/stats", inventoryController.getBrandStats);
 router.get("/warehouse", inventoryController.getWarehouses);
+router.post("/brands", inventoryController.addBrand);
 
 export default router;

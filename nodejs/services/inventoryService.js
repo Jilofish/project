@@ -150,3 +150,17 @@ export const getWarehouses = async () => {
         throw error;
     } 
 };
+
+export const addBrand = async (brandData) => {
+    try {
+        const result = await pool.query(`
+            INSERT INTO brand_list (brand_name)
+            VALUES ($1)
+            RETURNING *
+        `, [brandData.name]);
+        return result.rows[0];
+    } catch (error) {
+        console.error("❌ addBrand:", error.message);
+        throw error;
+    }
+};

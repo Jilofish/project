@@ -128,9 +128,11 @@ function BrandList() {
     
 
     useEffect(() => {
+      if (!isAddModalOpen && !isEditModalOpen) {
       fetchBrands();
       fetchStats();
-    }, []);
+      }
+    }, [isAddModalOpen, isEditModalOpen]);
     // --- PAGINATION LOGIC ---
     const totalOrders = filteredOrders.length;
     const totalPages = Math.ceil(totalOrders / rowLimit);
