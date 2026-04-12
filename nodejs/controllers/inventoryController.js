@@ -61,3 +61,11 @@ export const addBrand = async (req, res) => {
         res.status(500).json({ error: 'Failed to add brand' });
     }
 };
+export const updateBrand = async (req, res) => {
+    try {
+        const updatedBrand = await inventoryService.updateBrand(req.params.id, req.body);
+        res.status(200).json(updatedBrand);
+    } catch (error) {
+        res.status(500).json({ error: 'Failed to update brand' });
+    }
+};

@@ -10,5 +10,6 @@ router.get("/brands", inventoryController.getBrands);
 router.get("/brands/stats", inventoryController.getBrandStats);
 router.get("/warehouse", inventoryController.getWarehouses);
 router.post("/brands", inventoryController.addBrand);
+router.put("/brands/:id", inventoryController.updateBrand);
 
 export default router;

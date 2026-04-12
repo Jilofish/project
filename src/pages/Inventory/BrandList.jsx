@@ -7,6 +7,7 @@ import TablePagination from '../../components/pagination/TablePagination';
 import RowLimiter from '../../components/filter/RowLimiter';
 
 import AddBrandModal from '../../components/modals/AddBrandModal';
+import EditBrandModal from '../../components/modals/EditBrandModal';
 
 const ALL_OPTION = 'All';
 
@@ -76,7 +77,7 @@ function BrandList() {
     const handleSaveEdit = async(updatedData) => {
         try {
           const res = await fetch(
-            `/api/brands/${updatedData.id}`,
+            `/api/inventory/brands/${updatedData.id}`,
             {
               method:"PUT",
               headers:{
@@ -179,6 +180,12 @@ function BrandList() {
         <AddBrandModal
           isOpen={isAddModalOpen} 
           onClose={() => setIsAddModalOpen(false)} 
+        />
+        <EditBrandModal
+          isOpen={isEditModalOpen}
+          onClose={() => setIsEditModalOpen(false)}
+          brandData={brandToEdit}
+          onSave={handleSaveEdit}
         />
       </div>
     );

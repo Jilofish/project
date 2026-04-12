@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import { X } from 'lucide-react';
-import CustomFormSelect from '../filter/CustomFormSelect'; 
 
-function AddBrandModal({ isOpen, onClose }) {
+function EditBrandModal({ isOpen, onClose, brandData, onSave }) {
+    console.log("EditBrandModal received brandData:", brandData);
     if (!isOpen) return null;
 
     const [formValues, setFormValues] = useState({
-        name: ''
+        name: brandData?.name || ''
     });
 
     const handleInputChange = (e) => { 
@@ -16,31 +16,12 @@ function AddBrandModal({ isOpen, onClose }) {
             [name]: value 
         })); 
     };
-    const handleSubmit =async (e) => {
+    const handleSubmit = (e) => {
         e.preventDefault();
         console.log("Submitting form with values:", formValues);
-        try {
-            const res=await fetch(
-                "/api/inventory/brands",
-                {
-                    method:"POST", 
-                    headers:{"Content-Type": "application/json"},
-                    body:JSON.stringify(formValues)
-                }
-            );
-            if(!res.ok){
-                const errText = await response.text();
-                console.error("Backend error:", errText);
-                throw new Error("Failed to save purchase");
-            }
-        } catch (error) {
-            console.error(err);
-            alert("Error saving purchase. See console.");
-        }
-        
+        onSave({ ...brandData, ...formValues });
 
-        setFormValues({ name: ''
-        });
+        setFormValues({ name: ''    });
         onClose();
     };
 
@@ -51,7 +32,7 @@ function AddBrandModal({ isOpen, onClose }) {
 
                 <div className = "w-full flex items-center justify-between mb-6 pb-6 border-b border-slate-300 dark:border-slate-700">
                         <h2 className="text-2xl font-bold text-slate-800 dark:text-white">
-                            Add New Brand
+                            Edit Brand
                         </h2>
 
                         <button onClick={onClose} className="p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-full transition-colors">
@@ -74,7 +55,7 @@ function AddBrandModal({ isOpen, onClose }) {
                             Cancel
                         </button>
                         <button type="submit" className="cursor-pointer px-4 py-2 text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 transition-colors shadow-md">
-                            Add Brand
+                            Edit Brand
                         </button>
                     </div>
                 </form>
@@ -83,4 +64,4 @@ function AddBrandModal({ isOpen, onClose }) {
     );
 }
 
-export default AddBrandModal;
+export default EditBrandModal;

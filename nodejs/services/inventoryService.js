@@ -164,3 +164,17 @@ export const addBrand = async (brandData) => {
         throw error;
     }
 };
+export const updateBrand = async (id, brandData) => {
+    try {
+        const result = await pool.query(`
+            UPDATE brand_list
+            SET brand_name = $1
+            WHERE id = $2
+            RETURNING *
+        `, [brandData.name, id]);
+        return result.rows[0];
+    } catch (error) {
+        console.error("❌ updateBrand:", error.message);
+        throw error;
+    }
+};
