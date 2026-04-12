@@ -51,7 +51,7 @@ function AddBrandModal({ isOpen, onClose }) {
 
                 <div className = "w-full flex items-center justify-between mb-6 pb-6 border-b border-slate-300 dark:border-slate-700">
                         <h2 className="text-2xl font-bold text-slate-800 dark:text-white">
-                            Add New Customer
+                            Add New Brand
                         </h2>
 
                         <button onClick={onClose} className="p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-full transition-colors">
