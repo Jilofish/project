@@ -57,7 +57,7 @@ function SalesChart({ salesTableData = [] }) {
   const isNoSales = data.length === 1 && data[0].isFallback;
 
   return (
-    <div className="bg-white dark:bg-slate-900 backdrop-blur-xl rounded-b-2xl p-6 border-slate-200/50 dark:border-slate-700/50">
+    <div className="bg-white dark:bg-slate-900/80 backdrop-blur-xl rounded-2xl border border-slate-200/50 dark:border-slate-700/50 p-6">
       <div className="mb-6">
         <h3 className="text-lg font-bold text-slate-800 dark:text-white">
           Sales by Category

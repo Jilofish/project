@@ -9,7 +9,23 @@ import {
   BarChart,
 } from "recharts";
 
-function RevenueChart({ revenueChartData }) {
+function RevenueChart() {
+  // Mock data embedded in component
+  const mockData = [
+    { month: "Jan", revenue: 45000, cogs: 27000, profit: 18000 },
+    { month: "Feb", revenue: 52000, cogs: 31200, profit: 20800 },
+    { month: "Mar", revenue: 48500, cogs: 29100, profit: 19400 },
+    { month: "Apr", revenue: 61000, cogs: 33550, profit: 27450 },
+    { month: "May", revenue: 58000, cogs: 34800, profit: 23200 },
+    { month: "Jun", revenue: 72000, cogs: 39600, profit: 32400 },
+    { month: "Jul", revenue: 68500, cogs: 41100, profit: 27400 },
+    { month: "Aug", revenue: 75000, cogs: 42000, profit: 33000 },
+    { month: "Sep", revenue: 64000, cogs: 38400, profit: 25600 },
+    { month: "Oct", revenue: 79000, cogs: 43340, profit: 35660 },
+    { month: "Nov", revenue: 85000, cogs: 46750, profit: 38250 },
+    { month: "Dec", revenue: 92000, cogs: 50600, profit: 41400 },
+  ];
+
   const formatMoney = (value) => {
     const num = Math.trunc(Number(value) * 100) / 100;
     return `₱${num.toLocaleString("en-PH", {
@@ -18,10 +34,11 @@ function RevenueChart({ revenueChartData }) {
     })}`;
   };
 
-  const data = revenueChartData ?? [];
+  // Use provided data, fallback to mock data
+  const data = mockData;
 
   return (
-    <div className="bg-white dark:bg-slate-900/80 backdrop-blur-xl rounded-b-2xl border border-slate-200/50 dark:border-slate-700/50 p-6">
+    <div className="bg-white dark:bg-slate-900/80 backdrop-blur-xl rounded-2xl border border-slate-200/50 dark:border-slate-700/50 p-6">
       
       {/* HEADER */}
       <div className="flex items-center justify-between mb-6">
@@ -87,12 +104,17 @@ function RevenueChart({ revenueChartData }) {
             />
 
             <Tooltip
-              contentStyle={{
-                backgroundColor: "rgba(230, 236, 250, 0.9)",
-                border: "none",
-                borderRadius: "12px",
-                boxShadow: "0 10px 40px rgba(235, 227, 227, 0.3)",
-              }}
+            cursor={{ 
+              fill: document.documentElement.classList.contains('dark') ? 'rgba(255, 255, 255, 0.25)' : 'rgba(0, 0, 0, 0.1)' }}
+            contentStyle={{
+              backgroundColor: document.documentElement.classList.contains('dark') 
+                ? "#f3f3f5"// slate-800
+                : "#ffffff",
+              border: "none",
+              borderRadius: "12px",
+              boxShadow: "0 10px 40px rgba(0, 0, 0, 0.2)",
+              // color: document.documentElement.classList.contains('dark') ? "#1e293b" : "#f1f5f9"
+            }}
               formatter={(value, name, props) => {
                 if (name === "profit") return [formatMoney(value), "Profit"];
                 if (name === "cogs") return [formatMoney(value), "COGS"];
