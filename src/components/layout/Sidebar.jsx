@@ -136,7 +136,7 @@ function Sidebar ({ collapsed }) {
               {collapsed && isFloatingOpen && isExpandable && (
                 <>
                   <div className="fixed inset-0 z-[60]" onClick={() => setOpenFloatingMenu(null)} />
-                  <div className="absolute left-[calc(100%+12px)] top-0 z-[70] animate-in fade-in slide-in-from-left-2 duration-200">
+                  <div className="absolute left-[calc(100%+20px)] top-0 z-[70] animate-in fade-in slide-in-from-left-2 duration-200">
                     <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl shadow-2xl p-3 min-w-[220px]">
                       <div className="flex items-center justify-between mb-3 pb-2 border-b border-slate-200 dark:border-slate-700">
                         <p className="text-xs font-bold text-slate-700 dark:text-white uppercase tracking-wide">{item.label}</p>
