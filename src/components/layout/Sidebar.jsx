@@ -72,10 +72,10 @@ function Sidebar ({ collapsed }) {
   return (
     <div className={`${
       collapsed ? "w-20" : "w-72"
-    } transition-all duration-300 ease-in-out bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border-r border-slate-200/50 dark:border-slate-700/50 flex flex-col relative z-50 h-screen`}>
+    } transition-all duration-100 bg-white/80 dark:bg-slate-900 backdrop-blur-xl border-r border-slate-200/50 dark:border-slate-700/50 flex flex-col relative z-50 h-screen`}>
       
       {/* Logo */}
-      <div className="p-6 border-b border-slate-200/50 dark:border-slate-700/50">
+      <div className="p-6 border-b border-slate-200/50 dark:border-white/10">
         <div className="flex items-center space-x-3">
           <div className="w-10 h-10 bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl flex items-center justify-center shadow-lg">
             <Zap className="w-6 h-6 text-white"/>
@@ -104,7 +104,7 @@ function Sidebar ({ collapsed }) {
                   className={({ isActive }) =>
                     `w-full flex items-center justify-between p-3 rounded-xl transition-all duration-200
                     ${isActive 
-                      ? "bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg shadow-blue-500/25" 
+                      ? "bg-gradient-to-r from-blue-500 to-purple-600 text-white" 
                       : "text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/50"
                     }`
                   }
@@ -119,7 +119,7 @@ function Sidebar ({ collapsed }) {
                   onClick={() => collapsed ? toggleFloatingMenu(item.id) : toggleExpanded(item.id)}
                   className={`w-full flex items-center justify-between p-3 rounded-xl transition-all duration-200
                     ${(isExpanded || isFloatingOpen)
-                      ? "bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg shadow-blue-500/25"
+                      ? "bg-gradient-to-r from-blue-500 to-purple-600 text-white"
                       : "text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/50"
                     }`
                   }
@@ -173,10 +173,10 @@ function Sidebar ({ collapsed }) {
                       key={subitem.id}
                       to={`/${item.id}/${subitem.id}`}
                       className={({ isActive }) =>
-                        `block w-full text-left p-2 text-sm rounded-lg transition-all
+                        `block w-full text-left p-2 py-2.5 pl-4 text-sm rounded-lg transition-all 
                         ${isActive
-                          ? "text-blue-500 font-semibold"
-                          : "text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800/50"
+                          ? "text-blue-500 font-semibold bg-black/7 dark:bg-slate-800/50"
+                          : "text-slate-500 dark:text-slate-300/80 hover:text-slate-700 dark:hover:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-800/50"
                         }`
                       }
                     >
@@ -192,7 +192,7 @@ function Sidebar ({ collapsed }) {
 
       {/* User Profile */}
       {!collapsed && (
-        <footer className="p-4 border-t border-slate-200/50 dark:border-slate-700/50">
+        <footer className="p-4 border-t border-slate-200/50 dark:border-white/10">
           <div className="flex items-center space-x-3 p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50">
             <img src="https://cdn-icons-png.flaticon.com/512/4042/4042171.png" alt="user" className="w-10 h-10 rounded-full ring-2 ring-blue-500" />
             <div className="flex-1 min-w-0">

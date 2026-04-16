@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import {
   Bar,
   XAxis,
@@ -7,10 +7,27 @@ import {
   ResponsiveContainer,
   Tooltip,
   BarChart,
+  Cell,
 } from "recharts";
 
 function RevenueChart() {
-  // Mock data embedded in component
+  // 1. CREATE THEME STATE
+  const [isDark, setIsDark] = useState(document.documentElement.classList.contains('dark'));
+
+  // 2. OBSERVE THEME CHANGES
+  useEffect(() => {
+    const observer = new MutationObserver(() => {
+      setIsDark(document.documentElement.classList.contains('dark'));
+    });
+
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ['class'],
+    });
+
+    return () => observer.disconnect();
+  }, []);
+
   const mockData = [
     { month: "Jan", revenue: 45000, cogs: 27000, profit: 18000 },
     { month: "Feb", revenue: 52000, cogs: 31200, profit: 20800 },
@@ -34,7 +51,6 @@ function RevenueChart() {
     })}`;
   };
 
-  // Use provided data, fallback to mock data
   const data = mockData;
 
   return (
@@ -52,23 +68,14 @@ function RevenueChart() {
         </div>
 
         <div className="flex items-center space-x-6">
-
-          {/* Profit Legend */}
           <div className="flex items-center space-x-2">
             <div className="w-3 h-3 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full"></div>
-            <span className="text-sm text-slate-600 dark:text-slate-400">
-              Profit
-            </span>
+            <span className="text-sm text-slate-600 dark:text-slate-400">Profit</span>
           </div>
-
-          {/* COGS Legend */}
           <div className="flex items-center space-x-2">
             <div className="w-3 h-3 bg-gradient-to-r from-slate-400 to-slate-500 rounded-full"></div>
-            <span className="text-sm text-slate-600 dark:text-slate-400">
-              COGS
-            </span>
+            <span className="text-sm text-slate-600 dark:text-slate-400">COGS</span>
           </div>
-
         </div>
       </div>
 
@@ -77,24 +84,25 @@ function RevenueChart() {
         <ResponsiveContainer width="100%" height="100%">
           <BarChart
             data={data}
-            margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
+            margin={{ top: 10, right: 30, left: 20, bottom: 5 }}
           >
             <CartesianGrid
-              strokeDasharray="3 3"
-              stroke="#e2e8f0"
+              strokeDasharray="3 2"
+              stroke={isDark ? "#ffffffa4" : "#00000073"} 
               opacity={0.3}
             />
 
             <XAxis
               dataKey="month"
-              stroke="#64748b"
+              stroke={isDark ? "#94a3b8" : "#64748b"}
               fontSize={12}
               tickLine={false}
               axisLine={false}
             />
 
             <YAxis
-              stroke="#64748b"
+              tickCount={8}
+              stroke={isDark ? "#94a3b8" : "#64748b"}
               fontSize={12}
               tickLine={false}
               axisLine={false}
@@ -104,41 +112,37 @@ function RevenueChart() {
             />
 
             <Tooltip
-            cursor={{ 
-              fill: document.documentElement.classList.contains('dark') ? 'rgba(255, 255, 255, 0.25)' : 'rgba(0, 0, 0, 0.1)' }}
-            contentStyle={{
-              backgroundColor: document.documentElement.classList.contains('dark') 
-                ? "#f3f3f5"// slate-800
-                : "#ffffff",
-              border: "none",
-              borderRadius: "12px",
-              boxShadow: "0 10px 40px rgba(0, 0, 0, 0.2)",
-              // color: document.documentElement.classList.contains('dark') ? "#1e293b" : "#f1f5f9"
-            }}
-              formatter={(value, name, props) => {
-                if (name === "profit") return [formatMoney(value), "Profit"];
-                if (name === "cogs") return [formatMoney(value), "COGS"];
+              cursor={{ fill: isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.05)' }}
+              contentStyle={{
+                backgroundColor: isDark ? "#1e293b" : "#ffffff",
+                border: "none",
+                borderRadius: "12px",
+                boxShadow: "0 10px 40px rgba(0, 0, 0, 0.2)",
+                color: isDark ? "#ffffff" : "#1e293b"
               }}
-              labelFormatter={(label, payload) => {
-                if (!payload || !payload.length) return label;
-                const revenue =
-                  Number(payload[0].payload.revenue ?? 0);
-                return `${label} — Revenue: ${formatMoney(revenue)}`;
+              itemStyle={{ color: isDark ? "#cbd5e1" : "#383838" }}
+              formatter={(value, name) => {
+                if (name === "cogs") return [formatMoney(value), "COGS"];
+                if (name === "profit") return [formatMoney(value), "Profit"];
+              }}
+              labelFormatter={(label) => {
+                const item = data.find(d => d.month === label);
+                if (item) {
+                  return `${label} — Total: ${formatMoney(item.revenue)}`;
+                }
+                return label;
               }}
             />
 
-            {/* COGS (Bottom of Stack) */}
             <Bar
               dataKey="cogs"
-              stackId="sales"
+              stackId="revenue"
               fill="url(#cogsGradient)"
-              radius={[0, 0, 0, 0]}
             />
 
-            {/* PROFIT (Top of Stack) */}
             <Bar
               dataKey="profit"
-              stackId="sales"
+              stackId="revenue"
               fill="url(#profitGradient)"
               radius={[6, 6, 0, 0]}
             />

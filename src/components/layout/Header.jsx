@@ -1,12 +1,45 @@
 import { Filter, Menu, Search, Plus, Sun, Moon, Bell, Settings, ChevronDown } from 'lucide-react'
 import React, { useEffect, useState } from 'react'
+import { useLocation } from 'react-router-dom'
 
 const Header = ({ onToggleSidebar }) => {
+  const location = useLocation();
 
   // THEME STATE
   const [darkMode, setDarkMode] = useState(
     localStorage.getItem("theme") === "dark"
   );
+
+  // PAGE TITLE ROUTING
+  const getPageTitle = (pathname) => {
+    const routes = {
+      '/': 'Dashboard',
+      '/dashboard': 'Dashboard',
+      '/transactions/Sales': 'Sales',
+      '/transactions/Expenses': 'Expenses',
+      '/transactions/Balances': 'Balances',
+      '/transactions/Ledger': 'Ledger',
+      '/inventory': 'Inventory',
+      '/customers': 'Customers',
+      '/suppliers': 'Suppliers',
+      '/activityLog': 'Activity Logs',
+      '/accounts': 'Accounts',
+      '/purchasing': 'Purchasing',
+      '/purchasing/createPurchase': 'Create Purchase',
+      '/purchasing/supplierList': 'Supplier List',
+      '/purchasing/receivedItems': 'Received Items',
+      '/sales': 'Sales',
+      '/sales/createSalesInvoice': 'Create Sales Invoice',
+      '/sales/customerList': 'Customer List',
+      '/inventory/brandList': 'Brand List',
+      '/inventory/stockManagement': 'Item List',
+      '/inventory/inventoryCounting': 'Inventory Counting',
+      '/reports': 'Reports',
+      '/warehouse': 'Warehouse',
+      '/settings': 'Settings',
+    };
+    return routes[pathname] || 'Dashboard';
+  };
 
   useEffect(() => {
     if (darkMode) {
@@ -17,6 +50,8 @@ const Header = ({ onToggleSidebar }) => {
       localStorage.setItem("theme", "light");
     }
   }, [darkMode]);
+
+  const pageTitle = getPageTitle(location.pathname);
 
   return (
     <div className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border-b border-slate-200/50 dark:border-slate-700/50 px-6 py-4">
@@ -32,8 +67,8 @@ const Header = ({ onToggleSidebar }) => {
           </button>
 
           <div className="hidden md:block">
-            <h1 className="text-2xl font-black text-slate-800 dark:text-white">
-              Dashboard
+            <h1 className="text-2xl font-bold text-slate-800 dark:text-white">
+              {pageTitle}
             </h1>
             <p className="text-xs text-slate-500 dark:text-slate-400">
               Welcome back, Earl! Here's what's happening today
