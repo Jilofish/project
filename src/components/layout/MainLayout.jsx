@@ -15,7 +15,7 @@ const MainLayout = () => {
       />
 
       {/* Main Content */}
-      <div className="flex-1 flex flex-col bg-slate-100 dark:bg-slate-900 transition-all">
+      <div className="flex-1 flex flex-col bg-slate-100 dark:bg-slate-900 transition-all overflow-auto z-10">
         <Header onToggleSidebar={() => setCollapsed(!collapsed)} />
 
         {/* Routed Pages */}
