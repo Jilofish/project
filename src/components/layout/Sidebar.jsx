@@ -93,7 +93,7 @@ function Sidebar ({collapsed /*onToggle currentPage, onPageChange*/}) {
   return (
     <div className={`${
       collapsed ? "w-20" : "w-72"
-    } transition-all duration-300 ease-in-out bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border-r border-slate-200/50 dark:border-slate-700/50 flex-col relative z-10`}>
+    } transition-all duration-300 ease-in-out bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border-r border-slate-200/50 dark:border-slate-700/50 flex flex-col relative z-10 h-screen`}>
       {/* Logo */}
       <div className="p-6 border-b border-slate-200/50 dark:border-slate-700/50">
         <div className="flex items-center space-x-3">
@@ -178,7 +178,7 @@ function Sidebar ({collapsed /*onToggle currentPage, onPageChange*/}) {
       {/* User Profile */}
       {!collapsed && (
         <footer>
-        <div className="p-4 border-t border-slate-200/50 dark:border-slate-700/50 mt-auto">
+        <div className="p-4 border-t border-slate-200/50 dark:border-slate-700/50">
           <div className="flex items-center space-x-3 p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50">
             <img
               src="https://cdn-icons-png.flaticon.com/512/4042/4042171.png"
@@ -187,7 +187,7 @@ function Sidebar ({collapsed /*onToggle currentPage, onPageChange*/}) {
               />
             <div className="flex-1 min-w-0">
               <p className="text-sm font-medium text-slate-800 dark:text-white truncate">
-                Earl Betez
+                Earl Betiz
               </p>
               <p className="text-xs text-slate-500 dark:text-slate-400 truncate">
                 Administrator
