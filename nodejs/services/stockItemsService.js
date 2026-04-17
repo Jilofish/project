@@ -1,4 +1,6 @@
 import pool from "../config/connection.js";
+import ExcelJS from "exceljs";
+import fs from "fs";
 /* ============================================================
    GET ALL STOCK ITEMS
 ============================================================ */
@@ -334,4 +336,260 @@ export const getStockStats = async () => {
     totalVal,
     totalCritStock
   };
+};
+
+
+// ==========================
+// 📤 TEMPLATE GENERATION
+// ==========================
+export const generateTemplateBuffer = async () => {
+  const client = await pool.connect();
+
+  try {
+    // ==========================
+    // FETCH DROPDOWN DATA
+    // ==========================
+    const brandRes = await client.query(`SELECT id, brand_name FROM brand_list ORDER BY brand_name`);
+    const warehouseRes = await client.query(`SELECT id, whouse_name FROM warehouse ORDER BY whouse_name`);
+
+    const brands = brandRes.rows;
+    const warehouses = warehouseRes.rows;
+    console.log("Brands:", brands);
+    console.log("Warehouses:", warehouses);
+    const workbook = new ExcelJS.Workbook();
+
+    const mainSheet = workbook.addWorksheet("Items");
+    const brandSheet = workbook.addWorksheet("Brands");
+    const warehouseSheet = workbook.addWorksheet("Warehouses");
+
+    // ==========================
+    // MAIN HEADERS
+    // ==========================
+    const headers = [
+      "Item Name",
+      "Threshold Count",
+      "Price",
+      "Brand",
+      "Item Type",
+      "Warehouse",
+      "Remarks"
+    ];
+
+    mainSheet.addRow(headers);
+    mainSheet.getRow(1).font = { bold: true };
+
+    // ==========================
+    // HIDDEN SHEETS (FOR DROPDOWN)
+    // ==========================
+    brandSheet.addRow(["ID", "Name"]);
+    brands.forEach(b => brandSheet.addRow([b.id, b.brand_name]));
+
+    warehouseSheet.addRow(["ID", "Name"]);
+    warehouses.forEach(w => warehouseSheet.addRow([w.id, w.whouse_name]));
+
+    brandSheet.state = "hidden";
+    warehouseSheet.state = "hidden";
+
+    // ==========================
+    // DROPDOWN VALIDATION
+    // ==========================
+    const brandRange = `=Brands!B2:B${brands.length + 1}`;
+    const warehouseRange = `=Warehouses!B2:B${warehouses.length + 1}`;
+    for (let i = 2; i <= 200; i++) {
+      mainSheet.getCell(`D${i}`).dataValidation = {
+        type: "list",
+        allowBlank: true,
+        formulae: [brandRange]
+      };
+
+      mainSheet.getCell(`F${i}`).dataValidation = {
+        type: "list",
+        allowBlank: true,
+        formulae: [warehouseRange]
+      };
+    }
+
+    return await workbook.xlsx.writeBuffer();
+
+  } finally {
+    client.release();
+  }
+};
+export const processExcelFile = async (filePath) => {
+  const client = await pool.connect();
+
+  try {
+    await client.query("BEGIN");
+
+    // ==========================
+    // LOAD LOOKUP TABLES
+    // ==========================
+    const brandRes = await client.query(`
+      SELECT id, brand_name FROM brand_list
+    `);
+
+    const warehouseRes = await client.query(`
+      SELECT id, whouse_name FROM warehouse
+    `);
+
+    const normalizeText = (val) =>
+      String(val || "").toLowerCase().trim();
+
+    const brandMap = {};
+    brandRes.rows.forEach(b => {
+      brandMap[normalizeText(b.brand_name)] = b.id;
+    });
+
+    const warehouseMap = {};
+    warehouseRes.rows.forEach(w => {
+      warehouseMap[normalizeText(w.whouse_name)] = w.id;
+    });
+
+    // ==========================
+    // READ EXCEL
+    // ==========================
+    const workbook = new ExcelJS.Workbook();
+    await workbook.xlsx.readFile(filePath);
+
+    const sheet = workbook.worksheets[0];
+
+    const normalizeHeader = (key) =>
+      key.toLowerCase().replace(/\s+/g, "");
+
+    const getValue = (val) =>
+      typeof val === "object" && val?.text ? val.text : val;
+
+    // ==========================
+    // READ HEADERS
+    // ==========================
+    const headers = [];
+
+    sheet.getRow(1).eachCell((cell, colNumber) => {
+      headers[colNumber] = normalizeHeader(cell.value);
+    });
+
+    const rowsToInsert = [];
+
+    // ==========================
+    // PROCESS ROWS
+    // ==========================
+    sheet.eachRow((row, rowNumber) => {
+      if (rowNumber === 1) return;
+
+      if (!row.values || row.values.every(v => !v)) return;
+
+      const newRow = {};
+
+      row.eachCell((cell, colNumber) => {
+        const key = headers[colNumber];
+        if (!key) return;
+
+        newRow[key] = getValue(cell.value);
+      });
+
+      const itemName = newRow.itemname;
+      const brandName = normalizeText(newRow.brand);
+      const warehouseName = normalizeText(newRow.warehouse);
+
+      const brandId = brandMap[brandName];
+      const warehouseId = warehouseMap[warehouseName];
+
+      // ==========================
+      // VALIDATION
+      // ==========================
+      if (!itemName) {
+        throw new Error(`Row ${rowNumber}: Item Name is required`);
+      }
+
+      if (!brandId) {
+        throw new Error(`Row ${rowNumber}: Invalid brand "${newRow.brand}"`);
+      }
+
+      if (!warehouseId) {
+        throw new Error(`Row ${rowNumber}: Invalid warehouse "${newRow.warehouse}"`);
+      }
+
+      rowsToInsert.push({
+        item_name: itemName,
+        quantity: 0,
+        threshold_count: Number(newRow.thresholdcount || 0),
+        suggested_retail_price: Number(newRow.price || 0),
+        whouse_id: warehouseId,
+        status: "Active",
+        item_type: newRow.itemtype || null,
+        brand: brandId,
+        remarks: newRow.remarks || "N/A"
+      });
+    });
+
+    // ==========================
+    // BULK INSERT
+    // ==========================
+    if (rowsToInsert.length === 0) {
+      throw new Error("No valid rows found in Excel file");
+    }
+
+    const values = [];
+    const placeholders = [];
+
+    rowsToInsert.forEach((item, index) => {
+      const base = index * 9;
+
+      placeholders.push(`(
+        $${base + 1}, $${base + 2}, $${base + 3},
+        $${base + 4}, $${base + 5}, $${base + 6},
+        $${base + 7}, $${base + 8}, $${base + 9}
+      )`);
+
+      values.push(
+        item.item_name,
+        item.quantity,
+        item.threshold_count,
+        item.suggested_retail_price,
+        item.whouse_id,
+        item.status,
+        item.item_type,
+        item.brand,
+        item.remarks
+      );
+    });
+
+    const insertResult = await client.query(`
+      INSERT INTO items
+      (item_name, quantity, threshold_count, suggested_retail_price, whouse_id, status, item_type, brand, remarks)
+      VALUES ${placeholders.join(",")}
+      RETURNING id
+    `, values);
+    
+    const insertedIds = insertResult.rows.map(r => r.id);
+
+    // ==========================
+    // BULK UPDATE ITEM CODE
+    // ==========================
+    await client.query(`
+      UPDATE items
+      SET item_code = 'ITM-' || LPAD(id::text, 4, '0')
+      WHERE id = ANY($1)
+    `, [insertedIds]);
+
+    // attach item_code to response
+    insertedIds.forEach((id, index) => {
+      rowsToInsert[index].item_code = "ITM-" + String(id).padStart(4, "0");
+    });
+
+    await client.query("COMMIT");
+
+    return rowsToInsert;
+
+  } catch (err) {
+    await client.query("ROLLBACK");
+    throw err;
+
+  } finally {
+    client.release();
+
+    if (fs.existsSync(filePath)) {
+      fs.unlinkSync(filePath);
+    }
+  }
 };
