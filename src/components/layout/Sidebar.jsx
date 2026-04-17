@@ -72,7 +72,7 @@ function Sidebar ({ collapsed }) {
   return (
     <div className={`${
       collapsed ? "w-20" : "w-72"
-    } transition-all duration-100 bg-white/80 dark:bg-slate-900 backdrop-blur-xl border-r border-slate-200/50 dark:border-slate-700/50 flex flex-col relative z-50 h-screen`}>
+    } transition-all duration-100 bg-white/80 dark:bg-slate-900 backdrop-blur-xl border-r border-slate-200/50 dark:border-slate-700/50 flex flex-col relative z-10 h-screen`}>
       
       {/* Logo */}
       <div className="p-6 border-b border-slate-200/50 dark:border-white/10">
@@ -192,7 +192,7 @@ function Sidebar ({ collapsed }) {
 
       {/* User Profile */}
       {!collapsed && (
-        <footer className="p-4 border-t border-slate-200/50 dark:border-white/10">
+        <footer className="p-4">
           <div className="flex items-center space-x-3 p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50">
             <img src="https://cdn-icons-png.flaticon.com/512/4042/4042171.png" alt="user" className="w-10 h-10 rounded-full ring-2 ring-blue-500" />
             <div className="flex-1 min-w-0">

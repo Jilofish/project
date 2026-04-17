@@ -1,9 +1,16 @@
 import { Filter, Menu, Search, Plus, Sun, Moon, Bell, Settings, ChevronDown } from 'lucide-react'
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useRef } from 'react'
 import { useLocation } from 'react-router-dom'
+import { createPortal } from 'react-dom'
 
 const Header = ({ onToggleSidebar }) => {
   const location = useLocation();
+
+  const [isNotifMenuOpen, setIsNotifMenuOpen] = useState(false);
+  const [notifPosition, setNotifPosition] = useState({ top: 0, right: 0 });
+  
+  const notifRef = useRef(null);
+  const notifButtonRef = useRef(null);
 
   // THEME STATE
   const [darkMode, setDarkMode] = useState(
@@ -50,6 +57,29 @@ const Header = ({ onToggleSidebar }) => {
       localStorage.setItem("theme", "light");
     }
   }, [darkMode]);
+
+  // Update notification panel position when button is clicked
+  useEffect(() => {
+    if (isNotifMenuOpen && notifButtonRef.current) {
+      const rect = notifButtonRef.current.getBoundingClientRect();
+      setNotifPosition({
+        top: rect.bottom + 8,
+        right: window.innerWidth - rect.right
+      });
+    }
+  }, [isNotifMenuOpen]);
+
+  // Close menu when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (notifRef.current && !notifRef.current.contains(event.target) && 
+          notifButtonRef.current && !notifButtonRef.current.contains(event.target)) {
+        setIsNotifMenuOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   const pageTitle = getPageTitle(location.pathname);
 
@@ -106,17 +136,43 @@ const Header = ({ onToggleSidebar }) => {
             className="p-2.5 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
           >
             {darkMode ? (
-              <Sun className="w-5 h-5" />
+              <Sun className="w-5 h-5 text-yellow-400" />
             ) : (
-              <Moon className="w-5 h-5" />
+              <Moon className="w-5 h-5 text-blue-500" />
             )}
           </button>
 
           {/* Notifications */}
-          <button className="relative p-2.5 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
-            <Bell className="w-5 h-5" />
-            <span className="absolute -top-1 w-5 h-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center">3</span>
-          </button>
+          <div className="relative">
+            <button 
+              ref={notifButtonRef}
+              onClick={() => setIsNotifMenuOpen(!isNotifMenuOpen)}
+              className="relative p-2.5 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+            >
+              <Bell className="w-5 h-5" />
+              <span className="absolute -top-1 w-5 h-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center">3</span>
+            </button>
+
+            {isNotifMenuOpen && createPortal(
+              <div 
+                ref={notifRef}
+                className="fixed w-72 md:w-80 bg-white dark:bg-[#111] border border-slate-200 dark:border-white/10 rounded-xl shadow-xl z-[9999] overflow-hidden animate-in fade-in zoom-in duration-100"
+                style={{
+                  top: `${notifPosition.top}px`,
+                  right: `${notifPosition.right}px`,
+                }}
+              >
+                <div className="p-4 border-b border-slate-100 dark:border-white/10 flex justify-between items-center">
+                  <h3 className="font-bold text-slate-800 dark:text-white"><Bell className="w-5 h-6 mt-[-2px] mr-2 inline" />Notifications</h3>
+                </div>
+                
+                <div className="p-3 border-t border-slate-100 dark:border-white/10 text-center">
+                  testing notifications
+                </div>
+              </div>,
+              document.body
+            )}
+          </div>
 
           {/* Settings */}
           <button className="p-2.5 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
@@ -124,17 +180,19 @@ const Header = ({ onToggleSidebar }) => {
           </button>
 
           {/* User Profile */}
-          <div className="flex items-center space-x-3 pl-3 border-l border-slate-200 dark:border-slate-700">
-            <img
-              src="https://cdn-icons-png.flaticon.com/512/4042/4042171.png"
-              alt="User"
-              className="w-8 h-8 rounded-full ring-2 ring-blue-500"
-            />
-            <div className="hidden md:block">
-              <p className="text-sm font-medium text-slate-500 dark:text-slate-400">Earl Betez</p>
-              <p className="text-xs text-slate-500 dark:text-slate-400">Administrator</p>
+          <div className=" pl-3 border-l border-slate-200 dark:border-slate-700">
+            <div className = "flex items-center space-x-3 py-2.5 px-4 text-slate-600 dark:text-slate-300 cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800/50 rounded-xl transition-colors">
+              <img
+                src="https://cdn-icons-png.flaticon.com/512/4042/4042171.png"
+                alt="User"
+                className="w-8 h-8 rounded-full ring-2 ring-blue-500"
+              />
+              <div className="hidden md:block">
+                <p className="text-sm font-medium text-slate-700 dark:text-slate-300">Earl Betez</p>
+                <p className="text-xs text-slate-500 dark:text-slate-400">Administrator</p>
+              </div>
+              <ChevronDown className="w-4 h-4 text-slate-400" />
             </div>
-            <ChevronDown className="w-4 h-4 text-slate-400" />
           </div>
 
         </div>
