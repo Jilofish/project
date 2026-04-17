@@ -19,7 +19,7 @@ const MainLayout = () => {
         <Header onToggleSidebar={() => setCollapsed(!collapsed)} />
 
         {/* Routed Pages */}
-        <div className="p-6 overflow-y-auto flex-1">
+        <div className="p-6 overflow-y-auto flex-1 z-10">
           <Outlet />
         </div>
       </div>

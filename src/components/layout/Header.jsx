@@ -1,7 +1,12 @@
-import { Filter, Menu, Search, Plus, Sun, Moon, Bell, Settings, ChevronDown } from 'lucide-react'
+import { Filter, Menu, Search, Plus, Sun, Moon, Bell, Settings, ChevronDown, ShoppingCart, Truck, Clock } from 'lucide-react'
 import React, { useEffect, useState, useRef } from 'react'
 import { useLocation } from 'react-router-dom'
 import { createPortal } from 'react-dom'
+
+const MockUpNotifications = [
+  { activity: "New Sale Recorded", message: "A new sale has been recorded for Order #12345.", date: "Apr 17, 2026", time: "10:30 AM", user: "System" },
+  { activity: "Order Received", message: "Purchase Order #54321 has been received.", date: "Apr 17, 2026", time: "10:30 AM", user: "System" },
+];
 
 const Header = ({ onToggleSidebar }) => {
   const location = useLocation();
@@ -36,7 +41,7 @@ const Header = ({ onToggleSidebar }) => {
       '/purchasing/supplierList': 'Supplier List',
       '/purchasing/receivedItems': 'Received Items',
       '/sales': 'Sales',
-      '/sales/createSalesInvoice': 'Create Sales Invoice',
+      '/sales/createSalesInvoice': 'Sales Invoice',
       '/sales/customerList': 'Customer List',
       '/inventory/brandList': 'Brand List',
       '/inventory/stockManagement': 'Item List',
@@ -82,6 +87,32 @@ const Header = ({ onToggleSidebar }) => {
   }, []);
 
   const pageTitle = getPageTitle(location.pathname);
+
+  const getActivityColor = (activity) => {
+    switch (activity) {
+      case "New Sale Recorded":
+        return "text-emerald-700 dark:text-emerald-500";
+          
+      case "Order Arrived":
+        return "text-blue-600 dark:text-blue-500";
+
+      default:
+        return "text-blue-600 dark:text-blue-500";
+    }
+  };
+
+  const getIcon = (iconNotif) => {
+    switch (iconNotif) {
+      case "New Sale Recorded":
+        return <ShoppingCart className="inline mr-2 mt-[-2px]" size={18} />;
+
+      case "Order Received":
+        return <Truck className="inline mr-2 mt-[-2px]" size={18} />;
+
+      default:
+        return null; 
+    }
+  };
 
   return (
     <div className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border-b border-slate-200/50 dark:border-slate-700/50 px-6 py-4">
@@ -156,18 +187,47 @@ const Header = ({ onToggleSidebar }) => {
             {isNotifMenuOpen && createPortal(
               <div 
                 ref={notifRef}
-                className="fixed w-72 md:w-80 bg-white dark:bg-[#111] border border-slate-200 dark:border-white/10 rounded-xl shadow-xl z-[9999] overflow-hidden animate-in fade-in zoom-in duration-100"
+                className="pb-4 fixed w-72 md:w-80 bg-white dark:bg-slate-800 border border-black/10 dark:border-slate-700/50 rounded-xl z-[9999] overflow-hidden"
                 style={{
                   top: `${notifPosition.top}px`,
                   right: `${notifPosition.right}px`,
                 }}
               >
-                <div className="p-4 border-b border-slate-100 dark:border-white/10 flex justify-between items-center">
+                <div className="p-4 border-b border-black/10 dark:border-slate-700/50 flex justify-between items-center">
                   <h3 className="font-bold text-slate-800 dark:text-white"><Bell className="w-5 h-6 mt-[-2px] mr-2 inline" />Notifications</h3>
                 </div>
                 
-                <div className="p-3 border-t border-slate-100 dark:border-white/10 text-center">
-                  testing notifications
+                <div className="max-h-[400px] overflow-y-auto custom-scrollbar">
+                  {MockUpNotifications.length > 0 ? (
+                      MockUpNotifications.map((notif) => (
+                      <div 
+                        key={notif.id}
+                        className="p-4 border-b border-black/10 dark:border-white/15 hover:bg-slate-50 dark:hover:bg-white/5 cursor-pointer transition-colors"
+                      >
+                        <div className = "flex items-center justify-between">
+                          <p className={`text-sm font-semibold ${getActivityColor(notif.activity)}`}>
+                            {getIcon(notif.activity)}
+                            <span>{notif.activity}</span>
+                          </p>
+
+                          <p className="text-xs text-gray-700/80 dark:text-white/75 mt-0.5 font-medium">
+                            <Clock className = "w-3.5 h-3.5 inline mr-1 mt-[-3px]"/>{notif.time}
+                          </p>
+                        </div>
+                        <p className="text-[10px] text-gray-700/80 dark:text-white/60 mt-0.5 font-medium">
+                          {notif.user} • {notif.date}
+                        </p>
+                        <p className="mt-3 p-2 bg-slate-300/10 rounded-lg text-[10pt] font-medium dark:font-normal text-slate-700 dark:text-white/80 mt-1 whitespace-pre-line">
+                          {notif.message}
+                        </p>
+                      </div>
+                      ))
+                  ) : (
+                    <div className="p-8 text-center">
+                      <Bell className="w-12 h-12 mx-auto text-slate-300 dark:text-slate-600 mb-2" />
+                      <p className="text-sm text-slate-500 dark:text-slate-400">No notifications yet</p>
+                    </div>
+                  )}
                 </div>
               </div>,
               document.body
