@@ -40,7 +40,7 @@ function CustomDateRangeSelect({ options, initialValue, onSelect, iconProps }) {
             {/* Display Button */}
             <button
                 type="button"
-                className={`w-26 bg-transparent focus:outline-none hover:cursor-pointer flex items-center justify-between ${selectedTextColor}`}
+                className={`w-full bg-transparent focus:outline-none hover:cursor-pointer flex items-center justify-between ${selectedTextColor}`}
                 onClick={() => setIsOpen(!isOpen)}
                 aria-expanded={isOpen}
                 aria-haspopup="listbox"
@@ -55,7 +55,7 @@ function CustomDateRangeSelect({ options, initialValue, onSelect, iconProps }) {
             {/* Dropdown Options List */}
             {isOpen && (
                 <ul
-                    className="absolute z-10 top-full mt-2 w-full left-0 bg-white dark:bg-slate-700 shadow-xl rounded-lg border border-slate-300 dark:border-slate-600 overflow-hidden"
+                    className="absolute z-60 top-full mt-2 w-full left-0 bg-white dark:bg-slate-700 shadow-xl rounded-lg border border-slate-300 dark:border-slate-600 overflow-hidden"
                     role="listbox"
                 >
                     {selectableOptions.map((option) => (
