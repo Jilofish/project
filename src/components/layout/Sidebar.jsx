@@ -51,9 +51,10 @@ const menuItems = [
   { id: "settings", icon: Settings, label: "Settings" }
 ]
 
-function Sidebar ({ collapsed }) {
+function Sidebar({ collapsed }) {
   const [expandedItems, setExpandedItems] = useState(new Set(["analytics"]));
   const [openFloatingMenu, setOpenFloatingMenu] = useState(null);
+  const location = useLocation();
 
   const toggleExpanded = (itemid) => {
     const newExpanded = new Set(expandedItems);
@@ -63,11 +64,18 @@ function Sidebar ({ collapsed }) {
       newExpanded.add(itemid);
     }
     setExpandedItems(newExpanded);
-  }
+  };
 
   const toggleFloatingMenu = (itemid) => {
-    setOpenFloatingMenu(prev => prev === itemid ? null : itemid);
-  }
+    setOpenFloatingMenu((prev) => (prev === itemid ? null : itemid));
+  };
+
+  const isChildActive = (item) => {
+    if (!item.submenu) return false;
+    return item.submenu.some((sub) =>
+      location.pathname === `/${item.id}/${sub.id}`
+    );
+  };
 
   return (
     <div className={`${
@@ -95,6 +103,15 @@ function Sidebar ({ collapsed }) {
           const isExpandable = item.submenu && item.submenu.length > 0;
           const isExpanded = expandedItems.has(item.id);
           const isFloatingOpen = openFloatingMenu === item.id;
+          const childActive = isChildActive(item);
+
+          const parentButtonClass = isExpandable
+            ? childActive
+              ? "bg-gradient-to-r from-blue-500 to-purple-600 text-white"
+              : (isExpanded || isFloatingOpen)
+              ? "bg-slate-100 dark:bg-white/10 text-slate-700 dark:text-white"
+              : "text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/50"
+            : "";
 
           return (
             <div key={item.id} className="relative">
@@ -117,12 +134,7 @@ function Sidebar ({ collapsed }) {
               ) : (
                 <button
                   onClick={() => collapsed ? toggleFloatingMenu(item.id) : toggleExpanded(item.id)}
-                  className={`w-full flex items-center justify-between p-3 rounded-xl transition-all duration-200
-                    ${(isExpanded || isFloatingOpen)
-                      ? "bg-gradient-to-r from-blue-500 to-purple-600 text-white"
-                      : "text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/50"
-                    }`
-                  }
+                  className={`w-full flex items-center justify-between p-3 rounded-xl transition-all duration-200 ${parentButtonClass}`}
                 >
                   <div className="flex items-center space-x-3">
                     <item.icon className="w-5 h-5" />
