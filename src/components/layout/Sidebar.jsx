@@ -11,7 +11,7 @@ import {
   Warehouse,
   X
 } from 'lucide-react'
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { NavLink, useLocation } from 'react-router-dom';
 
 const menuItems = [
@@ -51,10 +51,22 @@ const menuItems = [
   { id: "settings", icon: Settings, label: "Settings" }
 ]
 
-function Sidebar({ collapsed }) {
+function Sidebar({ collapsed, mobileOpen, onMobileClose }) {
   const [expandedItems, setExpandedItems] = useState(new Set(["analytics"]));
   const [openFloatingMenu, setOpenFloatingMenu] = useState(null);
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 500);
   const location = useLocation();
+
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth <= 500);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  // Close mobile sidebar on route change
+  useEffect(() => {
+    if (isMobile) onMobileClose?.();
+  }, [location.pathname]);
 
   const toggleExpanded = (itemid) => {
     const newExpanded = new Set(expandedItems);
@@ -77,6 +89,127 @@ function Sidebar({ collapsed }) {
     );
   };
 
+  // On mobile: hidden unless mobileOpen, renders as overlay
+  // On desktop: always visible, respects collapsed prop
+  if (isMobile) {
+    return (
+      <>
+        {/* Backdrop */}
+        <div
+          className={`fixed inset-0 z-[80] bg-black/40 backdrop-blur-sm transition-opacity duration-300 ${
+            mobileOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
+          }`}
+          onClick={onMobileClose}
+        />
+
+        {/* Drawer */}
+        <div className={`fixed top-0 left-0 h-full w-72 z-[90] bg-white dark:bg-slate-900 border-r border-slate-200/50 dark:border-slate-700/50 flex flex-col transition-transform duration-300 ease-in-out ${
+          mobileOpen ? 'translate-x-0' : '-translate-x-full'
+        }`}>
+          {/* Logo */}
+          <div className="p-6 border-b border-slate-200/50 dark:border-white/10">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-3">
+                <div className="w-10 h-10 bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl flex items-center justify-center shadow-lg">
+                  <Zap className="w-6 h-6 text-white"/>
+                </div>
+                <div>
+                  <h1 className="text-xl font-bold text-slate-800 dark:text-white">Meat ERP</h1>
+                  <p className="text-xs text-slate-500 dark:text-slate-400">Admin Panel</p>
+                </div>
+              </div>
+              <button onClick={onMobileClose} className="p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-500 dark:text-slate-400">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+          </div>
+
+          {/* Navigation */}
+          <nav className="flex-1 p-4 space-y-2 overflow-y-auto">
+            {menuItems.map((item) => {
+              const isExpandable = item.submenu && item.submenu.length > 0;
+              const isExpanded = expandedItems.has(item.id);
+              const childActive = isChildActive(item);
+
+              const parentButtonClass = isExpandable
+                ? childActive
+                  ? "bg-gradient-to-r from-blue-500 to-purple-600 text-white"
+                  : isExpanded
+                  ? "bg-slate-100 dark:bg-white/10 text-slate-700 dark:text-white"
+                  : "text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/50"
+                : "";
+
+              return (
+                <div key={item.id} className="relative">
+                  {!isExpandable ? (
+                    <NavLink
+                      to={`/${item.id}`}
+                      className={({ isActive }) =>
+                        `w-full flex items-center justify-between p-3 rounded-xl transition-all duration-200
+                        ${isActive
+                          ? "bg-gradient-to-r from-blue-500 to-purple-600 text-white"
+                          : "text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/50"
+                        }`
+                      }
+                    >
+                      <div className="flex items-center space-x-3">
+                        <item.icon className="w-5 h-5" />
+                        <span className="font-medium">{item.label}</span>
+                      </div>
+                    </NavLink>
+                  ) : (
+                    <button
+                      onClick={() => toggleExpanded(item.id)}
+                      className={`w-full flex items-center justify-between p-3 rounded-xl transition-all duration-200 ${parentButtonClass}`}
+                    >
+                      <div className="flex items-center space-x-3">
+                        <item.icon className="w-5 h-5" />
+                        <span className="font-medium">{item.label}</span>
+                      </div>
+                      <ChevronDown className={`w-4 h-4 transition-transform ${isExpanded ? 'rotate-180' : ''}`} />
+                    </button>
+                  )}
+
+                  {isExpandable && isExpanded && (
+                    <div className="ml-8 mt-2 space-y-1">
+                      {item.submenu.map((subitem) => (
+                        <NavLink
+                          key={subitem.id}
+                          to={`/${item.id}/${subitem.id}`}
+                          className={({ isActive }) =>
+                            `block w-full text-left p-2 py-2.5 pl-4 text-sm rounded-lg transition-all
+                            ${isActive
+                              ? "text-blue-500 font-semibold bg-black/7 dark:bg-slate-800/50"
+                              : "text-slate-500 dark:text-slate-300/80 hover:text-slate-700 dark:hover:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-800/50"
+                            }`
+                          }
+                        >
+                          {subitem.label}
+                        </NavLink>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </nav>
+
+          {/* User Profile */}
+          <footer className="p-4">
+            <div className="flex items-center space-x-3 p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50">
+              <img src="https://cdn-icons-png.flaticon.com/512/4042/4042171.png" alt="user" className="w-10 h-10 rounded-full ring-2 ring-blue-500" />
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-medium text-slate-800 dark:text-white truncate">Earl Betiz</p>
+                <p className="text-xs text-slate-500 dark:text-slate-400 truncate">Administrator</p>
+              </div>
+            </div>
+          </footer>
+        </div>
+      </>
+    );
+  }
+
+  // Desktop sidebar
   return (
     <div className={`${
       collapsed ? "w-20" : "w-72"
@@ -215,7 +348,7 @@ function Sidebar({ collapsed }) {
         </footer>
       )}
     </div>
-  )
+  );
 }
 
 export default Sidebar;

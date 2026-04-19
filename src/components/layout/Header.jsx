@@ -17,12 +17,10 @@ const Header = ({ onToggleSidebar }) => {
   const notifRef = useRef(null);
   const notifButtonRef = useRef(null);
 
-  // THEME STATE
   const [darkMode, setDarkMode] = useState(
     localStorage.getItem("theme") === "dark"
   );
 
-  // PAGE TITLE ROUTING
   const getPageTitle = (pathname) => {
     const routes = {
       '/': 'Dashboard',
@@ -63,7 +61,6 @@ const Header = ({ onToggleSidebar }) => {
     }
   }, [darkMode]);
 
-  // Update notification panel position when button is clicked
   useEffect(() => {
     if (isNotifMenuOpen && notifButtonRef.current) {
       const rect = notifButtonRef.current.getBoundingClientRect();
@@ -74,7 +71,6 @@ const Header = ({ onToggleSidebar }) => {
     }
   }, [isNotifMenuOpen]);
 
-  // Close menu when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (notifRef.current && !notifRef.current.contains(event.target) && 
@@ -92,10 +88,8 @@ const Header = ({ onToggleSidebar }) => {
     switch (activity) {
       case "New Sale Recorded":
         return "text-emerald-700 dark:text-emerald-500";
-          
       case "Order Arrived":
         return "text-blue-600 dark:text-blue-500";
-
       default:
         return "text-blue-600 dark:text-blue-500";
     }
@@ -105,12 +99,10 @@ const Header = ({ onToggleSidebar }) => {
     switch (iconNotif) {
       case "New Sale Recorded":
         return <ShoppingCart className="inline mr-2 mt-[-2px]" size={18} />;
-
       case "Order Received":
         return <Truck className="inline mr-2 mt-[-2px]" size={18} />;
-
       default:
-        return null; 
+        return null;
     }
   };
 
@@ -155,13 +147,11 @@ const Header = ({ onToggleSidebar }) => {
         {/* Right */}
         <div className="flex items-center space-x-3">
 
-          {/* Quick Actions */}
           <button className="hidden lg:flex items-center space-x-2 py-2 px-4 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-xl hover:shadow-lg transition-all">
             <Plus className="w-4 h-4" />
             <span className="text-sm font-medium">New</span>
           </button>
 
-          {/* THEME TOGGLE BUTTON */}
           <button
             onClick={() => setDarkMode(!darkMode)}
             className="p-2.5 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
@@ -173,7 +163,6 @@ const Header = ({ onToggleSidebar }) => {
             )}
           </button>
 
-          {/* Notifications */}
           <div className="relative">
             <button 
               ref={notifButtonRef}
@@ -199,19 +188,18 @@ const Header = ({ onToggleSidebar }) => {
                 
                 <div className="max-h-[400px] overflow-y-auto custom-scrollbar">
                   {MockUpNotifications.length > 0 ? (
-                      MockUpNotifications.map((notif) => (
+                    MockUpNotifications.map((notif) => (
                       <div 
                         key={notif.id}
                         className="p-4 border-b border-black/10 dark:border-white/15 hover:bg-slate-50 dark:hover:bg-white/5 cursor-pointer transition-colors"
                       >
-                        <div className = "flex items-center justify-between">
+                        <div className="flex items-center justify-between">
                           <p className={`text-sm font-semibold ${getActivityColor(notif.activity)}`}>
                             {getIcon(notif.activity)}
                             <span>{notif.activity}</span>
                           </p>
-
                           <p className="text-xs text-gray-700/80 dark:text-white/75 mt-0.5 font-medium">
-                            <Clock className = "w-3.5 h-3.5 inline mr-1 mt-[-3px]"/>{notif.time}
+                            <Clock className="w-3.5 h-3.5 inline mr-1 mt-[-3px]"/>{notif.time}
                           </p>
                         </div>
                         <p className="text-[10px] text-gray-700/80 dark:text-white/60 mt-0.5 font-medium">
@@ -221,7 +209,7 @@ const Header = ({ onToggleSidebar }) => {
                           {notif.message}
                         </p>
                       </div>
-                      ))
+                    ))
                   ) : (
                     <div className="p-8 text-center">
                       <Bell className="w-12 h-12 mx-auto text-slate-300 dark:text-slate-600 mb-2" />
@@ -234,14 +222,12 @@ const Header = ({ onToggleSidebar }) => {
             )}
           </div>
 
-          {/* Settings */}
           <button className="p-2.5 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
             <Settings className="w-5 h-5" />
           </button>
 
-          {/* User Profile */}
-          <div className=" pl-3 border-l border-slate-200 dark:border-slate-700">
-            <div className = "flex items-center space-x-3 py-2.5 px-4 text-slate-600 dark:text-slate-300 cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800/50 rounded-xl transition-colors">
+          <div className="pl-3 border-l border-slate-200 dark:border-slate-700">
+            <div className="flex items-center space-x-3 py-2.5 px-4 text-slate-600 dark:text-slate-300 cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800/50 rounded-xl transition-colors">
               <img
                 src="https://cdn-icons-png.flaticon.com/512/4042/4042171.png"
                 alt="User"
@@ -254,7 +240,6 @@ const Header = ({ onToggleSidebar }) => {
               <ChevronDown className="w-4 h-4 text-slate-400" />
             </div>
           </div>
-
         </div>
       </div>
     </div>
