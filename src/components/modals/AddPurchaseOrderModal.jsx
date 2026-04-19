@@ -328,291 +328,293 @@ function AddPurchaseOrderModal({ isOpen, onClose, onAddPurchase, itemList, brand
   /* ----------------------------- JSX ------------------------------------- */
     return (
         <>
-            <div className="fixed inset-0 bg-black/20 dark:bg-black/20 z-40 overflow-y-auto">
-                <div className="relative my-10 mx-auto max-w-4xl bg-white dark:bg-slate-800 p-8 rounded-lg shadow-2xl">
-                    
-                    <div className = "w-full flex items-center justify-between mb-6 pb-6 border-b border-slate-300 dark:border-slate-700">
-                        <h2 className="text-2xl font-bold text-slate-800 dark:text-white">
-                            Create New Purchase (PO)
-                        </h2>
+            <div className="fixed inset-0 bg-black/40 z-40 flex items-center justify-center p-4">
 
-                        <button onClick={handleClose} className="p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-full transition-colors">
-                            <X className="w-7 h-7 text-slate-600 dark:text-slate-300 cursor-pointer"/>
-                        </button>
-                    </div>
-                    
+              <div className="w-full max-w-4xl bg-white dark:bg-slate-800 rounded-2xl shadow-2xl flex flex-col max-h-[90vh] overflow-hidden space-y-4" onClick={e => e.stopPropagation()}>
+                <div className = "w-full flex items-center justify-between py-4 px-6 border-b border-slate-300 dark:border-white/10 flex-shrink-0">
+                    <h2 className="text-2xl font-bold text-slate-800 dark:text-white">
+                      Create New Purchase (PO)
+                    </h2>
 
-                    <form onSubmit={handleFormSubmit} className="space-y-8">
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                            <div>
-                              <label
-                                htmlFor="PONumber"
-                                className="block text-sm font-medium text-slate-700 dark:text-slate-300"
-                              >
-                                PO No. (Preview)
-                              </label>
-
-                              <input
-                                type="text"
-                                id="PONumber"
-                                value={poPreview}
-                                disabled
-                                className="
-                                  w-full mt-1 px-3 py-1.5 h-9 rounded-md
-                                  border border-slate-300 dark:border-slate-600
-                                  bg-slate-100 dark:bg-slate-800
-                                  text-slate-500 dark:text-slate-400
-                                  cursor-not-allowed
-                                "
-                              />
-                            </div>
-                            
-                            {/* SUPPLIER FIELD */}
-                            <CustomFormSelect
-                            label="Supplier"
-                            name="supplier"
-                            options={supplierOptions}
-                            initialValue={formValues.supplier}
-                            onSelect={handleInputChange}
-                            placeholder={loadingSuppliers ? "Loading suppliers..." : "Select supplier"}
-                            />
-
-                            <div> 
-                                <label htmlFor="transaction_date" 
-                                className="block text-sm font-medium text-slate-700 dark:text-slate-300"> 
-                                Transaction Date 
-                                </label> 
-                                <input type="date" 
-                                id="transaction_date"
-                                name="transaction_date"
-                                value={formValues.transaction_date}
-                                onChange={(e) => handleInputChange(e.target.value, e.target.name)} 
-                                className="relative z-10 w-full text-slate-700 dark:text-slate-200 mt-1 px-3 py-1.5 h-9 rounded-md border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 shadow-xs focus:outline-none focus:border-blue-500 dark:focus:border-blue-500 focus:caret-slate-500 dark:focus:caret-white" /> 
-                            </div>
-                            <div> 
-                                <label htmlFor="delivery_date" 
-                                className="block text-sm font-medium text-slate-700 dark:text-slate-300"> 
-                                Delivery Date 
-                                </label> 
-                                <input type="date" 
-                                id="delivery_date"
-                                name="delivery_date"
-                                value={formValues.delivery_date}
-                                onChange={(e) => handleInputChange(e.target.value, e.target.name)} 
-                                className="relative z-10 w-full text-slate-700 dark:text-slate-200 mt-1 px-3 py-1.5 h-9 rounded-md border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 shadow-xs focus:outline-none focus:border-blue-500 dark:focus:border-blue-500 focus:caret-slate-500 dark:focus:caret-white" /> 
-                            </div>
-                            
-
-                            {/* WAREHOUSE FIELD */}
-                            <CustomFormSelect
-                                label="Warehouse"
-                                name="warehouse"
-                                options={warehouseOptions}
-                                initialValue={formValues.warehouse}
-                                onSelect={handleInputChange} 
-                            />
-                            
-                        </div>
-
-                        {/* Product List Table Section */}
-                        <div className="overflow-x-auto pb-3">
-                            <div className="flex items-center justify-between mb-3">
-                                <h1 className="text-[#535353] dark:text-white text-xl font-bold">Product List</h1>
-                               
-                                <button
-                                    type="button"
-                                    onClick={handleOpenItemModal}
-                                    disabled={!formValues.supplier}
-                                    className={`
-                                        flex items-center space-x-2 py-2 px-4 rounded-lg transition-all
-                                        ${!formValues.supplier 
-                                            ? "bg-gray-400 cursor-not-allowed opacity-60" 
-                                            : "bg-blue-500 text-white hover:shadow-lg cursor-pointer"}
-                                    `}
-                                >
-                                    <Plus className="w-4 h-4" />
-                                    <span className="text-sm font-medium">Add Item</span>
-                                </button>
-                            </div>
-                            <table className="w-full">
-                                <thead>
-                                    <tr className = "bg-slate-200/50 dark:bg-slate-700/50">
-                                        <th className="text-left p-4 text-sm font-semibold text-slate-600 dark:text-slate-200">Brand</th>
-                                        <th className="text-left p-4 text-sm font-semibold text-slate-600 dark:text-slate-200">Type</th>
-                                        <th className="text-left p-4 text-sm font-semibold text-slate-600 dark:text-slate-200">Quantity (KG)</th>
-                                        <th className="text-left p-4 text-sm font-semibold text-slate-600 dark:text-slate-200">Unit Price</th>
-                                        <th className="text-left p-4 text-sm font-semibold text-slate-600 dark:text-slate-200">Total</th>
-                                        <th className="text-left p-4 text-sm font-semibold text-slate-600 dark:text-slate-200">Action</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {/* DYNAMIC ROWS MAPPING OVER purchaseItems */}
-                                    {purchaseItems.length > 0 ? (
-                                        purchaseItems.map((item, index) => (
-                                            <tr 
-                                                key={item.id} 
-                                                className = "border-b border-slate-300 dark:border-slate-600 hover:bg-slate-50/50 dark:hover:bg-slate-800/50 transition-colors"
-                                            > 
-                                                <td className="p-4">
-                                                  <select
-                                                    value={item.id || ""}
-                                                    onChange={(e) => handleBrandChange(index, e.target.value)}
-                                                    className="w-full px-2 py-1 rounded-md border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-sm"
-                                                  >
-                                                    <option value="">Select Brand</option>
-                                                    {itemList.map((product) => (
-                                                      <option key={product.id} value={product.id}>
-                                                        {product.item_name}
-                                                      </option>
-                                                    ))}
-                                                  </select>
-                                                </td>
-                                                <td className="p-4 text-sm text-slate-700 dark:text-slate-200">
-                                                  {TYPE_LABELS[item.type] || item.type || "N/A"}
-                                                </td>
-                                                <td className="p-4">
-                                                  <input
-                                                    type="number"
-                                                    min="1"
-                                                    value={item.quantity}
-                                                    onChange={(e) => handleQuantityChange(index, e.target.value)}
-                                                    className="w-24 px-2 py-1 rounded-md border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-sm"
-                                                  />
-                                                </td>
-                                                <td className="p-4">
-                                                  <input
-                                                      type="number"
-                                                      step="0.01"
-                                                      min="0"
-                                                      value={item.unit_price}
-                                                      onChange={(e) => handleUnitPriceChange(index, e.target.value)}
-                                                      className="w-28 px-2 py-1 rounded-md border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-sm"
-                                                  />
-                                                </td>
-                                                <td className="p-4 text-sm text-slate-700 dark:text-slate-200">
-                                                  ₱{Number(item.line_total).toFixed(2)}
-                                                </td>
-                                                <td className="p-4 text-sm text-slate-700 dark:text-slate-200">
-                                                    <button 
-                                                        type="button" 
-                                                        onClick={() => handleRemoveItem(item.temp_id)}
-                                                        className="text-red-500 hover:text-red-700 p-1 rounded transition-colors cursor-pointer"
-                                                        aria-label={`Remove item ${item.brand}`}
-                                                    >
-                                                        <Trash2 className="w-4 h-4" />
-                                                    </button>
-                                                </td>
-                                            </tr>
-                                        ))
-                                    ) : (
-                                        <tr className="border-b border-slate-200/50 dark:border-slate-700/50">
-                                            <td colSpan="6" className="p-4 text-center text-sm text-slate-500 dark:text-slate-400 italic">
-                                                No products added yet.
-                                            </td>
-                                        </tr>
-                                    )}
-                                </tbody>
-                            </table>
-                        </div>
-                        
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div className="space-y-4">
-                                {/* REMARKS FIELD */}
-                                <label htmlFor="remarks" className="block text-sm font-medium text-slate-700 dark:text-slate-300">
-                                    Remarks
-                                </label>
-                                <textarea
-                                    id="remarks"
-                                    name="remarks"
-                                    rows="3"
-                                    value={formValues.remarks}
-                                    onChange={(e) => handleInputChange(e.target.value, e.target.name)}
-                                    className="mt-1 p-2 block w-full rounded-md border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 shadow-xs focus:outline-none focus:border-blue-500 dark:focus:border-blue-500 focus:caret-slate-500 dark:focus:caret-white resize-none text-slate-700 dark:text-slate-200"
-                                />
-
-                                {/* FILE UPLOAD FIELD */}
-                                <label className="block mb-2.5 text-sm font-medium text-slate-700 dark:text-slate-300" htmlFor="file_input">Upload Delivery Receipt</label>
-                                <div className="relative flex rounded-lg overflow-hidden w-full max-w-xs bg-white border border-slate-300 dark:bg-slate-700 dark:border-slate-600 hover:border-blue-400 shadow-xs">
-                                    <span className="bg-slate-400/20 dark:bg-slate-600/90 text-slate-600/80 dark:text-slate-400/80 px-3 py-2 text-sm font-medium flex items-center select-none cursor-pointer">
-                                        Choose File
-                                    </span>
-                                    
-                                    <span className="text-slate-800 dark:text-white px-4 py-2.5 text-sm flex items-center truncate overflow-hidden whitespace-nowrap min-w-0">
-                                        {receiptFileName}
-                                    </span>
-                                    
-                                    <input type="file" id="file_input" className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" onChange={handleFileChange}/>
-                                </div>
-                            </div>
-                            
-                            {/* Payment Details */}
-                            <div>
-                                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-3">Payment Details</label>
-                                <div className = "w-full rounded-md overflow-hidden border border-slate-300 dark:border-slate-700">
-                                    <table className="w-full">
-                                        <tbody>
-                                            <tr className = "bg-slate-200/50 dark:bg-slate-700/50">
-                                                <td className="py-3 px-4 text-sm text-slate-700 dark:text-slate-200">Merchandise Subtotal</td>
-                                                <td className="py-3 px-4 text-sm text-slate-700 dark:text-slate-200 text-end">{merchandiseSubtotal.toFixed(2)}</td>
-                                            </tr>
-                                            <tr className = "hover:bg-slate-50/50 dark:hover:bg-slate-800/50 transition-colors">
-                                                <td className="py-3 px-4 text-sm text-slate-700 dark:text-slate-200">Shipping Subtotal</td>
-                                                <td className="py-3 px-4 text-sm text-slate-700 dark:text-slate-200 text-end">{shippingSubtotal.toFixed(2)}</td>
-                                            </tr>
-                                            <tr className = "hover:bg-slate-50/50 dark:hover:bg-slate-800/50 transition-colors">
-                                                <td className="py-3 px-4 text-sm text-slate-700 dark:text-slate-200">Item Discount Subtotal</td>
-                                                <td className="py-3 px-4 text-sm text-slate-700 dark:text-slate-200 text-end">{discountSubtotal.toFixed(2)}</td>
-                                            </tr>
-                                            <tr className = "hover:bg-slate-50/50 dark:hover:bg-slate-800/50 transition-colors">
-                                                <td className="py-3 px-4 text-sm text-slate-700 dark:text-slate-200">Order Discount</td>
-                                                <td className="py-3 px-4 text-end">
-                                                  {!isEditing ? (
-                                                    <span
-                                                      className="cursor-pointer text-sm text-slate-700 dark:text-slate-200"
-                                                      onClick={() => setIsEditing(true)}
-                                                    >
-                                                      {discount.toFixed(2)}
-                                                    </span>
-                                                  ) : (
-                                                    <input
-                                                      type="number"
-                                                      autoFocus
-                                                      min="0"
-                                                      step="0.01"
-                                                      value={discount}
-                                                      onChange={(e) => setDiscount(Number(e.target.value))}
-                                                      onBlur={() => setIsEditing(false)}
-                                                      className="
-                                                        w-28 text-end rounded-md border border-slate-300
-                                                        bg-white px-2 py-1 text-sm text-slate-700
-                                                        focus:outline-none focus:ring-2 focus:ring-blue-500
-                                                        dark:border-slate-600 dark:bg-slate-900 dark:text-slate-200
-                                                      "
-                                                    />
-                                                  )}
-                                                </td>
-                                            </tr>
-                                            <tr className = "hover:bg-slate-50/50 dark:hover:bg-slate-800/50 transition-colors">
-                                                <td className="py-3 px-4 text-sm text-slate-700 dark:text-slate-200 font-medium dark:font-bold">Total Payment</td>
-                                                <td className="py-3 px-4 text-sm text-slate-700 dark:text-slate-200 font-medium dark:font-bold text-end">{totalPayment.toFixed(2)}</td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Action Buttons */}
-                        <div className="pt-4 flex justify-end space-x-3">
-                            <button type="button" onClick={handleClose} className="cursor-pointer px-4 py-2 text-sm font-medium rounded-md text-slate-700 dark:text-slate-300 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors">
-                                Cancel
-                            </button>
-                            <button type="submit" className="cursor-pointer px-4 py-2 text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 transition-colors shadow-md">
-                                Save Purchase
-                            </button>
-                        </div>
-                    </form>
+                    <button onClick={handleClose} className="p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-full transition-colors">
+                        <X className="w-7 h-7 text-slate-600 dark:text-slate-300 cursor-pointer"/>
+                    </button>
                 </div>
+                
+
+                <form onSubmit={handleFormSubmit} id = "purchaseForm" className="flex-1 overflow-y-auto py-5 space-y-8 px-7">
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                      <div>
+                        <label
+                          htmlFor="PONumber"
+                          className="block text-sm font-medium text-slate-700 dark:text-slate-300"
+                        >
+                          PO No. (Preview)
+                        </label>
+
+                        <input
+                          type="text"
+                          id="PONumber"
+                          value={poPreview}
+                          disabled
+                          className="
+                            w-full mt-1 px-3 py-1.5 h-9 rounded-md
+                            border border-slate-300 dark:border-slate-600
+                            bg-slate-100 dark:bg-slate-800
+                            text-slate-500 dark:text-slate-400
+                            cursor-not-allowed
+                          "
+                        />
+                      </div>
+                      
+                      {/* SUPPLIER FIELD */}
+                      <CustomFormSelect
+                      label="Supplier"
+                      name="supplier"
+                      options={supplierOptions}
+                      initialValue={formValues.supplier}
+                      onSelect={handleInputChange}
+                      placeholder={loadingSuppliers ? "Loading suppliers..." : "Select supplier"}
+                      />
+
+                      <div> 
+                          <label htmlFor="transaction_date" 
+                          className="block text-sm font-medium text-slate-700 dark:text-slate-300"> 
+                          Transaction Date 
+                          </label> 
+                          <input type="date" 
+                          id="transaction_date"
+                          name="transaction_date"
+                          value={formValues.transaction_date}
+                          onChange={(e) => handleInputChange(e.target.value, e.target.name)} 
+                          className="relative z-10 w-full text-slate-700 dark:text-slate-200 mt-1 px-3 py-1.5 h-9 rounded-md border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 shadow-xs focus:outline-none focus:border-blue-500 dark:focus:border-blue-500 focus:caret-slate-500 dark:focus:caret-white" /> 
+                      </div>
+                      <div> 
+                          <label htmlFor="delivery_date" 
+                          className="block text-sm font-medium text-slate-700 dark:text-slate-300"> 
+                          Delivery Date 
+                          </label> 
+                          <input type="date" 
+                          id="delivery_date"
+                          name="delivery_date"
+                          value={formValues.delivery_date}
+                          onChange={(e) => handleInputChange(e.target.value, e.target.name)} 
+                          className="relative z-10 w-full text-slate-700 dark:text-slate-200 mt-1 px-3 py-1.5 h-9 rounded-md border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 shadow-xs focus:outline-none focus:border-blue-500 dark:focus:border-blue-500 focus:caret-slate-500 dark:focus:caret-white" /> 
+                      </div>
+                      
+
+                      {/* WAREHOUSE FIELD */}
+                      <CustomFormSelect
+                          label="Warehouse"
+                          name="warehouse"
+                          options={warehouseOptions}
+                          initialValue={formValues.warehouse}
+                          onSelect={handleInputChange} 
+                      />
+                      
+                  </div>
+
+                  {/* Product List Table Section */}
+                  <div className="w-full pb-3 overflow-x-auto">
+                    <div className="flex flex-1 items-center justify-between mb-3">
+                      <h1 className="text-black/80 dark:text-white text-xl font-bold">Product List</h1>
+                      
+                      <button
+                          type="button"
+                          onClick={handleOpenItemModal}
+                          disabled={!formValues.supplier}
+                          className={`
+                              flex items-center space-x-2 py-2 px-4 rounded-lg transition-all
+                              ${!formValues.supplier 
+                                  ? "bg-gray-400 cursor-not-allowed opacity-60" 
+                                  : "bg-blue-500 text-white hover:shadow-lg cursor-pointer"}
+                          `}
+                      >
+                          <Plus className="w-4 h-4" />
+                          <span className="text-sm font-medium">Add Item</span>
+                      </button>
+                    </div>
+                    <div className = "overflow-x-auto">
+                      <table className="w-full">
+                          <thead>
+                              <tr className = "bg-slate-200/50 dark:bg-slate-700/50">
+                                  <th className="text-left p-4 text-sm font-semibold text-slate-600 dark:text-slate-200">Brand</th>
+                                  <th className="text-left p-4 text-sm font-semibold text-slate-600 dark:text-slate-200">Type</th>
+                                  <th className="text-left p-4 text-sm font-semibold text-slate-600 dark:text-slate-200">Quantity (KG)</th>
+                                  <th className="text-left p-4 text-sm font-semibold text-slate-600 dark:text-slate-200">Unit Price</th>
+                                  <th className="text-left p-4 text-sm font-semibold text-slate-600 dark:text-slate-200">Total</th>
+                                  <th className="text-left p-4 text-sm font-semibold text-slate-600 dark:text-slate-200">Action</th>
+                              </tr>
+                          </thead>
+                          <tbody>
+                              {/* DYNAMIC ROWS MAPPING OVER purchaseItems */}
+                              {purchaseItems.length > 0 ? (
+                                  purchaseItems.map((item, index) => (
+                                      <tr 
+                                          key={item.id} 
+                                          className = "border-b border-slate-300 dark:border-slate-600 hover:bg-slate-50/50 dark:hover:bg-slate-800/50 transition-colors"
+                                      > 
+                                          <td className="p-4">
+                                            <select
+                                              value={item.id || ""}
+                                              onChange={(e) => handleBrandChange(index, e.target.value)}
+                                              className="w-full px-2 py-1 rounded-md border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-sm"
+                                            >
+                                              <option value="">Select Brand</option>
+                                              {itemList.map((product) => (
+                                                <option key={product.id} value={product.id}>
+                                                  {product.item_name}
+                                                </option>
+                                              ))}
+                                            </select>
+                                          </td>
+                                          <td className="p-4 text-sm text-slate-700 dark:text-slate-200">
+                                            {TYPE_LABELS[item.type] || item.type || "N/A"}
+                                          </td>
+                                          <td className="p-4">
+                                            <input
+                                              type="number"
+                                              min="1"
+                                              value={item.quantity}
+                                              onChange={(e) => handleQuantityChange(index, e.target.value)}
+                                              className="w-24 px-2 py-1 rounded-md border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-sm"
+                                            />
+                                          </td>
+                                          <td className="p-4">
+                                            <input
+                                                type="number"
+                                                step="0.01"
+                                                min="0"
+                                                value={item.unit_price}
+                                                onChange={(e) => handleUnitPriceChange(index, e.target.value)}
+                                                className="w-28 px-2 py-1 rounded-md border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-sm"
+                                            />
+                                          </td>
+                                          <td className="p-4 text-sm text-slate-700 dark:text-slate-200">
+                                            ₱{Number(item.line_total).toFixed(2)}
+                                          </td>
+                                          <td className="p-4 text-sm text-slate-700 dark:text-slate-200">
+                                              <button 
+                                                  type="button" 
+                                                  onClick={() => handleRemoveItem(item.temp_id)}
+                                                  className="text-red-500 hover:text-red-700 p-1 rounded transition-colors cursor-pointer"
+                                                  aria-label={`Remove item ${item.brand}`}
+                                              >
+                                                  <Trash2 className="w-4 h-4" />
+                                              </button>
+                                          </td>
+                                      </tr>
+                                  ))
+                              ) : (
+                                  <tr className="border-b border-slate-200/50 dark:border-slate-700/50">
+                                      <td colSpan="6" className="p-4 text-center text-sm text-slate-500 dark:text-slate-400 italic">
+                                          No products added yet.
+                                      </td>
+                                  </tr>
+                              )}
+                          </tbody>
+                      </table>
+                    </div>
+                  </div>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-4">
+                          {/* REMARKS FIELD */}
+                          <label htmlFor="remarks" className="block text-sm font-medium text-slate-700 dark:text-slate-300">
+                              Remarks
+                          </label>
+                          <textarea
+                              id="remarks"
+                              name="remarks"
+                              rows="3"
+                              value={formValues.remarks}
+                              onChange={(e) => handleInputChange(e.target.value, e.target.name)}
+                              className="mt-1 p-2 block w-full rounded-md border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 shadow-xs focus:outline-none focus:border-blue-500 dark:focus:border-blue-500 focus:caret-slate-500 dark:focus:caret-white resize-none text-slate-700 dark:text-slate-200"
+                          />
+
+                          {/* FILE UPLOAD FIELD */}
+                          <label className="block mb-2.5 text-sm font-medium text-slate-700 dark:text-slate-300" htmlFor="file_input">Upload Delivery Receipt</label>
+                          <div className="relative flex rounded-lg overflow-hidden w-full max-w-xs bg-white border border-slate-300 dark:bg-slate-700 dark:border-slate-600 hover:border-blue-400 shadow-xs">
+                              <span className="bg-slate-400/20 dark:bg-slate-600/90 text-slate-600/80 dark:text-slate-400/80 px-3 py-2 text-sm font-medium flex items-center select-none cursor-pointer">
+                                  Choose File
+                              </span>
+                              
+                              <span className="text-slate-800 dark:text-white px-4 py-2.5 text-sm flex items-center truncate overflow-hidden whitespace-nowrap min-w-0">
+                                  {receiptFileName}
+                              </span>
+                              
+                              <input type="file" id="file_input" className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" onChange={handleFileChange}/>
+                          </div>
+                      </div>
+                      
+                      {/* Payment Details */}
+                      <div>
+                          <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-3">Payment Details</label>
+                          <div className = "w-full rounded-md overflow-hidden border border-slate-300 dark:border-slate-700">
+                              <table className="w-full">
+                                  <tbody>
+                                      <tr className = "bg-slate-200/50 dark:bg-slate-700/50">
+                                          <td className="py-3 px-4 text-sm text-slate-700 dark:text-slate-200">Merchandise Subtotal</td>
+                                          <td className="py-3 px-4 text-sm text-slate-700 dark:text-slate-200 text-end">{merchandiseSubtotal.toFixed(2)}</td>
+                                      </tr>
+                                      <tr className = "hover:bg-slate-50/50 dark:hover:bg-slate-800/50 transition-colors">
+                                          <td className="py-3 px-4 text-sm text-slate-700 dark:text-slate-200">Shipping Subtotal</td>
+                                          <td className="py-3 px-4 text-sm text-slate-700 dark:text-slate-200 text-end">{shippingSubtotal.toFixed(2)}</td>
+                                      </tr>
+                                      <tr className = "hover:bg-slate-50/50 dark:hover:bg-slate-800/50 transition-colors">
+                                          <td className="py-3 px-4 text-sm text-slate-700 dark:text-slate-200">Item Discount Subtotal</td>
+                                          <td className="py-3 px-4 text-sm text-slate-700 dark:text-slate-200 text-end">{discountSubtotal.toFixed(2)}</td>
+                                      </tr>
+                                      <tr className = "hover:bg-slate-50/50 dark:hover:bg-slate-800/50 transition-colors">
+                                          <td className="py-3 px-4 text-sm text-slate-700 dark:text-slate-200">Order Discount</td>
+                                          <td className="py-3 px-4 text-end">
+                                            {!isEditing ? (
+                                              <span
+                                                className="cursor-pointer text-sm text-slate-700 dark:text-slate-200"
+                                                onClick={() => setIsEditing(true)}
+                                              >
+                                                {discount.toFixed(2)}
+                                              </span>
+                                            ) : (
+                                              <input
+                                                type="number"
+                                                autoFocus
+                                                min="0"
+                                                step="0.01"
+                                                value={discount}
+                                                onChange={(e) => setDiscount(Number(e.target.value))}
+                                                onBlur={() => setIsEditing(false)}
+                                                className="
+                                                  w-28 text-end rounded-md border border-slate-300
+                                                  bg-white px-2 py-1 text-sm text-slate-700
+                                                  focus:outline-none focus:ring-2 focus:ring-blue-500
+                                                  dark:border-slate-600 dark:bg-slate-900 dark:text-slate-200
+                                                "
+                                              />
+                                            )}
+                                          </td>
+                                      </tr>
+                                      <tr className = "hover:bg-slate-50/50 dark:hover:bg-slate-800/50 transition-colors">
+                                          <td className="py-3 px-4 text-sm text-slate-700 dark:text-slate-200 font-medium dark:font-bold">Total Payment</td>
+                                          <td className="py-3 px-4 text-sm text-slate-700 dark:text-slate-200 font-medium dark:font-bold text-end">{totalPayment.toFixed(2)}</td>
+                                      </tr>
+                                  </tbody>
+                              </table>
+                          </div>
+                      </div>
+                  </div>
+                </form>
+
+                {/* Action Buttons */}
+                <div className="p-5 flex justify-end space-x-3 border-t border-slate-300 dark:border-slate-700 flex-shrink-0">
+                  <button type="button" onClick={handleClose} className="cursor-pointer px-4 py-2 text-sm font-medium rounded-md text-slate-700 dark:text-slate-300 bg-slate-200 dark:bg-slate-700 hover:bg-slate-300/90 dark:hover:bg-slate-600 transition-colors">
+                    Cancel
+                  </button>
+                  <button type="submit" form = "purchaseForm" className="cursor-pointer px-4 py-2 text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 transition-colors shadow-md">
+                    Save Purchase
+                  </button>
+                </div>
+              </div>
             </div>
 
             {/* Render the new AddItemModal here */}

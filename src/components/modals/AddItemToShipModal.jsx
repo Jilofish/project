@@ -38,16 +38,16 @@ function AddItemToShipModal({ isOpen, onClose, onAdd, itemOptions }) {
     const finalOptions = itemOptions || defaultItemOptions;
 
     return (
-        <div className="fixed inset-0 bg-black/60 z-[60] flex items-center justify-center p-4">
-            <div className="bg-white dark:bg-slate-800 rounded-xl shadow-xl w-full max-w-md overflow-hidden">
-                <div className="flex items-center justify-between p-4 border-b border-slate-200 dark:border-slate-700">
+        <div className="fixed inset-0 bg-black/50 dark:bg-black/20 z-40 flex items-center justify-center">
+            <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl w-full max-w-md mx-4 space-y-2">
+                <div className="flex items-center justify-between p-4 border-b border-slate-300 dark:border-slate-700">
                     <h3 className="font-bold text-slate-800 dark:text-white">Add Item to Shipment</h3>
                     <button onClick={onClose} className="cursor-pointer rounded-full p-1 transition-colors hover:bg-slate-100">
                         <X className="w-5 h-5 text-slate-500" />
                     </button>
                 </div>
                 
-                <form onSubmit={handleSubmit} className="p-6 space-y-5">
+                <form onSubmit={handleSubmit} id = "AddItemToShipForm" className="p-6 space-y-5">
                     <CustomFormSelect 
                         label="Select Item"
                         name="itemName"
@@ -71,17 +71,17 @@ function AddItemToShipModal({ isOpen, onClose, onAdd, itemOptions }) {
                             placeholder="0.00"
                         />
                     </div>
-
-                    <div className="flex justify-end space-x-3 mt-6">
-                        <button type="button" onClick={onClose} 
-                        className="px-4 py-2 text-sm text-slate-600 dark:text-slate-400 cursor-pointer hover:underline">
-                            Cancel
-                        </button>
-                        <button type="submit" className="cursor-pointer px-6 py-2 text-sm bg-blue-600 text-white rounded-md hover:bg-blue-700">
-                            Add to List
-                        </button>
-                    </div>
                 </form>
+
+                <div className="p-5 flex justify-end space-x-3 border-t border-slate-300 dark:border-slate-700 flex-shrink-0">
+                    <button type="button" onClick={onClose} 
+                    className="px-4 py-2 text-sm text-slate-600 dark:text-slate-400 cursor-pointer hover:underline">
+                        Cancel
+                    </button>
+                    <button type="submit" form = "AddItemToShipForm" className="cursor-pointer px-6 py-2 text-sm bg-blue-600 text-white rounded-md hover:bg-blue-700">
+                        Add to List
+                    </button>
+                </div>
             </div>
         </div>
     );

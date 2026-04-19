@@ -57,17 +57,18 @@ function AddStockTransferModal({ isOpen, onClose, itemOptions }) {
 
     return (
         <>
-            <div className="fixed inset-0 bg-black/40 z-40 flex items-center justify-center">
-                <div className="bg-white dark:bg-slate-800 p-8 rounded-lg shadow-2xl w-full max-w-4xl mx-4 max-h-[90vh] overflow-y-auto">
+            <div className="fixed inset-0 bg-black/40 z-40 flex items-center justify-center p-4">
+                <div className="w-full max-w-4xl bg-white dark:bg-slate-800 rounded-2xl shadow-2xl flex flex-col max-h-[90vh] overflow-hidden"
+                    onClick={e => e.stopPropagation()}>
                     
-                    <div className="w-full flex items-center justify-between mb-6 pb-6 border-b border-slate-300 dark:border-slate-700">
+                    <div className="w-full flex items-center justify-between py-4 px-6 border-b border-slate-300 dark:border-white/10 flex-shrink-0">
                         <h2 className="text-2xl font-bold text-slate-800 dark:text-white">Add Stock Transfer</h2>
                         <button onClick={onClose} className="p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-full transition-colors cursor-pointer">
                             <X className="w-7 h-7 text-slate-600 dark:text-slate-300"/>
                         </button>
                     </div>
 
-                    <form onSubmit={handleFormSubmit} className="space-y-8">
+                    <form onSubmit={handleFormSubmit} id = "addStockTransferForm" className="flex-1 overflow-y-auto py-5 space-y-8 px-7">
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div className="space-y-4">
                                  <div className="w-full">
@@ -186,12 +187,12 @@ function AddStockTransferModal({ isOpen, onClose, itemOptions }) {
                                 </table>
                             </div>
                         </div>
-
-                        <div className="pt-4 flex justify-end space-x-3">
-                            <button type="button" onClick={onClose} className="cursor-pointer px-4 py-2 text-sm font-medium rounded-md text-slate-700 dark:text-slate-300 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors">Cancel</button>
-                            <button type="submit" className="px-6 py-2 text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 shadow-md cursor-pointer">Save Transfer</button>
-                        </div>
                     </form>
+
+                    <div className="p-5 flex justify-end space-x-3 border-t border-slate-300 dark:border-slate-700 flex-shrink-0">
+                        <button type="button" onClick={onClose} className="cursor-pointer px-4 py-2 text-sm font-medium rounded-md text-slate-700 dark:text-slate-300 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors">Cancel</button>
+                        <button type="submit" form = "addStockTransferForm" className="px-6 py-2 text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 shadow-md cursor-pointer">Save Transfer</button>
+                    </div>
                 </div>
             </div>
 
