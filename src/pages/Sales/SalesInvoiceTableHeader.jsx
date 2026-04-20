@@ -86,6 +86,7 @@ function SalesInvoiceTableHeader({
                                 initialValue={currentCustomer}
                                 onSelect={handleCustomerChange}
                                 iconProps={iconProps}
+                                className = "w-full"
                             />
                             <CustomApprovalStatusSelect
                                 options={approvalOptions}

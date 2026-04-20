@@ -76,6 +76,7 @@ return (
                             initialValue={currentName}
                             onSelect={handleNameChange}
                             iconProps={iconProps}
+                            className = "w-full"
                         /> 
 
                         {/* 2. Business Name Filter */}
@@ -84,6 +85,7 @@ return (
                             initialValue={currentBusinessName}
                             onSelect={handleBusinessNameChange}
                             iconProps={iconProps}
+                            className = "w-full"
                         /> 
 
                         {/* 3. Status Filter */}
@@ -92,6 +94,7 @@ return (
                             initialValue={currentStatus}
                             onSelect={handleStatusChange}
                             iconProps={iconProps}
+                            className = "w-full"
                         /> 
                     </div>
 

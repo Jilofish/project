@@ -69,6 +69,7 @@ function CustomerListTableHeader({
                             initialValue={currentName}
                             onSelect={handleNameChange}
                             iconProps={iconProps}
+                            className = "w-full"
                         />
                         {/* 2. Customer Type Filter */}
                         <CustomSelect 
@@ -76,6 +77,7 @@ function CustomerListTableHeader({
                             initialValue={currentCustomerType}
                             onSelect={handleCustomerTypeChange}
                             iconProps={iconProps}
+                            className = "w-full"
                         />
                         {/* 3. Status Filter */}
                         <CustomSelect 
@@ -83,6 +85,7 @@ function CustomerListTableHeader({
                             initialValue={currentStatus}
                             onSelect={handleStatusChange}
                             iconProps={iconProps}
+                            className = "w-full"
                         />
                     </div>
                 )}

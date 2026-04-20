@@ -83,6 +83,7 @@ function ReceivedItemsTableHeader({
                                 initialValue={currentSupplier}
                                 onSelect={handleSupplierChange}
                                 iconProps={iconProps}
+                                className = "w-full"
                             />
 
                             {/* 3. Delivery Status Filter */}

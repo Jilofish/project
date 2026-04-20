@@ -17,6 +17,7 @@ function BrandListTableHeader({
                 initialValue={currentName}
                 onSelect={handleNameChange}
                 iconProps={iconProps}
+                className = "w-30"
             />
        
 

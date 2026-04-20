@@ -90,6 +90,7 @@ return (
                             initialValue={currentSupplier}
                             onSelect={handleSupplierChange}
                             iconProps={iconProps}
+                            className = "w-full"
                         />
 
                         {/* 3. Approval Status Filter (NEW) */}
