@@ -337,7 +337,7 @@ function CreatePurchase() {
         <div>
             <PurchasedStatsGrid stats={stats}/>
 
-            <div className = "bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl rounded-2xl py-5 px-5 border border-slate-200/50 dark:border-slate-700/50">
+            <div className = "bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl rounded-2xl py-5 px-3 lg:px-5 border border-slate-200/50 dark:border-slate-700/50">
 
                 <PurchasedOrdersTableHeader
                     dateRangeOptions={dateRangeOptions}
@@ -370,7 +370,7 @@ function CreatePurchase() {
                     onViewReceipt={openViewModal}
                 />
 
-                <div className = "flex items-center justify-between mb-3">
+                <div className = "flex items-center justify-between mt-3 mb-3">
                     <RowLimiter
                         options={rowLimitOptions}
                         initialValue={rowLimit.toString()}
