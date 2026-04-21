@@ -63,8 +63,8 @@ function StockManagement() {
 
     const getTabClasses = (tabId) => 
         activeTab === tabId 
-            ? "inline-block p-4 border-b-2 border-blue-500 text-blue-500 font-semibold cursor-pointer hover:text-blue-600 hover:border-blue-600"
-            : "inline-block p-4 border-b-2 border-transparent text-slate-600 dark:text-slate-400 hover:text-blue-500 hover:border-blue-300 cursor-pointer";
+            ? "inline-block px-2 lg:px-4 py-2 lg:py-4 border-b-2 border-blue-500 text-blue-500 font-semibold cursor-pointer hover:text-blue-600 hover:border-blue-600"
+            : "inline-block px-2 lg:px-4 py-2 lg:py-4 border-b-2 border-transparent text-slate-600 dark:text-slate-400 hover:text-blue-500 hover:border-blue-300 cursor-pointer";
 
     // --- HANDLERS ---
     const handleEditClick = (item) => {
@@ -120,11 +120,9 @@ function StockManagement() {
         <div>
             <StockStatsGrid stats={stats}/>
 
-            <div className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl rounded-2xl py-4 px-5 border border-slate-200/50 dark:border-slate-700/50 shadow-sm">
-                <h1 className="p-2 text-black/80 dark:text-white text-2xl font-bold">Item List</h1>
-
+            <div className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl rounded-2xl py-4 px-3 lg:px-5 border border-slate-200/50 dark:border-slate-700/50 shadow-sm">
                 <div>
-                    <div className="mb-4 border-b border-gray-200 dark:border-gray-700">
+                    <div className="px-2 lg:px-0 mb-4 border-b border-gray-200 dark:border-gray-700">
                         <ul className="flex flex-wrap -mb-px text-sm font-medium text-center" role="tablist">
                             <li className="me-2">
                                 <button onClick={() => handleTabClick('profile')} className={getTabClasses('profile')} type="button">
@@ -138,7 +136,7 @@ function StockManagement() {
                             </li>
                              <li className="me-2">
                                 <button onClick={() => handleTabClick('commisary')} className={getTabClasses('commisary')} type="button">
-                                    Commisary and Trading Transfer
+                                    Commisary and Trading Transfer 
                                 </button>
                             </li>
                         </ul>
