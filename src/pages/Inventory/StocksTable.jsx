@@ -215,7 +215,7 @@ function StocksTable({ rowLimit, currentPage, onTotalDataChange, onAddProductCli
                         }`}
                     >
                         <Funnel className="w-3.5 h-3.5" />
-                        <span className="text-sm lg:text-sm font-medium">Filters</span>
+                        <span className="text-sm font-medium">Filters</span>
                     </button>
 
                     {showFilters && (
