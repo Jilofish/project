@@ -55,21 +55,22 @@ function DeliveryPaymentHistoryModal({ isOpen, onClose,displayData, transactType
 
     return (
         <div className="fixed inset-0 bg-black/60 z-[60] flex items-center justify-center">
-            <div className="bg-white dark:bg-slate-800 p-6 rounded-lg shadow-2xl w-full max-w-md mx-4 border border-slate-200 dark:border-slate-700">
-                <div className="flex justify-between items-center mb-4">
+            <div className="w-full max-w-md bg-white dark:bg-slate-800 rounded-2xl shadow-2xl flex flex-col overflow-hidden" 
+            onClick={e => e.stopPropagation()}>
+                <div className="w-full flex items-center justify-between py-4 px-6 border-b border-slate-300 dark:border-white/10 flex-shrink-0">
                     <h2 className="text-xl font-bold text-slate-800 dark:text-white">Payment History Details</h2>
                     <button onClick={onClose} className="p-1 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-full transition-colors">
                         <X className="w-6 h-6 text-slate-500" />
                     </button>
                 </div>
-                <div className="overflow-x-auto pb-6 mt-5">
+                <div className="flex-1 overflow-y-auto py-5 space-y-8 px-7">
                     <p className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-3">
                         Payment History
                     </p>
                     <div className="w-full rounded-md overflow-hidden border border-slate-300 dark:border-slate-700">
                         <table className="w-full">
                             <thead>
-                                <tr className="bg-slate-200/50 dark:bg-slate-700/50">
+                                <tr className="bg-slate-200/50 dark:bg-slate-700/50 text-slate-600 dark:text-white/70">
                                     <th className="px-3 py-3 text-sm text-center">Date</th>
                                     <th className="px-3 py-3 text-sm text-center">Amount</th>
                                     <th className="px-3 py-3 text-sm text-center">Method</th>
@@ -87,7 +88,7 @@ function DeliveryPaymentHistoryModal({ isOpen, onClose,displayData, transactType
 
                                 {!loading && paymentHistory.length === 0 && (
                                     <tr>
-                                        <td colSpan="4" className="text-center py-4 text-sm">
+                                        <td colSpan="4" className="text-center py-4 text-sm text-slate-700/70 dark:text-white/50">
                                             No payment history found
                                         </td>
                                     </tr>

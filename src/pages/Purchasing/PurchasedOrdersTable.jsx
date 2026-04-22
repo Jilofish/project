@@ -1,74 +1,74 @@
 import React ,{useEffect }from 'react';
 import { Trash2, ReceiptText, Eye} from 'lucide-react'; 
 
-// const orders =[
-//   {
-//     "po": "PO-2026-001",
-//     "supplier": {
-//       "businessname": "Fresh Harvest Co."
-//     },
-//     "transaction_date": "2026-04-15T08:30:00Z",
-//     "delivery_date": "2026-04-20T10:00:00Z",
-//     "total": 15450.50,
-//     "approval_status": "Approved",
-//     "delivery_status": "Delivered",
-//     "payment_status": "Paid",
-//     "total_quantity": 150
-//   },
-//   {
-//     "po": "PO-2026-002",
-//     "supplier": {
-//       "businessname": "Prime Meats Inc."
-//     },
-//     "transaction_date": "2026-04-18T14:20:00Z",
-//     "delivery_date": "2026-04-25T09:00:00Z",
-//     "total": 8200.00,
-//     "approval_status": "Pending",
-//     "delivery_status": "Order Placed",
-//     "payment_status": "Unpaid",
-//     "total_quantity": 45
-//   },
-//   {
-//     "po": "PO-2026-003",
-//     "businessname": "Legacy Poultry",
-//     "supplier": {},
-//     "transaction_date": "2026-04-10T11:00:00Z",
-//     "delivery_date": "2026-04-12T17:00:00Z",
-//     "total": 12500.75,
-//     "approval_status": "Approved",
-//     "delivery_status": "Order Placed",
-//     "payment_status": "Partially Paid",
-//     "total_quantity": 85
-//   },
-//   {
-//     "po": "PO-2026-004",
-//     "supplier": {
-//       "businessname": "Ocean's Best"
-//     },
-//     "transaction_date": "2026-04-19T09:15:00Z",
-//     "delivery_date": "2026-04-21T08:00:00Z",
-//     "total": 5600.00,
-//     "approval_status": "Rejected",
-//     "delivery_status": "Order Placed",
-//     "payment_status": "Unpaid",
-//     "total_quantity": 20
-//   },
-//   {
-//     "po": "PO-2026-005",
-//     "supplier": {
-//       "businessname": "Green Valley Spices"
-//     },
-//     "transaction_date": "2026-04-21T16:45:00Z",
-//     "delivery_date": "2026-04-23T12:00:00Z",
-//     "total": 3400.25,
-//     "approval_status": "Approved",
-//     "delivery_status": "Out for Delivery",
-//     "payment_status": "Paid",
-//     "total_quantity": 12
-//   }
-// ]
+const orders =[
+  {
+    "po": "PO-2026-001",
+    "supplier": {
+      "businessname": "Fresh Harvest Co."
+    },
+    "transaction_date": "2026-04-15T08:30:00Z",
+    "delivery_date": "2026-04-20T10:00:00Z",
+    "total": 15450.50,
+    "approval_status": "Approved",
+    "delivery_status": "Delivered",
+    "payment_status": "Paid",
+    "total_quantity": 150
+  },
+  {
+    "po": "PO-2026-002",
+    "supplier": {
+      "businessname": "Prime Meats Inc."
+    },
+    "transaction_date": "2026-04-18T14:20:00Z",
+    "delivery_date": "2026-04-25T09:00:00Z",
+    "total": 8200.00,
+    "approval_status": "Pending",
+    "delivery_status": "Order Placed",
+    "payment_status": "Unpaid",
+    "total_quantity": 45
+  },
+  {
+    "po": "PO-2026-003",
+    "businessname": "Legacy Poultry",
+    "supplier": {},
+    "transaction_date": "2026-04-10T11:00:00Z",
+    "delivery_date": "2026-04-12T17:00:00Z",
+    "total": 12500.75,
+    "approval_status": "Approved",
+    "delivery_status": "Order Placed",
+    "payment_status": "Partially Paid",
+    "total_quantity": 85
+  },
+  {
+    "po": "PO-2026-004",
+    "supplier": {
+      "businessname": "Ocean's Best"
+    },
+    "transaction_date": "2026-04-19T09:15:00Z",
+    "delivery_date": "2026-04-21T08:00:00Z",
+    "total": 5600.00,
+    "approval_status": "Rejected",
+    "delivery_status": "Order Placed",
+    "payment_status": "Unpaid",
+    "total_quantity": 20
+  },
+  {
+    "po": "PO-2026-005",
+    "supplier": {
+      "businessname": "Green Valley Spices"
+    },
+    "transaction_date": "2026-04-21T16:45:00Z",
+    "delivery_date": "2026-04-23T12:00:00Z",
+    "total": 3400.25,
+    "approval_status": "Approved",
+    "delivery_status": "Out for Delivery",
+    "payment_status": "Paid",
+    "total_quantity": 12
+  }
+]
 
-function PurchasedOrdersTable({ orders, onViewReceipt, onDelete ,suppliers, onView}) {
+function PurchasedOrdersTable({ onViewReceipt, onDelete ,suppliers, onView}) {
     const getApprovalStatusColor = (approval_status) => {
         switch (approval_status) {
             case "Approved":
