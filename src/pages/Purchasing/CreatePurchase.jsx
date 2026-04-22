@@ -257,9 +257,9 @@ function CreatePurchase() {
                     handleApprovalChange={handleApprovalChange}
                     iconProps={iconProps}
 
-                    // onAddPurchaseOrderClick={openModal} << uncomment this line if you want to open Add Purchase Modal
-
-                    onAddPurchaseOrderClick={() => setIsConfirmOpen(true)}
+                    onAddPurchaseOrderClick={openModal}
+                    //  << uncomment this line if you want to open Add Purchase Modal
+                    // onAddPurchaseOrderClick={() => setIsConfirmOpen(true)}
                 />
 
                 <PurchasedOrdersTable 
