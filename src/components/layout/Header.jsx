@@ -1,4 +1,4 @@
-import { Filter, Menu, Search, Plus, Sun, Moon, Bell, Settings, ChevronDown, ShoppingCart, Truck, Clock } from 'lucide-react'
+import { Filter, Menu, Search, Plus, Sun, Moon, Bell, Settings, ChevronDown, ShoppingCart, Truck, Clock, LogOut, X, User, Lock, Palette, Database } from 'lucide-react'
 import React, { useEffect, useState, useRef } from 'react'
 import { useLocation } from 'react-router-dom'
 import { createPortal } from 'react-dom'
@@ -13,9 +13,17 @@ const Header = ({ onToggleSidebar }) => {
 
   const [isNotifMenuOpen, setIsNotifMenuOpen] = useState(false);
   const [notifPosition, setNotifPosition] = useState({ top: 0, right: 0 });
-  
+
+  const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
+  const [profilePosition, setProfilePosition] = useState({ top: 0, right: 0 });
+
+  const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
+
   const notifRef = useRef(null);
   const notifButtonRef = useRef(null);
+
+  const profileRef = useRef(null);
+  const profileButtonRef = useRef(null);
 
   const [darkMode, setDarkMode] = useState(
     localStorage.getItem("theme") === "dark"
@@ -72,10 +80,24 @@ const Header = ({ onToggleSidebar }) => {
   }, [isNotifMenuOpen]);
 
   useEffect(() => {
+    if (isProfileMenuOpen && profileButtonRef.current) {
+      const rect = profileButtonRef.current.getBoundingClientRect();
+      setProfilePosition({
+        top: rect.bottom + 8,
+        right: window.innerWidth - rect.right
+      });
+    }
+  }, [isProfileMenuOpen]);
+
+  useEffect(() => {
     const handleClickOutside = (event) => {
-      if (notifRef.current && !notifRef.current.contains(event.target) && 
-          notifButtonRef.current && !notifButtonRef.current.contains(event.target)) {
+      if (notifRef.current && !notifRef.current.contains(event.target) &&
+        notifButtonRef.current && !notifButtonRef.current.contains(event.target)) {
         setIsNotifMenuOpen(false);
+      }
+      if (profileRef.current && !profileRef.current.contains(event.target) &&
+        profileButtonRef.current && !profileButtonRef.current.contains(event.target)) {
+        setIsProfileMenuOpen(false);
       }
     };
     document.addEventListener("mousedown", handleClickOutside);
@@ -104,6 +126,11 @@ const Header = ({ onToggleSidebar }) => {
       default:
         return null;
     }
+  };
+
+  const handleLogout = () => {
+    setIsProfileMenuOpen(false);
+    // your logout logic here
   };
 
   return (
@@ -163,8 +190,9 @@ const Header = ({ onToggleSidebar }) => {
             )}
           </button>
 
+          {/* Notifications */}
           <div className="relative">
-            <button 
+            <button
               ref={notifButtonRef}
               onClick={() => setIsNotifMenuOpen(!isNotifMenuOpen)}
               className="relative p-2.5 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
@@ -174,9 +202,9 @@ const Header = ({ onToggleSidebar }) => {
             </button>
 
             {isNotifMenuOpen && createPortal(
-              <div 
+              <div
                 ref={notifRef}
-                className="pb-4 fixed w-72 md:w-80 bg-white dark:bg-slate-800 border border-black/10 dark:border-slate-700/50 rounded-xl z-[9999] overflow-hidden"
+                className="pb-4 fixed w-72 md:w-80 bg-white dark:bg-slate-800 border border-black/10 dark:border-slate-700/50 rounded-xl z-[9999] overflow-hidden shadow-xl"
                 style={{
                   top: `${notifPosition.top}px`,
                   right: `${notifPosition.right}px`,
@@ -185,11 +213,11 @@ const Header = ({ onToggleSidebar }) => {
                 <div className="p-4 border-b border-black/10 dark:border-slate-700/50 flex justify-between items-center">
                   <h3 className="font-bold text-slate-800 dark:text-white"><Bell className="w-5 h-6 mt-[-2px] mr-2 inline" />Notifications</h3>
                 </div>
-                
+
                 <div className="max-h-[400px] overflow-y-auto custom-scrollbar">
                   {MockUpNotifications.length > 0 ? (
                     MockUpNotifications.map((notif) => (
-                      <div 
+                      <div
                         key={notif.id}
                         className="p-4 border-b border-black/10 dark:border-white/15 hover:bg-slate-50 dark:hover:bg-white/5 cursor-pointer transition-colors"
                       >
@@ -199,7 +227,7 @@ const Header = ({ onToggleSidebar }) => {
                             <span>{notif.activity}</span>
                           </p>
                           <p className="text-xs text-gray-700/80 dark:text-white/75 mt-0.5 font-medium">
-                            <Clock className="w-3.5 h-3.5 inline mr-1 mt-[-3px]"/>{notif.time}
+                            <Clock className="w-3.5 h-3.5 inline mr-1 mt-[-3px]" />{notif.time}
                           </p>
                         </div>
                         <p className="text-[10px] text-gray-700/80 dark:text-white/60 mt-0.5 font-medium">
@@ -222,12 +250,21 @@ const Header = ({ onToggleSidebar }) => {
             )}
           </div>
 
-          <button className="p-2.5 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
+          {/* Settings Button → opens modal */}
+          <button
+            onClick={() => setIsSettingsModalOpen(true)}
+            className="p-2.5 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+          >
             <Settings className="w-5 h-5" />
           </button>
 
+          {/* Profile → opens floating dropdown */}
           <div className="pl-3 border-l border-slate-200 dark:border-slate-700">
-            <div className="flex items-center space-x-3 py-2.5 px-4 text-slate-600 dark:text-slate-300 cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800/50 rounded-xl transition-colors">
+            <div
+              ref={profileButtonRef}
+              onClick={() => setIsProfileMenuOpen(!isProfileMenuOpen)}
+              className="flex items-center space-x-3 py-2.5 px-4 text-slate-600 dark:text-slate-300 cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800/50 rounded-xl transition-colors"
+            >
               <img
                 src="https://cdn-icons-png.flaticon.com/512/4042/4042171.png"
                 alt="User"
@@ -237,11 +274,86 @@ const Header = ({ onToggleSidebar }) => {
                 <p className="text-sm font-medium text-slate-700 dark:text-slate-300">Earl Betez</p>
                 <p className="text-xs text-slate-500 dark:text-slate-400">Administrator</p>
               </div>
-              <ChevronDown className="w-4 h-4 text-slate-400" />
+              <ChevronDown className={`w-4 h-4 text-slate-400 transition-transform duration-200 ${isProfileMenuOpen ? 'rotate-180' : ''}`} />
             </div>
           </div>
+
+          {/* Profile Floating Dropdown */}
+          {isProfileMenuOpen && createPortal(
+            <div
+              ref={profileRef}
+              className="fixed w-42 bg-white dark:bg-slate-800 border border-black/10 dark:border-slate-700/50 rounded-xl z-[9999] overflow-hidden shadow-xl"
+              style={{
+                top: `${profilePosition.top}px`,
+                right: `${profilePosition.right}px`,
+              }}
+            >
+
+              <div className="p-2">
+                <button
+                  onClick={handleLogout}
+                  className="w-full flex items-center space-x-3 px-3 py-2.5 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10 rounded-lg transition-colors font-normal"
+                >
+                  <LogOut className="w-4 h-4" />
+                  <span>Log Out</span>
+                </button>
+              </div>
+            </div>,
+            document.body
+          )}
         </div>
       </div>
+
+      {/* Settings Modal */}
+      {isSettingsModalOpen && createPortal(
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center">
+          <div
+            className="absolute inset-0 bg-black/40"
+            onClick={() => setIsSettingsModalOpen(false)}
+          />
+
+          <div className="relative w-full max-w-md mx-2 pb-3 bg-white dark:bg-slate-800 rounded-2xl shadow-2xl border border-black/10 dark:border-slate-700/50 overflow-hidden">
+
+            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200 dark:border-slate-700/50">
+              <h2 className="text-lg font-bold text-slate-800 dark:text-white flex items-center gap-2">
+                <Settings className="w-5 h-5 text-blue-500" />
+                Settings
+              </h2>
+              <button
+                onClick={() => setIsSettingsModalOpen(false)}
+                className="p-1.5 rounded-lg text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="p-4 space-y-2">
+              {[
+                { icon: <User className="w-4 h-4" />, label: "Account", desc: "Manage your profile and credentials", color: "text-blue-500 bg-blue-50 dark:bg-blue-500/10" },
+                { icon: <Palette className="w-4 h-4" />, label: "Appearance", desc: "Theme, font size, and display", color: "text-purple-500 bg-purple-50 dark:bg-purple-500/10" },
+                { icon: <Lock className="w-4 h-4" />, label: "Security", desc: "Password, 2FA, and permissions", color: "text-emerald-500 bg-emerald-50 dark:bg-emerald-500/10" },
+                { icon: <Database className="w-4 h-4" />, label: "Data & Storage", desc: "Backups, exports, and cache", color: "text-orange-500 bg-orange-50 dark:bg-orange-500/10" },
+              ].map((item) => (
+                <button
+                  key={item.label}
+                  className="w-full flex items-center space-x-4 px-4 py-3 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors text-left group"
+                >
+                  <div className={`p-2 rounded-lg ${item.color}`}>
+                    {item.icon}
+                  </div>
+                  <div className="flex-1">
+                    <p className="text-sm font-semibold text-slate-700 dark:text-slate-200 group-hover:text-blue-500 transition-colors">{item.label}</p>
+                    <p className="text-xs text-slate-400 dark:text-slate-500">{item.desc}</p>
+                  </div>
+                  <ChevronDown className="w-4 h-4 text-slate-300 dark:text-slate-600 -rotate-90" />
+                </button>
+              ))}
+            </div>
+
+          </div>
+        </div>,
+        document.body
+      )}
     </div>
   );
 };

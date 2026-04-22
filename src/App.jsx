@@ -24,6 +24,10 @@ import Warehouse from "./pages/Warehouse";
 import ActivityLog from "./pages/ActivityLog";
 import Settings from "./pages/Settings";
 
+
+// Login
+import Login from "./pages/Login";
+
 //Export PDF
 import PrintPO from "./components/pdfExport/printPO";
 import PrintSI from "./components/pdfExport/printSI";
@@ -31,6 +35,7 @@ import PrintSI from "./components/pdfExport/printSI";
 function App() {
   return (
     <Routes>
+      <Route path="/login" element={<Login />} />
       <Route path="/" element={<MainLayout />}>
         {/* Dashboard */}
         <Route index element={<DashboardPage />} />
