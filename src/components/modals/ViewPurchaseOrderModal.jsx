@@ -326,7 +326,7 @@ function ViewPurchaseOrderModal({ isOpen, onClose, displayData, setDisplayData, 
     <>
         <div className="fixed inset-0 bg-black/40 z-40 flex items-center justify-center p-4">
             <div ref={exportRef}
-                className="w-full max-w-4xl bg-white dark:bg-slate-800 rounded-2xl shadow-2xl flex flex-col max-h-[100vh] overflow-hidden space-y-4">
+                className="w-full max-w-4xl bg-white dark:bg-slate-800 rounded-2xl shadow-2xl flex flex-col max-h-[90vh] overflow-hidden space-y-4">
 
                 {/* HEADER */}
                 <div className="w-full flex items-center justify-between py-4 px-6 border-b border-slate-300 dark:border-white/10 flex-shrink-0">
