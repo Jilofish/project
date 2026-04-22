@@ -8,7 +8,9 @@ import TablePagination from '../../components/pagination/TablePagination';
 import AddProductModal from '../../components/modals/AddProductModal';
 import AddStockTransferModal from '../../components/modals/AddStockTransferModal';
 import EditStockDetailsModal from '../../components/modals/EditStockDetailsModal';
-import EditStockTransferDetailsModal from '../../components/modals/EditStockTransferDetailsModal';
+
+// import EditStockTransferDetailsModal from '../../components/modals/EditStockTransferDetailsModal';
+import EditStockTransferDetailsModal from '../../components/modals/EditConfirmationModal';
 import DeleteConfirmModal from '../../components/modals/DeleteConfirmModal';
 
 function StockManagement() {
