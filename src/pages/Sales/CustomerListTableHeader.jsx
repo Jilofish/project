@@ -94,7 +94,7 @@ function CustomerListTableHeader({
                     onClick={onAddCustomerClick}
                     className="flex items-center cursor-pointer space-x-2 py-2 px-3 lg:px-4 bg-blue-500 text-white rounded-lg cursor-pointer hover:shadow-lg transition-all">
                     <Plus className="w-4 h-4" />
-                    <span className="text-xs lg:text-sm font-medium">Add <span className = "hidden md:inline">Purchase</span></span>
+                    <span className="text-xs lg:text-sm font-medium">Add <span className = "hidden md:inline">Customer</span></span>
                 </button>
             </div>
         </div>
