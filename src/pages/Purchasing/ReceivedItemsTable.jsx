@@ -1,5 +1,5 @@
 import React from 'react';
-import { Eye,ReceiptText, Trash2 } from 'lucide-react'; 
+import { Eye,ReceiptText, Trash2 } from 'lucide-react';
 
 function ReceivedItemsTable({ orders, onView, onViewReceipt, onDelete }) {
     
@@ -21,7 +21,7 @@ function ReceivedItemsTable({ orders, onView, onViewReceipt, onDelete }) {
     return (
         <div className="overflow-x-auto pb-6 mt-4">
           <table className="w-full">
-            <thead>
+              <thead>
                 <tr className = "bg-slate-200/50 dark:bg-slate-700/50">
                     <th className="text-left p-4 text-sm font-semibold text-slate-600 dark:text-slate-200">PO No.</th>
                     <th className="text-left p-4 text-sm font-semibold text-slate-600 dark:text-slate-200">Item Name</th>
@@ -33,7 +33,7 @@ function ReceivedItemsTable({ orders, onView, onViewReceipt, onDelete }) {
                     <th className="text-left p-4 text-sm font-semibold text-slate-600 dark:text-slate-200">Remarks</th> 
                     <th className="text-left p-4 text-sm font-semibold text-slate-600 dark:text-slate-200">Actions</th>
                 </tr>
-                </thead>
+              </thead>
                 <tbody>
                   {orders
                 .map((order) => {
