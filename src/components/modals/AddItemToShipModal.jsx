@@ -39,7 +39,7 @@ function AddItemToShipModal({ isOpen, onClose, onAdd, itemOptions }) {
 
     return (
         <div className="fixed inset-0 bg-black/50 dark:bg-black/20 z-40 flex items-center justify-center">
-            <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl w-full max-w-md mx-4 space-y-2">
+            <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl w-full max-w-md mx-4">
                 <div className="flex items-center justify-between p-4 border-b border-slate-300 dark:border-slate-700">
                     <h3 className="font-bold text-slate-800 dark:text-white">Add Item to Shipment</h3>
                     <button onClick={onClose} className="cursor-pointer rounded-full p-1 transition-colors hover:bg-slate-100">
@@ -47,7 +47,7 @@ function AddItemToShipModal({ isOpen, onClose, onAdd, itemOptions }) {
                     </button>
                 </div>
                 
-                <form onSubmit={handleSubmit} id = "AddItemToShipForm" className="p-6 space-y-5">
+                <form onSubmit={handleSubmit} id = "AddItemToShipForm" className="p-6 space-y-5 mb-5">
                     <CustomFormSelect 
                         label="Select Item"
                         name="itemName"
@@ -73,7 +73,7 @@ function AddItemToShipModal({ isOpen, onClose, onAdd, itemOptions }) {
                     </div>
                 </form>
 
-                <div className="p-5 flex justify-end space-x-3 border-t border-slate-300 dark:border-slate-700 flex-shrink-0">
+                <div className="px-4 py-3 flex justify-end space-x-3 border-t border-slate-300 dark:border-slate-700 flex-shrink-0">
                     <button type="button" onClick={onClose} 
                     className="px-4 py-2 text-sm text-slate-600 dark:text-slate-400 cursor-pointer hover:underline">
                         Cancel
