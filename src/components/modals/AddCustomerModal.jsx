@@ -22,12 +22,28 @@ function AddCustomerModal({ isOpen, onClose, onCustomerAdded }) {
         cus_type: ''
     });
 
-    const handleInputChange = (e) => { 
-        const { name, value } = e.target; 
-        setFormValues(prev => 
-        ({ ...prev, 
-            [name]: value 
-        })); 
+    const formatContactNumber = (value) => {
+        const digits = value.replace(/\D/g, '');
+        const trimmed = digits.substring(0, 11);
+        
+        if (trimmed.length > 7) {
+            return `${trimmed.slice(0, 4)} ${trimmed.slice(4, 7)} ${trimmed.slice(7)}`;
+        } else if (trimmed.length > 4) {
+            return `${trimmed.slice(0, 4)} ${trimmed.slice(4)}`;
+        }
+        return trimmed;
+    };
+
+    const handleInputChange = (e) => {
+        const { name, value } = e.target;
+        let finalValue = value;
+
+        if (name === 'contactno') finalValue = formatContactNumber(value);
+
+        setFormValues(prev => ({
+            ...prev,
+            [name]: finalValue
+        }));
     };
     const handleCustomerTypeChange = (value, name) => {
         setFormValues(prev => ({
@@ -132,11 +148,11 @@ function AddCustomerModal({ isOpen, onClose, onCustomerAdded }) {
                             <label htmlFor="contactno" className="block text-sm font-medium text-slate-700 dark:text-slate-300">Contact No.</label>
                             <input
                                 type="text"
-                                maxLength={11}        // ← React uses camelCase
+                                maxLength={13}        // ← React uses camelCase
                                 id="contactno"
                                 name="contactno"
                                 value={formValues.contactno}
-                                onChange={handleNumberChanges}
+                                onChange={handleInputChange}
                                 placeholder="0900xxxxxxx"
                                 inputMode="numeric"   // 📱 mobile numeric keypad
                                 className="w-full mt-1 px-3 py-1.5 rounded-md border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 shadow-xs focus:outline-none focus:border-blue-500 dark:focus:border-blue-500 text-slate-700 dark:text-slate-200"

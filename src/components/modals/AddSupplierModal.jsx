@@ -16,11 +16,40 @@ function AddSupplierModal({ isOpen, onClose, onAddSupplier }) {
         BankAcc: '',
     });
 
+    const formatContactNumber = (value) => {
+        const digits = value.replace(/\D/g, '');
+        const trimmed = digits.substring(0, 11);
+        
+        if (trimmed.length > 7) {
+            return `${trimmed.slice(0, 4)} ${trimmed.slice(4, 7)} ${trimmed.slice(7)}`;
+        } else if (trimmed.length > 4) {
+            return `${trimmed.slice(0, 4)} ${trimmed.slice(4)}`;
+        }
+        return trimmed;
+    };
+
+    const formatTIN = (value) => {
+        const digits = value.replace(/\D/g, '');
+        const trimmed = digits.substring(0, 9);
+        
+        if (trimmed.length > 6) {
+            return `${trimmed.slice(0, 3)}-${trimmed.slice(3, 6)}-${trimmed.slice(6)}`;
+        } else if (trimmed.length > 3) {
+            return `${trimmed.slice(0, 3)}-${trimmed.slice(3)}`;
+        }
+        return trimmed;
+    };
+
     const handleInputChange = (e) => {
         const { name, value } = e.target;
+        let finalValue = value;
+
+        if (name === 'ContactNo') finalValue = formatContactNumber(value);
+        if (name === 'tinNo') finalValue = formatTIN(value);
+
         setFormValues(prev => ({
             ...prev,
-            [name]: value
+            [name]: finalValue
         }));
     };
 
@@ -31,8 +60,9 @@ function AddSupplierModal({ isOpen, onClose, onAddSupplier }) {
             businessname: formValues.businessName,
             address: formValues.Address,
             email: formValues.Email,
-            contactno: formValues.ContactNo,
-            tinno: formValues.tinNo,
+            // Strip spaces and hyphens before saving to database
+            contactno: formValues.ContactNo.replace(/\s/g, ''), 
+            tinno: formValues.tinNo.replace(/-/g, ''),
             bankaccount: formValues.BankAcc,
             status: "Active" 
         };
@@ -86,10 +116,18 @@ function AddSupplierModal({ isOpen, onClose, onAddSupplier }) {
                         </div>
 
                         {/* Contact No */}
-                        <div>
+                       <div>
                             <label htmlFor="ContactNo" className="block text-sm font-medium text-slate-700 dark:text-slate-300">Contact No.</label>
-                            <input type="text" id="ContactNo" name="ContactNo" value={formValues.ContactNo} onChange={handleInputChange} placeholder="0917xxxxxxx"
-                                className="w-full mt-1 px-3 py-1.5 rounded-md border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 shadow-xs focus:outline-none focus:border-blue-500 dark:focus:border-blue-500 text-slate-700 dark:text-slate-200" />
+                            <input 
+                                type="tel" 
+                                id="ContactNo" 
+                                name="ContactNo" 
+                                value={formValues.ContactNo} 
+                                onChange={handleInputChange} 
+                                placeholder="0981 XXX XXXX"
+                                maxLength={13} 
+                                className="w-full mt-1 px-3 py-1.5 rounded-md border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 shadow-xs focus:outline-none focus:border-blue-500 dark:focus:border-blue-500 text-slate-700 dark:text-slate-200" 
+                                required />
                         </div>
                         
                         {/* Email */}
@@ -102,7 +140,14 @@ function AddSupplierModal({ isOpen, onClose, onAddSupplier }) {
                         {/* TIN No */}
                         <div>
                             <label htmlFor="tinNo" className="block text-sm font-medium text-slate-700 dark:text-slate-300">TIN No.</label>
-                            <input type="text" id="tinNo" name="tinNo" value={formValues.tinNo} onChange={handleInputChange} placeholder="123-456-789-000"
+                            <input 
+                                type="text" 
+                                id="tinNo" 
+                                name="tinNo" 
+                                value={formValues.tinNo} 
+                                onChange={handleInputChange} 
+                                placeholder="123-456-789"
+                                maxLength={11}
                                 className="w-full mt-1 px-3 py-1.5 rounded-md border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 shadow-xs focus:outline-none focus:border-blue-500 dark:focus:border-blue-500 text-slate-700 dark:text-slate-200" />
                         </div>
                         
@@ -122,7 +167,6 @@ function AddSupplierModal({ isOpen, onClose, onAddSupplier }) {
                     </div>
                 </form>
 
-                {/* Action Buttons */}
                 <div className="pt-5 px-4 flex justify-end space-x-3 border-t border-slate-300 dark:border-slate-700">
                     <button type="button" onClick={onClose} className=" px-4 py-2 text-sm font-medium rounded-md text-slate-700 dark:text-slate-300 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors">
                         Cancel
