@@ -213,7 +213,7 @@ function Sidebar({ collapsed, mobileOpen, onMobileClose }) {
   return (
     <div className={`${
       collapsed ? "w-20" : "w-72"
-    } transition-all duration-100 bg-white/80 dark:bg-slate-900 backdrop-blur-xl border-r border-slate-200/50 dark:border-slate-700/50 flex flex-col relative z-10 h-screen`}>
+    } custom-scrollbar transition-all duration-100 bg-white/80 dark:bg-slate-900 backdrop-blur-xl border-r border-slate-200/50 dark:border-slate-700/50 flex flex-col relative z-10 h-screen`}>
       
       {/* Logo */}
       <div className="p-6 border-b border-slate-200/50 dark:border-white/10">
@@ -231,7 +231,7 @@ function Sidebar({ collapsed, mobileOpen, onMobileClose }) {
       </div>
 
       {/* Navigation */}
-      <nav className={`flex-1 p-4 space-y-2 ${collapsed ? 'overflow-visible' : 'overflow-y-auto'}`}>
+      <nav className={`flex-1 p-4 space-y-2 custom-scrollbar ${collapsed ? 'overflow-visible' : 'overflow-y-auto'}`}>
         {menuItems.map((item) => {
           const isExpandable = item.submenu && item.submenu.length > 0;
           const isExpanded = expandedItems.has(item.id);

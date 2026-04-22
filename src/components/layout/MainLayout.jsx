@@ -33,7 +33,7 @@ const MainLayout = () => {
       <div className="flex-1 flex flex-col bg-slate-100 dark:bg-slate-900 transition-all overflow-auto">
         <Header onToggleSidebar={handleToggleSidebar} />
 
-        <div className="p-6 overflow-y-auto flex-1">
+        <div className="p-6 overflow-y-auto flex-1 custom-scrollbar">
           <Outlet />
         </div>
       </div>
