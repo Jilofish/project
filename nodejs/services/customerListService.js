@@ -1,4 +1,6 @@
 import pool from "../config/connection.js";
+import ExcelJS from "exceljs";
+import fs from "fs";
 
 export const getAllCustomers = async () => {
   const result = await pool.query(
@@ -82,4 +84,156 @@ export const getCustomerStats = async () => {
     active: parseInt(active.rows[0].count),
     inactive: parseInt(inactive.rows[0].count),
   };
+};
+
+
+// ==========================
+// 📤 TEMPLATE GENERATION
+// ==========================
+
+export const generateTemplateBuffer = async () => {
+  const workbook = new ExcelJS.Workbook();
+  const worksheet = workbook.addWorksheet("Customers");
+
+  const headers = [
+    "Customer Name",
+    "Business Name",
+    "Address",
+    "Email",
+    "Contact No",
+    "Facebook Name",
+    "Customer Type",
+    "Bank Account"
+  ];
+
+  // Add header row
+  worksheet.addRow(headers);
+
+  // Style header (optional but recommended)
+  worksheet.getRow(1).font = { bold: true };
+  worksheet.getColumn(7).eachCell((cell, rowNumber) => {
+    if (rowNumber === 1) return;
+
+    cell.dataValidation = {
+      type: 'list',
+      allowBlank: true,
+      formulae: ['"Regular,VIP"']
+    };
+  });
+  // Column widths (optional)
+  worksheet.columns = headers.map(header => ({
+    header,
+    width: 20
+  }));
+
+  return await workbook.xlsx.writeBuffer();
+};
+// ==========================
+// 📥 PROCESS EXCEL FILE
+// ==========================
+
+export const processExcelFile = async (filePath) => {
+  const client = await pool.connect();
+
+  try {
+    const workbook = new ExcelJS.Workbook();
+    await workbook.xlsx.readFile(filePath);
+
+    const worksheet = workbook.worksheets[0];
+
+    const headerMap = {
+      "customername": "customername",
+      "businessname": "businessname",
+      "address": "address",
+      "email": "email",
+      "contactno": "contactno",
+      "facebookname": "facebookname",
+      "customertype": "customertype",
+      "bankaccount": "bankaccount"
+    };
+
+    const normalize = (key) =>
+      key.toLowerCase().replace(/\s+/g, '');
+
+    let headers = [];
+
+    // Extract headers
+    worksheet.getRow(1).eachCell((cell, colNumber) => {
+      headers[colNumber] = normalize(cell.value);
+    });
+
+    const getValue = (val) =>
+      typeof val === "object" && val?.text ? val.text : val;
+
+    const formatted = [];
+
+    // Process rows
+    worksheet.eachRow((row, rowNumber) => {
+      if (rowNumber === 1) return; // skip header
+
+      const newRow = {};
+
+      row.eachCell((cell, colNumber) => {
+        const normalizedKey = headers[colNumber];
+        const mappedKey = headerMap[normalizedKey];
+
+        if (mappedKey) {
+          newRow[mappedKey] = getValue(cell.value);
+        }
+      });
+
+      formatted.push({
+        name: newRow.customername,
+        business_name: newRow.businessname,
+        address: newRow.address,
+        email: newRow.email,
+        contactno: String(newRow.contactno || ''),
+        facebook_name: newRow.facebookname,
+        cus_type: newRow.customertype,
+        bankaccount: newRow.bankaccount || "00000",
+        status: "Active"
+      });
+    });
+
+    // ==========================
+    // DB INSERT
+    // ==========================
+    await client.query('BEGIN');
+
+    console.log("Inserting customers:", formatted);
+
+    for (const customer of formatted) {
+      await client.query(
+        `INSERT INTO customer
+        (name, business_name, address, email, contactno, facebook_name, cus_type, bankaccount, status)
+        VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9)`,
+        [
+          customer.name,
+          customer.business_name,
+          customer.address,
+          customer.email,
+          customer.contactno,
+          customer.facebook_name,
+          customer.cus_type,
+          customer.bankaccount,
+          customer.status
+        ]
+      );
+    }
+
+    await client.query('COMMIT');
+
+    return formatted;
+
+  } catch (err) {
+    await client.query('ROLLBACK');
+    throw err;
+
+  } finally {
+    client.release();
+
+    if (fs.existsSync(filePath)) {
+      fs.unlinkSync(filePath);
+    }
+  }
 };

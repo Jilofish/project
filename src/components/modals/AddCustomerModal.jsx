@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { X } from 'lucide-react';
 import CustomFormSelect from '../filter/CustomFormSelect'; 
-
+import ImportCustomerModal from './ImportCustomerModal';
+import status from 'daisyui/components/status';
 const CustomerTypeOptions = [
     { customerType: 'Regular' },
     { customerType: 'VIP' },
@@ -11,7 +12,7 @@ const CustomerTypeOptions = [
 
 function AddCustomerModal({ isOpen, onClose, onCustomerAdded }) {
     if (!isOpen) return null;
-
+    const [isImportModalOpen, setIsImportModalOpen] = useState(false);
     const [formValues, setFormValues] = useState({
         name: '',
         business_name: '',
@@ -19,7 +20,8 @@ function AddCustomerModal({ isOpen, onClose, onCustomerAdded }) {
         email: '',
         contactno: '',
         facebook_name: '',
-        cus_type: ''
+        cus_type: '',
+        bankaccount: ''
     });
 
     const formatContactNumber = (value) => {
@@ -65,6 +67,7 @@ function AddCustomerModal({ isOpen, onClose, onCustomerAdded }) {
 
     const handleSubmit =async (e) => {
         e.preventDefault();
+        console.log("Submitting form with values:", formValues);
         try {
             const res=await fetch(
                 "/api/customers",
@@ -92,6 +95,7 @@ function AddCustomerModal({ isOpen, onClose, onCustomerAdded }) {
         contactno: '',
         facebook_name: '',
         cus_type: '',
+        bankaccount: ''
         });
         await onCustomerAdded();
         onClose();
@@ -129,7 +133,7 @@ function AddCustomerModal({ isOpen, onClose, onCustomerAdded }) {
                                 className="w-full mt-1 px-3 py-1.5 rounded-md border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 shadow-xs focus:outline-none focus:border-blue-500 dark:focus:border-blue-500 text-slate-700 dark:text-slate-200" required />
                         </div>
 
-                        {/* Contact No */}
+                        {/* Business Name */}
                         <div>
                             <label htmlFor="business_name" className="block text-sm font-medium text-slate-700 dark:text-slate-300">Business Name</label>
                             <input type="text" id="business_name" name="business_name" value={formValues.business_name} onChange={handleInputChange} placeholder="Enter Business Name"
@@ -143,7 +147,7 @@ function AddCustomerModal({ isOpen, onClose, onCustomerAdded }) {
                                 className="w-full mt-1 px-3 py-1.5 rounded-md border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 shadow-xs focus:outline-none focus:border-blue-500 dark:focus:border-blue-500 text-slate-700 dark:text-slate-200" />
                         </div>
 
-                        {/* TIN No */}
+                        {/* Contact No */}
                         <div>
                             <label htmlFor="contactno" className="block text-sm font-medium text-slate-700 dark:text-slate-300">Contact No.</label>
                             <input
@@ -159,7 +163,14 @@ function AddCustomerModal({ isOpen, onClose, onCustomerAdded }) {
                                 required
                             />
                         </div>
-                        
+
+                        {/* Bank Account */}
+                        <div>
+                            <label htmlFor="bankaccount" className="block text-sm font-medium text-slate-700 dark:text-slate-300">Bank Account No.</label>
+                            <input type="text" id="bankaccount" name="bankaccount" value={formValues.bankaccount} onChange={handleInputChange} placeholder="Enter Bank Account No."
+                                className="w-full mt-1 px-3 py-1.5 rounded-md border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 shadow-xs focus:outline-none focus:border-blue-500 dark:focus:border-blue-500 text-slate-700 dark:text-slate-200" />
+                        </div>
+
                         <CustomFormSelect
                         label="Customer Type"
                         name="cus_type"
@@ -167,6 +178,7 @@ function AddCustomerModal({ isOpen, onClose, onCustomerAdded }) {
                         initialValue={formValues.cus_type}
                         onSelect={handleCustomerTypeChange}
                         />
+
                     </div>
                     
                     {/* Address (Full width) */}
@@ -174,6 +186,22 @@ function AddCustomerModal({ isOpen, onClose, onCustomerAdded }) {
                         <label htmlFor="address" className="block text-sm font-medium text-slate-700 dark:text-slate-300">Address</label>
                         <input type = "text" id="address" name="address" rows="2" value={formValues.address} onChange={handleInputChange} placeholder="Enter Address"
                             className="w-full mt-1 px-3 py-1.5 rounded-md border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 shadow-xs focus:outline-none focus:border-blue-500 dark:focus:border-blue-500 text-slate-700 dark:text-slate-200 resize-none" />
+                    </div>
+
+                    {/* Action Buttons */}
+                    <div className="pt-4 flex justify-end space-x-3">
+                        <button type="button" onClick={onClose} className="cursor-pointer px-4 py-2 text-sm font-medium rounded-md text-slate-700 dark:text-slate-300 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors">
+                            Cancel
+                        </button>
+                        <button
+                            onClick={() => setIsImportModalOpen(true)}
+                            className="px-4 py-2 text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 transition-colors shadow-md"
+                            >
+                            Mutiple Add
+                        </button>
+                        <button type="submit" className="cursor-pointer px-4 py-2 text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 transition-colors shadow-md">
+                            Add Customer
+                        </button>
                     </div>
                 </form>
 
@@ -187,6 +215,13 @@ function AddCustomerModal({ isOpen, onClose, onCustomerAdded }) {
                     </button>
                 </div>
             </div>
+             <ImportCustomerModal
+                isOpen={isImportModalOpen}
+                onClose={() => setIsImportModalOpen(false)}
+                onImportSuccess={(customers) => {
+                    customers.forEach(c => onCustomerAdded(c));
+                }}
+            />
         </div>
     );
 }

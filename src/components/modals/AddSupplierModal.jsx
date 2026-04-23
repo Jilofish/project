@@ -2,9 +2,10 @@
 
 import React, { useState } from 'react';
 import { X } from 'lucide-react'; 
-
+import ImportSupplierModal from './ImportSupplierModal';
 function AddSupplierModal({ isOpen, onClose, onAddSupplier }) {
     if (!isOpen) return null;
+    const [isImportModalOpen, setIsImportModalOpen] = useState(false);
 
     const [formValues, setFormValues] = useState({
         Name: '',
@@ -165,6 +166,22 @@ function AddSupplierModal({ isOpen, onClose, onAddSupplier }) {
                         <input type = "text" id="Address" name="Address" rows="2" value={formValues.Address} onChange={handleInputChange} placeholder="123 Main Street, Quezon City"
                             className="w-full mt-1 px-3 py-1.5 rounded-md border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 shadow-xs focus:outline-none focus:border-blue-500 dark:focus:border-blue-500 text-slate-700 dark:text-slate-200" />
                     </div>
+
+                    {/* Action Buttons */}
+                    <div className="pt-4 flex justify-end space-x-3">
+                        <button type="button" onClick={onClose} className=" px-4 py-2 text-sm font-medium rounded-md text-slate-700 dark:text-slate-300 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors">
+                            Cancel
+                        </button>
+                        <button
+                            onClick={() => setIsImportModalOpen(true)}
+                            className="px-4 py-2 text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 transition-colors shadow-md"
+                            >
+                            Mutiple Add
+                        </button>
+                        <button type="submit" className=" px-4 py-2 text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 transition-colors shadow-md">
+                            Add Supplier
+                        </button>
+                    </div>
                 </form>
 
                 <div className="pt-5 px-4 flex justify-end space-x-3 border-t border-slate-300 dark:border-slate-700">
@@ -176,8 +193,17 @@ function AddSupplierModal({ isOpen, onClose, onAddSupplier }) {
                     </button>
                 </div>
             </div>
+            <ImportSupplierModal
+                isOpen={isImportModalOpen}
+                onClose={() => setIsImportModalOpen(false)}
+                onImportSuccess={(suppliers) => {
+                    suppliers.forEach(s => onAddSupplier(s));
+                }}
+            />
         </div>
+        
     );
+    
 }
 
 export default AddSupplierModal;

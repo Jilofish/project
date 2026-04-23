@@ -50,3 +50,48 @@ export const getStockItemsStats = async (req, res) => {
         res.status(500).json({ message: "Failed to load stats" });
     }
 };
+
+// ==========================
+// 📤 DOWNLOAD TEMPLATE
+// ==========================
+export const handleDownloadTemplate = async (req, res) => {
+  try {
+    const buffer = await stockItemsService.generateTemplateBuffer();
+
+    res.setHeader(
+      "Content-Disposition",
+      "attachment; filename=stock_items_template.xlsx"
+    );
+    res.setHeader(
+      "Content-Type",
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    );
+
+    res.send(buffer);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Failed to generate template" });
+  }
+};
+
+// ==========================
+// 📥 UPLOAD EXCEL
+// ==========================
+export const handleUploadExcel = async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ error: "No file uploaded" });
+    }
+
+    const result = await stockItemsService.processExcelFile(req.file.path);
+
+    res.json({
+      message: "Excel processed successfully",
+      data: result
+    });
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: err.message || "Failed to process Excel" });
+  }
+};
