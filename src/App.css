@@ -27,3 +27,48 @@ button
   background-color: white !important;
   border-color: rgb(203, 213, 225) !important;
 }
+
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 12px;
+  height: 12px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background-clip: padding-box; 
+  
+  border: 3px solid transparent; 
+  
+  background-color: #cbd5e1;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background-color: #94a3b8;
+}
+
+.dark .custom-scrollbar::-webkit-scrollbar-thumb {
+  background-color: #ffffff4d;
+}
+
+.dark .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background-color: #ffffff5e;
+}
+
+th, td {
+    white-space: nowrap;
+}
+
+thead th {
+    white-space: nowrap;
+}
+
+.overflow-x-auto {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}

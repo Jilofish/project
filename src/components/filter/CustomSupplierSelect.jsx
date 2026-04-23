@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { ArrowDownWideNarrow } from 'lucide-react';
 
-function CustomSupplierSelect({ options, initialValue, onSelect, iconProps }) {
+function CustomSupplierSelect({ options, initialValue, onSelect, iconProps, className = '' }) {
     
     const [selectedValue, setSelectedValue] = useState(initialValue);
     const [isOpen, setIsOpen] = useState(false);
@@ -39,7 +39,7 @@ function CustomSupplierSelect({ options, initialValue, onSelect, iconProps }) {
             <button
                 type="button"
                 // Adjusted width to 'w-22' for supplier name, matching original code structure
-                className={`w-34 bg-transparent focus:outline-none hover:cursor-pointer flex items-center justify-between ${selectedTextColor}`}
+                className={` ${className} bg-transparent focus:outline-none hover:cursor-pointer flex items-center justify-between ${selectedTextColor}`}
                 onClick={() => setIsOpen(!isOpen)}
                 aria-expanded={isOpen}
                 aria-haspopup="listbox"

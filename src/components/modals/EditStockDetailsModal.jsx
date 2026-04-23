@@ -299,17 +299,18 @@ function EditStockDetailsModal({ isOpen, onClose, initialData, onEditStockClose}
 
     return (
         <>
-            <div className="fixed inset-0 bg-black/40 z-40 flex items-center justify-center">
-                <div className="bg-white dark:bg-slate-800 p-8 rounded-lg shadow-2xl w-full max-w-4xl mx-4 max-h-[90vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
+            <div className="fixed inset-0 bg-black/40 z-40 flex items-center justify-center p-4">
+                <div className="w-full max-w-4xl bg-white dark:bg-slate-800 rounded-2xl shadow-2xl flex flex-col max-h-[90vh] overflow-hidden"
+                onClick={e => e.stopPropagation()}>
                     
-                    <div className="w-full flex items-center justify-between mb-6 pb-6 border-b border-slate-300 dark:border-slate-700">
+                    <div className = "w-full flex items-center justify-between py-4 px-6 border-b border-slate-300 dark:border-white/10 flex-shrink-0">
                         <h2 className="text-2xl font-bold text-slate-800 dark:text-white">Edit Stock Details</h2>
                         <button onClick={onClose} className="p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-full transition-colors cursor-pointer">
                             <X className="w-7 h-7 text-slate-600 dark:text-slate-300"/>
                         </button>
                     </div>
 
-                    <form onSubmit={handleFormSubmit} className="space-y-8">
+                    <form onSubmit={handleFormSubmit} id = "editStockDetailsForm" className="flex-1 overflow-y-auto custom-scrollbar py-5 space-y-8 px-7">
                         {/* Top Fields */}
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div className="space-y-4">
@@ -376,12 +377,12 @@ function EditStockDetailsModal({ isOpen, onClose, initialData, onEditStockClose}
                                     />
                                 </>
                                 )}
-                            </div>
 
-                             <div className="space-y-2">
+                                <div className="space-y-2">
                                     <label className="block text-sm font-medium text-slate-700 dark:text-slate-300">Remarks</label>
                                     <textarea name="remarks" rows="4" value={formValues.remarks} onChange={(e) => handleCustomForm(e.target.value, e.target.name)} className="mt-1 p-2 block w-full rounded-md border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-700 dark:text-slate-200 resize-none outline-none focus:border-blue-500" />
                                 </div>
+                            </div>
                         </div>
 
                         {/* Supplier Pricing Table Section */}
@@ -425,6 +426,7 @@ function EditStockDetailsModal({ isOpen, onClose, initialData, onEditStockClose}
                                 </tbody>
                             </table>
                         </div>
+
                         {/* VIP Pricing Table Section */}
                         <div className="overflow-x-auto pb-3">
                             <div className="flex items-center justify-between mb-3">
@@ -466,12 +468,14 @@ function EditStockDetailsModal({ isOpen, onClose, initialData, onEditStockClose}
                                 </tbody>
                             </table>
                         </div>
-
-                        <div className="pt-4 flex justify-end space-x-3">
-                            <button type="button" onClick={handleClose} className="cursor-pointer px-5 py-2 text-sm font-medium rounded-md text-slate-700 dark:text-slate-300 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors">Cancel</button>
-                            <button type="submit" className="px-6 py-2 text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 shadow-md cursor-pointer">Update Product</button>
-                        </div>
                     </form>
+
+                    <div className="p-5 flex justify-end space-x-3 border-t border-slate-300 dark:border-slate-700 flex-shrink-0">
+                        <button type="button" onClick={handleClose} className="cursor-pointer px-4 py-2 text-sm font-medium rounded-md text-slate-700 dark:text-slate-300 bg-slate-200 dark:bg-slate-700 hover:bg-slate-300/90 dark:hover:bg-slate-600 transition-colors">
+                            Cancel
+                        </button>
+                        <button type="submit" form = "editStockDetailsForm" className="px-6 py-2 text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 shadow-md cursor-pointer">Update Product</button>
+                    </div>
                 </div>
             </div>
 

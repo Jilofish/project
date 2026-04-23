@@ -25,15 +25,17 @@ function ViewDeliveryReceiptModal({isOpen, displayData, onClose, transactType}) 
 
   return (
     <div className="fixed inset-0 bg-black/50 dark:bg-black/70 z-50 flex items-center justify-center">
-        <div className="bg-white dark:bg-slate-800 p-6 rounded-lg shadow-2xl w-full max-w-lg mx-4" onClick={e => e.stopPropagation()}>
-            <div className="w-full flex items-center justify-between mb-6 pb-3 border-b border-slate-200 dark:border-slate-700">
+        <div className = "w-full max-w-lg bg-white dark:bg-slate-800 rounded-2xl shadow-2xl flex flex-col max-h-[90vh] overflow-hidden space-y-4" 
+            onClick={e => e.stopPropagation()}>
+                
+            <div className="w-full flex items-center justify-between py-4 px-6 border-b border-slate-300 dark:border-white/10 flex-shrink-0">
                 <h2 className="text-2xl font-bold text-slate-800 dark:text-white">Delivery Receipt Details</h2>
                 <button onClick={onClose} className="p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-full transition-colors">
                     <X className="w-7 h-7 text-slate-600 dark:text-slate-300 cursor-pointer"/>
                 </button>
             </div>
 
-            <div className="w-full overflow-hidden rounded-xl border border-slate-300 dark:border-slate-700">
+            <div className="mx-auto w-80 overflow-hidden rounded-xl border border-slate-300 dark:border-slate-700">
                 {receiptPublicUrl ? (
                     isPDF ? (
                     <iframe
@@ -58,12 +60,12 @@ function ViewDeliveryReceiptModal({isOpen, displayData, onClose, transactType}) 
                     No receipt uploaded
                     </div>
                 )}
-                </div>
+            </div>
 
-            <div className="pt-5 flex justify-end space-x-3">
+            <div className="p-5 flex justify-end space-x-3 border-t border-slate-300 dark:border-slate-700 flex-shrink-0">
                 <button type="button" 
                 onClick={() => setIsHistoryOpen(true)}
-                className="px-4 py-2 text-sm font-medium rounded-md text-slate-700 dark:text-slate-200/90 bg-slate-100 dark:bg-slate-700 dark:hover:bg-slate-600/80 hover:bg-slate-200/80 transition-colors">
+                className="px-4 py-2 text-sm font-medium rounded-md text-blue-500 dark:text-slate-200/90 bg-blue-500/25 dark:bg-slate-700 dark:hover:bg-slate-600/80 hover:bg-blue-500/30 transition-colors">
                     View Payment History
                 </button>
                 {displayData.payment_status !== "Paid" && (

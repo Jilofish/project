@@ -99,13 +99,13 @@ function AddCountingModal({ isOpen, onClose }) {
     const WarehouseOption = WarehouseOptions.map(d => ({ value: d.warehouse, label: d.warehouse }));
 
     return (
-        <div className="fixed inset-0 bg-black/50 dark:bg-black/70 z-[60] flex items-center justify-center">
+        <div className="fixed inset-0 bg-black/40 z-40 flex items-center justify-center p-4">
             <div 
-                className="bg-white dark:bg-slate-800 p-8 rounded-lg shadow-2xl w-full max-w-3xl mx-4 max-h-[90vh] flex flex-col" // <--- KEY CHANGES
+                className="w-full max-w-4xl bg-white dark:bg-slate-800 rounded-2xl shadow-2xl flex flex-col max-h-[90vh] overflow-hidden space-y-4" // <--- KEY CHANGES
                 onClick={e => e.stopPropagation()}
             >
 
-                <div className="w-full flex items-center justify-between mb-6 pb-6 border-b border-slate-300 dark:border-slate-700 flex-shrink-0">
+                <div className="w-full flex items-center justify-between py-4 px-6 border-b border-slate-300 dark:border-white/10 flex-shrink-0">
                     <h2 className="text-2xl font-bold text-slate-800 dark:text-white">
                         Add Counting
                     </h2>
@@ -114,7 +114,7 @@ function AddCountingModal({ isOpen, onClose }) {
                     </button>
                 </div>
 
-                <form onSubmit={handleSubmit} className="space-y-5 overflow-y-auto flex-grow pr-2 custom-scrollbar"> 
+                <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto py-5 space-y-8 px-7 custom-scrollbar"> 
                     
                     {/* Main form fields */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -141,7 +141,7 @@ function AddCountingModal({ isOpen, onClose }) {
                                         viewBox="0 0 24 24" fill="none" 
                                         stroke="currentColor" strokeWidth="2" 
                                         strokeLinecap="round" strokeLinejoin="round" 
-                                        className="w-5 h-5 text-slate-800 dark:text-slate-300"> 
+                                        className="w-5 h-5 text-slate-500 dark:text-slate-300"> 
                                         <rect width="18" height="18" x="3" y="4" rx="2" ry="2"/>
                                         <line x1="16" x2="16" y1="2" y2="6"/>
                                         <line x1="8" x2="8" y1="2" y2="6"/>
@@ -179,7 +179,7 @@ function AddCountingModal({ isOpen, onClose }) {
 
                     {/* ITEMS TO COUNT SECTION (DYNAMIC TABLE)  */}
                     <div className="pb-3">
-                        <div className="flex items-center justify-between pb-4 mb-1 border-b border-slate-300 dark:border-slate-600">
+                        <div className="flex items-center justify-between pb-4 mb-1 border-b border-slate-200 dark:border-slate-600">
                             <h1 className="text-[#535353] dark:text-white text-xl font-bold">Items to Count</h1>
                         </div>
 
@@ -192,7 +192,7 @@ function AddCountingModal({ isOpen, onClose }) {
                                         className="border-b border-slate-200/50 dark:border-slate-700/50 hover:bg-slate-50/50 dark:hover:bg-slate-800/50 transition-colors"
                                     >
                                         {/* ITEM INPUT FIELD */}
-                                        <td className="p-2 py-3 text-sm text-slate-700 dark:text-slate-200 w-1/2">
+                                        <td className="p-2 py-6 text-sm text-slate-700 dark:text-slate-200 w-1/2">
                                             <div className="flex items-center space-x-4">
                                                 <span className="text-md font-medium min-w-[50px]">Item:</span>
                                                 <input 
@@ -206,7 +206,7 @@ function AddCountingModal({ isOpen, onClose }) {
                                         </td>
                                         
                                         {/* QUANTITY INPUT FIELD */}
-                                        <td className="p-2 py-3 text-sm text-slate-700 dark:text-slate-200 w-1/3">
+                                        <td className="p-2 py-6 text-sm text-slate-700 dark:text-slate-200 w-1/3">
                                             <div className="flex items-center space-x-4">
                                                 <span className="text-md font-medium min-w-[80px]">Quantity: </span>
                                                 <input 
@@ -219,7 +219,7 @@ function AddCountingModal({ isOpen, onClose }) {
                                         </td>
                                         
                                         {/* REMOVE BUTTON */}
-                                        <td className="p-2 py-3 text-center text-sm text-slate-700 dark:text-slate-200 w-auto">
+                                        <td className="p-2 py-6 text-center text-sm text-slate-700 dark:text-slate-200 w-auto">
                                             {items.length > 1 && (
                                                 <button 
                                                     type="button"
@@ -248,13 +248,13 @@ function AddCountingModal({ isOpen, onClose }) {
 
                         {/* NEW ITEM BUTTON - Calls handleAddItem */}
                         <div className="flex items-center justify-center ">
-                            <div className="flex items-center justify-center mt-3 w-80 rounded-md hover:bg-slate-100/50 border border-slate-300 dark:border-slate-600/50 dark:bg-slate-800/50 dark:hover:bg-slate-700/50 cursor-pointer transition-all">
+                            <div className="flex items-center justify-center mt-5 w-80 rounded-md hover:bg-slate-100/50 border border-dashed border-slate-300 dark:border-slate-600/50 dark:bg-slate-800/50 dark:hover:bg-slate-700/50 cursor-pointer transition-all">
                                 <button
                                     type="button"
                                     onClick={handleAddItem} 
                                     className="flex items-center space-x-2 py-2 px-4 text-slate-600 dark:text-white rounded-lg cursor-pointer transition-all">
                                     <Plus className="w-4 h-4" />
-                                    <span className="text-sm font-medium">New Item</span>
+                                    <span className="text-sm font-medium">Add Another Row</span>
                                 </button>
                             </div>
                         </div>
@@ -262,7 +262,7 @@ function AddCountingModal({ isOpen, onClose }) {
                 </form>
 
                 {/* FOOTER: Fixed (flex-shrink-0) */}
-                <div className="pt-8 flex justify-end space-x-3 flex-shrink-0 mt-auto">
+                <div className="p-5 flex justify-end space-x-3 border-t border-slate-300 dark:border-slate-700 flex-shrink-0">
                     <button type="button" onClick={onClose} className="cursor-pointer px-4 py-2 text-sm font-medium rounded-md text-slate-700 dark:text-slate-300 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors">
                         Cancel
                     </button>

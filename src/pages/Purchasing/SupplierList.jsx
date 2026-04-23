@@ -207,7 +207,7 @@ function SupplierList() {
             onDelete={handleDeleteSupplier}
         />
 
-        <div className="flex items-center justify-between mb-3">
+        <div className="flex items-center justify-between mt-3 mb-3">
           <RowLimiter
             options={rowLimitOptions}
             initialValue={rowLimit.toString()}

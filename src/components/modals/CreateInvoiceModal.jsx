@@ -410,13 +410,13 @@ function CreateInvoiceModal({ isOpen, onClose, onAddSales,itemList}) {
     return (
         <>
             <div 
-                className="fixed inset-0 bg-black/20 dark:bg-black/20 z-40 flex items-center justify-center overflow-y-auto"
+                className="fixed inset-0 bg-black/40 z-40 flex items-center justify-center p-4"
             >
                 {/* Modal Content Box */}
-                <div className="flex flex-col h-full max-h-[95vh] bg-white dark:bg-slate-800 p-6 rounded-lg shadow-2xl w-full max-w-5xl mx-4" 
+                <div className="w-full max-w-4xl bg-white dark:bg-slate-800 rounded-2xl shadow-2xl flex flex-col max-h-[90vh] overflow-hidden"
                     onClick={e => e.stopPropagation()}>
                     
-                    <div className = "w-full flex items-center justify-between mb-5 pb-4 border-b border-slate-300 dark:border-slate-700 flex-shrink-0">
+                    <div className = "w-full flex items-center justify-between py-4 px-6 border-b border-slate-300 dark:border-white/10 flex-shrink-0">
                         <h2 className="text-2xl font-bold text-slate-800 dark:text-white">
                             Create Invoice
                         </h2>
@@ -427,7 +427,7 @@ function CreateInvoiceModal({ isOpen, onClose, onAddSales,itemList}) {
                     </div>
                     
 
-                    <form onSubmit={handleFormSubmit} className="flex-grow overflow-y-auto space-y-8 pr-3">
+                    <form onSubmit={handleFormSubmit} id = "createInvoiceForm" className="flex-1 overflow-y-auto py-5 space-y-8 px-7">
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
                             <div>
                                 <label htmlFor="PONumber" className="block text-sm font-medium text-slate-700 dark:text-slate-300">
@@ -457,6 +457,7 @@ function CreateInvoiceModal({ isOpen, onClose, onAddSales,itemList}) {
                                 onSelect={handleCustomerSelect}
                                 highlightValues={[ADD_NEW_CUSTOMER]}
                             />
+                            
                             <div> 
                                 <label htmlFor="transaction_date" 
                                 className="block text-sm font-medium text-slate-700 dark:text-slate-300"> 
@@ -697,17 +698,18 @@ function CreateInvoiceModal({ isOpen, onClose, onAddSales,itemList}) {
                             </div>
                         </div>
 
-                        {/* Action Buttons */}
-                        <div className="pt-4 mt-4 border-t border-slate-300 dark:border-slate-700 flex justify-end space-x-3 flex-shrink-0">
-                            <button type="button" onClick={onClose} className="cursor-pointer px-4 py-2 text-sm font-medium rounded-md text-slate-700 dark:text-slate-300 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors">
-                                Cancel
-                            </button>
-                            <button type="submit" className="cursor-pointer px-4 py-2 text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 transition-colors shadow-md">
-                                Save Purchase
-                            </button>
-                        </div>
+                        
                     </form>
-
+                
+                    {/* Action Buttons */}
+                    <div className="p-5 flex justify-end space-x-3 border-t border-slate-300 dark:border-slate-700 flex-shrink-0">
+                        <button type="button" onClick={onClose} className="cursor-pointer px-4 py-2 text-sm font-medium rounded-md text-slate-700 dark:text-slate-300 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors">
+                            Cancel
+                        </button>
+                        <button type="submit" form = "createInvoiceForm" className="cursor-pointer px-4 py-2 text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 transition-colors shadow-md">
+                            Save Purchase
+                        </button>
+                    </div>
                 </div>
             </div>
 

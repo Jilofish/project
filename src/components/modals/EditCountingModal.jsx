@@ -113,13 +113,13 @@ function EditCountingModal({ isOpen, onClose, initialData }) {
     const WarehouseOption = WarehouseOptions.map(d => ({ value: d.warehouse, label: d.warehouse }));
 
     return (
-        <div className="fixed inset-0 bg-black/50 dark:bg-black/70 z-[60] flex items-center justify-center">
+        <div className="fixed inset-0 bg-black/40 z-40 flex items-center justify-center p-4">
             <div 
-                className="bg-white dark:bg-slate-800 p-8 rounded-lg shadow-2xl w-full max-w-3xl mx-4 max-h-[90vh] flex flex-col" // <--- KEY CHANGES
+                className="w-full max-w-3xl bg-white dark:bg-slate-800 rounded-2xl shadow-2xl flex flex-col max-h-[90vh] overflow-hidden"
                 onClick={e => e.stopPropagation()}
             >
 
-                <div className="w-full flex items-center justify-between mb-6 pb-6 border-b border-slate-300 dark:border-slate-700 flex-shrink-0">
+                <div className="w-full flex items-center justify-between py-4 px-6 border-b border-slate-300 dark:border-white/10 flex-shrink-0">
                     <h2 className="text-2xl font-bold text-slate-800 dark:text-white">
                         Edit Details
                     </h2>
@@ -128,7 +128,7 @@ function EditCountingModal({ isOpen, onClose, initialData }) {
                     </button>
                 </div>
 
-                <form onSubmit={handleSubmit} className="space-y-5 overflow-y-auto flex-grow pr-2 custom-scrollbar"> 
+                <form onSubmit={handleSubmit} id = "editCountingForm" className="flex-1 overflow-y-auto py-5 space-y-8 px-7">
                     
                     {/* Main form fields */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -276,11 +276,11 @@ function EditCountingModal({ isOpen, onClose, initialData }) {
                 </form>
 
                 {/* FOOTER: Fixed (flex-shrink-0) */}
-                <div className="pt-8 flex justify-end space-x-3 flex-shrink-0 mt-auto">
+                <div className="p-5 flex justify-end space-x-3 border-t border-slate-300 dark:border-slate-700 flex-shrink-0">
                     <button type="button" onClick={onClose} className="cursor-pointer px-4 py-2 text-sm font-medium rounded-md text-slate-700 dark:text-slate-300 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors">
                         Cancel
                     </button>
-                    <button type="submit" onClick={handleSubmit} className="cursor-pointer px-4 py-2 text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 transition-colors shadow-md">
+                    <button type="submit" form = "editCountingForm" onClick={handleSubmit} className="cursor-pointer px-4 py-2 text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 transition-colors shadow-md">
                         Save Counting
                     </button>
                 </div>

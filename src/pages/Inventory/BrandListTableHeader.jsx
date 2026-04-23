@@ -8,7 +8,7 @@ function BrandListTableHeader({
 }) {
   return (
     <div className="flex items-center justify-between">
-        <h1 className="text-[#454545] dark:text-white text-2xl font-bold">Brand List</h1>
+        <h1 className="text-black/80 dark:text-white text-2xl font-bold">Brand List</h1>
 
         <div className="flex items-center justify-end gap-3">
             {/* 1. Name Filter */}
@@ -17,6 +17,7 @@ function BrandListTableHeader({
                 initialValue={currentName}
                 onSelect={handleNameChange}
                 iconProps={iconProps}
+                className = "w-30"
             />
        
 
