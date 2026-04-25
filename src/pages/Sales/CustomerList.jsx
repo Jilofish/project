@@ -274,6 +274,7 @@ function CustomerList() {
           if (!res.ok) throw new Error("Delete failed");
 
           fetchCustomers();
+          fetchStats();
       } catch (err) {
           console.error(err);
       }
@@ -296,9 +297,10 @@ function CustomerList() {
     
 
     useEffect(() => {
+      if (isAddModalOpen || isEditModalOpen) return;
       fetchCustomers();
       fetchStats();
-    }, []);
+    }, [isAddModalOpen, isEditModalOpen]);
     // --- PAGINATION LOGIC ---
     const totalOrders = filteredOrders.length;
     const totalPages = Math.ceil(totalOrders / rowLimit);

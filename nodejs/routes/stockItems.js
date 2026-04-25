@@ -24,6 +24,7 @@ router.post("/", stockItemsController.addStockItems);
 router.delete("/:id", stockItemsController.deleteStockItems);
 router.put("/:id", stockItemsController.updateStockItem);
 router.get("/stats", stockItemsController.getStockItemsStats);
+router.get("/warehouse-items", stockItemsController.getWarehouseItems);
 //Import and Export
 router.get("/template", stockItemsController.handleDownloadTemplate);
 router.post("/upload-excel", upload.single('file'), stockItemsController.handleUploadExcel);

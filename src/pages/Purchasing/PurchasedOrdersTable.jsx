@@ -1,7 +1,8 @@
 import React ,{useEffect }from 'react';
 import { Trash2, ReceiptText, Eye} from 'lucide-react'; 
 
-const orders =[
+// Comment if it's for frontend
+/* const orders =[
   {
     "po": "PO-2026-001",
     "supplier": {
@@ -66,9 +67,11 @@ const orders =[
     "payment_status": "Paid",
     "total_quantity": 12
   }
-]
+] */
+/* function PurchasedOrdersTable({ onViewReceipt, onDelete ,suppliers, onView}) { */
 
-function PurchasedOrdersTable({ onViewReceipt, onDelete ,suppliers, onView}) {
+
+function PurchasedOrdersTable({ onViewReceipt, onDelete ,suppliers,orders, onView}) {
     const getApprovalStatusColor = (approval_status) => {
         switch (approval_status) {
             case "Approved":

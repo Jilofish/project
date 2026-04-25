@@ -190,18 +190,7 @@ function AddCustomerModal({ isOpen, onClose, onCustomerAdded }) {
 
                     {/* Action Buttons */}
                     <div className="pt-4 flex justify-end space-x-3">
-                        <button type="button" onClick={onClose} className="cursor-pointer px-4 py-2 text-sm font-medium rounded-md text-slate-700 dark:text-slate-300 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors">
-                            Cancel
-                        </button>
-                        <button
-                            onClick={() => setIsImportModalOpen(true)}
-                            className="px-4 py-2 text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 transition-colors shadow-md"
-                            >
-                            Mutiple Add
-                        </button>
-                        <button type="submit" className="cursor-pointer px-4 py-2 text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 transition-colors shadow-md">
-                            Add Customer
-                        </button>
+                        
                     </div>
                 </form>
 
@@ -209,6 +198,12 @@ function AddCustomerModal({ isOpen, onClose, onCustomerAdded }) {
                 <div className="p-5 flex justify-end space-x-3 border-t border-slate-300 dark:border-slate-700 flex-shrink-0">
                     <button type="button" onClick={onClose} className="cursor-pointer px-4 py-2 text-sm font-medium rounded-md text-slate-700 dark:text-slate-300 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors">
                         Cancel
+                    </button>
+                    <button
+                        onClick={() => setIsImportModalOpen(true)}
+                        className="px-4 py-2 text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 transition-colors shadow-md"
+                        >
+                        Mutiple Add
                     </button>
                     <button type="submit" form = "addCustomerForm" className="cursor-pointer px-4 py-2 text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 transition-colors shadow-md">
                         Add Customer

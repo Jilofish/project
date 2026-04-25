@@ -9,8 +9,8 @@ import {
   BarChart,
   Cell,
 } from "recharts";
-
-function RevenueChart() {
+function RevenueChart({revenueChartData}) {
+/* function RevenueChart() { */
   // 1. CREATE THEME STATE
   const [isDark, setIsDark] = useState(document.documentElement.classList.contains('dark'));
 
@@ -28,7 +28,7 @@ function RevenueChart() {
     return () => observer.disconnect();
   }, []);
 
-  const mockData = [
+  /* const mockData = [
     { month: "Jan", revenue: 45000, cogs: 27000, profit: 18000 },
     { month: "Feb", revenue: 52000, cogs: 31200, profit: 20800 },
     { month: "Mar", revenue: 48500, cogs: 29100, profit: 19400 },
@@ -41,7 +41,7 @@ function RevenueChart() {
     { month: "Oct", revenue: 79000, cogs: 43340, profit: 35660 },
     { month: "Nov", revenue: 85000, cogs: 46750, profit: 38250 },
     { month: "Dec", revenue: 92000, cogs: 50600, profit: 41400 },
-  ];
+  ]; */
 
   const formatMoney = (value) => {
     const num = Math.trunc(Number(value) * 100) / 100;
@@ -50,9 +50,11 @@ function RevenueChart() {
       maximumFractionDigits: 2,
     })}`;
   };
+  //remove this when api is ready
+  /*const data = mockData; */
 
-  const data = mockData;
-
+  //calls the data from the parent component which is the dashboard.jsx
+  const data = revenueChartData ?? [];
   return (
     <div className="bg-white dark:bg-slate-900/80 backdrop-blur-xl rounded-2xl border border-slate-200/50 dark:border-slate-700/50 p-6">
       

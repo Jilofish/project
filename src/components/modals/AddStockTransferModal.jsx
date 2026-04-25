@@ -1,14 +1,14 @@
-import React, { useState } from 'react';
+import React, { useState,useEffect } from 'react';
 import { Plus, Trash2, X, Pencil, Calendar } from 'lucide-react'; 
 import CustomFormSelect from '../filter/CustomFormSelect';
 import AddItemToShipModal from './AddItemToShipModal';
 import EditItemToShipModal from './EditItemToShipModal'; 
 
-const warehouseData = [{ warehouse: 'Saog' }, { warehouse: 'Meycuayan' }, { warehouse: 'Quezon City' }];
+
 
 function AddStockTransferModal({ isOpen, onClose, itemOptions }) {
     const [formValues, setFormValues] = useState({
-        transferDate: '', // Renamed from itemName for clarity
+        transferDate: '', 
         sendingWarehouse: null,
         receivingWarehouse: null, 
         expectedDeliveryDate: '',
@@ -19,6 +19,28 @@ function AddStockTransferModal({ isOpen, onClose, itemOptions }) {
     const [shipmentItems, setShipmentItems] = useState([]); // Renamed from supplierPrices
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [selectedEntry, setSelectedEntry] = useState(null);
+    const [warehouseData,setWarehouseData] = useState([]);
+    const isWarehouseSelected =
+    formValues.sendingWarehouse && formValues.receivingWarehouse;
+
+    const fetchWarehouseData = async () => {
+        try {
+            const response = await fetch('/api/inventory/warehouse');
+            const data = await response.json();
+            setWarehouseData(data);
+        } catch (error) {
+            console.error("Failed to fetch warehouse data:", error);
+        }
+    };
+
+    useEffect(() => {
+        if (isOpen) fetchWarehouseData();
+    }, [isOpen]);
+
+    useEffect(() => {
+        setShipmentItems([]);
+    }, [formValues.sendingWarehouse, formValues.receivingWarehouse]);
+
 
     if (!isOpen) return null;
 
@@ -48,13 +70,34 @@ function AddStockTransferModal({ isOpen, onClose, itemOptions }) {
         setShipmentItems(prev => prev.filter(item => item.id !== id));
     };
     
-    const handleFormSubmit = (e) => {
+    const handleFormSubmit = async(e) => {
         e.preventDefault();
-        onClose();
+        console.log("Submitting stock transfer with data:", {
+            ...formValues,
+            items: shipmentItems,
+        });
+        try{
+            const response = await fetch('/api/stock/stock-transfer', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    ...formValues,
+                    items: shipmentItems,
+                }),
+            });
+            const result = await response.json();
+        } catch (error) {
+            console.error('Error submitting stock transfer:', error);
+        } finally {
+            onClose();
+        }
     };
 
-    const warehouseOptions = warehouseData.map(d => ({ value: d.warehouse, label: d.warehouse }));
-
+    const warehouseOptions = warehouseData.map(d => ({
+    value: d.id,
+    label: d.whouse_name
+    }));
+    console.log("Warehouse options for select:", warehouseOptions);
     return (
         <>
             <div className="fixed inset-0 bg-black/40 z-40 flex items-center justify-center p-4">
@@ -146,7 +189,12 @@ function AddStockTransferModal({ isOpen, onClose, itemOptions }) {
                                 <button 
                                     type="button" 
                                     onClick={() => setIsAddItemModalOpen(true)} 
-                                    className="flex items-center space-x-2 py-2 px-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all cursor-pointer"
+                                    disabled={!isWarehouseSelected}
+                                    className={`flex items-center space-x-2 py-2 px-4 rounded-lg transition-all
+                                        ${isWarehouseSelected 
+                                            ? "bg-blue-600 hover:bg-blue-700 text-white cursor-pointer" 
+                                            : "bg-slate-300 text-slate-500 cursor-not-allowed"
+                                        }`}
                                 >
                                     <Plus className="w-4 h-4" />
                                     <span className="text-sm font-medium">Add Item</span>
@@ -202,6 +250,7 @@ function AddStockTransferModal({ isOpen, onClose, itemOptions }) {
                 onClose={() => setIsAddItemModalOpen(false)} 
                 onAdd={handleAddItem} 
                 itemOptions={itemOptions} 
+                selectedWarehouse={formValues.sendingWarehouse}
             />
 
             <EditItemToShipModal 

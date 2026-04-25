@@ -4,7 +4,7 @@ import { Plus, Pencil, Trash2, Search, Funnel } from 'lucide-react';
 import CustomSupplierSelect from '../../components/filter/CustomSupplierSelect'; 
 import CustomPaymentStatusSelect from '../../components/filter/CustomPaymentStatusSelect'; 
 
-const StocksTransferData = [
+/* const StocksTransferData = [
 {
     id: 1,
     TransferDate: '10/10/2025', 
@@ -45,7 +45,7 @@ const StocksTransferData = [
     TotalValue: '1240.80', 
     Status: 'Cancelled' 
 }
-];
+]; */
 
 const ALL_OPTION = 'All';
 
@@ -55,27 +55,43 @@ function StocksTransferTable({ rowLimit, currentPage, onTotalDataChange, onAddSt
     const [senderFilter, setSenderFilter] = useState('Sender');
     const [receiverFilter, setReceiverFilter] = useState('Receiver');
     const [statusFilter, setStatusFilter] = useState('Status');
+    const [StocksTransferData, setStocksTransferData] = useState([]);
 
+    const getStockTransfer = async () => {
+        try {
+            const res = await fetch("/api/stock/stock-transfer");
+            const data = await res.json(); 
+            console.log("Fetched Stock Transfer Data:", data);
+            setStocksTransferData(data);
+        } catch (err) {
+            console.error("Failed to fetch stock transfer data", err);
+        }
+    };
+    useEffect(() => {
+        getStockTransfer();
+    }, []);
+    console.log("Fetched Stock Transfer Data:", StocksTransferData);
     // --- 2. DYNAMIC OPTIONS ---
     const dateOptions = useMemo(() => {
         const unique = [...new Set(StocksTransferData.map(item => item.TransferDate))];
         return ['Transfer Date', ALL_OPTION, ...unique.sort()];
-    }, []);
+    }, [StocksTransferData]);
 
     const senderOptions = useMemo(() => {
         const unique = [...new Set(StocksTransferData.map(item => item.Sender))];
         return ['Sender', ALL_OPTION, ...unique.sort()];
-    }, []);
+    }, [StocksTransferData]);
 
     const receiverOptions = useMemo(() => {
         const unique = [...new Set(StocksTransferData.map(item => item.Receiver))];
         return ['Receiver', ALL_OPTION, ...unique.sort()];
-    }, []);
+    }, [StocksTransferData]);
 
     const statusOptions = useMemo(() => {
         const unique = [...new Set(StocksTransferData.map(item => item.Status))];
         return ['Status', ALL_OPTION, ...unique.sort()];
-    }, []);
+    }, [StocksTransferData]);
+
 
     // --- 3. FILTERING LOGIC (Recalibrated for Placeholders) ---
     const filteredData = useMemo(() => {
@@ -88,8 +104,8 @@ function StocksTransferTable({ rowLimit, currentPage, onTotalDataChange, onAddSt
 
             return matchDate && matchSender && matchReceiver && matchStatus;
         });
-    }, [dateFilter, senderFilter, receiverFilter, statusFilter]);
-
+    }, [StocksTransferData,dateFilter, senderFilter, receiverFilter, statusFilter]);
+    console.log("Filtered Stock Transfer Data:", filteredData);
     // --- 4. SYNC TOTAL COUNT FOR PAGINATION ---
     useEffect(() => {
         if (onTotalDataChange) {
@@ -251,15 +267,15 @@ function StocksTransferTable({ rowLimit, currentPage, onTotalDataChange, onAddSt
                         {paginatedData.length > 0 ? (
                             paginatedData.map((order, index) => (
                                 <tr key={`${order.id}`} className="border-b border-slate-200/50 dark:border-slate-700/50 hover:bg-slate-50/50 dark:hover:bg-slate-800/50 transition-colors">
-                                    <td className="p-4 text-sm font-medium text-blue-500">{order.TransferDate}</td>
-                                    <td className="p-4 text-sm text-slate-800 dark:text-white">{order.Sender}</td>
-                                    <td className="p-4 text-sm text-slate-800 dark:text-white">{order.Receiver}</td>
-                                    <td className="p-4 text-sm text-slate-800 dark:text-white">{order.Remarks}</td>
-                                    <td className="p-4 text-sm text-left text-slate-800 dark:text-white">{order.TotalQuantity}</td>
-                                    <td className="p-4 text-sm text-left text-slate-800 dark:text-white">{order.TotalValue}</td>
+                                    <td className="p-4 text-sm font-medium text-blue-500">{order.transfer_date}</td>
+                                    <td className="p-4 text-sm text-slate-800 dark:text-white">{order.sender}</td>
+                                    <td className="p-4 text-sm text-slate-800 dark:text-white">{order.receiver}</td>
+                                    <td className="p-4 text-sm text-slate-800 dark:text-white">{order.remarks}</td>
+                                    <td className="p-4 text-sm text-left text-slate-800 dark:text-white">{order.total_quantity}</td>
+                                    <td className="p-4 text-sm text-left text-slate-800 dark:text-white">{order.total_value}</td>
                                     <td className="p-4 text-center">
-                                        <span className={`font-medium text-xs px-3 py-1 rounded-full ${getStatusColor(order.Status)}`}>
-                                            {order.Status}
+                                        <span className={`font-medium text-xs px-3 py-1 rounded-full ${getStatusColor(order.status)}`}>
+                                            {order.status}
                                         </span>
                                     </td>
                                     <td className="p-4 flex items-center justify-center gap-3"> 

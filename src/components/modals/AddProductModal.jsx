@@ -184,7 +184,7 @@ function AddProductModal({ isOpen, onClose }) {
             ...formValues,pricing: supplierPrices, vip_pricing: VIPPrices 
         }
         console.log("Submitting new stock:", newStocks);
-        /* try {
+        try {
             const res = await fetch(
                 "/api/stock",
                 {
@@ -200,7 +200,7 @@ function AddProductModal({ isOpen, onClose }) {
         } catch (error) {
             console.error("Failed to save received items", error);
         }
-        handleClose(); */
+        handleClose();
     };
     const handleClose = () => {
         resetForm();
@@ -392,21 +392,16 @@ function AddProductModal({ isOpen, onClose }) {
                                 </tbody>
                             </table>
                         </div>
+                    </form>
 
-                        <div className="pt-4 flex justify-end space-x-3">
-                            <button type="button" onClick={handleClose} className="cursor-pointer px-5 py-2 text-sm font-medium rounded-md text-slate-700 dark:text-slate-300 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors">Cancel</button>
-                            <button
+                    <div className="p-5 flex justify-end space-x-3 border-t border-slate-300 dark:border-slate-700 flex-shrink-0">
+                        <button type="button" onClick={handleClose} className="cursor-pointer px-5 py-2 text-sm font-medium rounded-md text-slate-700 dark:text-slate-300 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors">Cancel</button>
+                        <button
                                 onClick={() => setIsImportModalOpen(true)}
                                 className="px-4 py-2 text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 transition-colors shadow-md"
                             >
                             Mutiple Add
                             </button>
-                             <button type="submit" className="px-6 py-2 text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 shadow-md cursor-pointer">Save Product</button>
-                        </div>
-                    </form>
-
-                    <div className="p-5 flex justify-end space-x-3 border-t border-slate-300 dark:border-slate-700 flex-shrink-0">
-                        <button type="button" onClick={handleClose} className="cursor-pointer px-5 py-2 text-sm font-medium rounded-md text-slate-700 dark:text-slate-300 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors">Cancel</button>
                         <button type="submit" form = "addProductForm" className="px-6 py-2 text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 shadow-md cursor-pointer">Save Product</button>
                     </div>
                 </div>

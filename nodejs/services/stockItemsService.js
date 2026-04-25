@@ -67,6 +67,25 @@ export const getAllStockItems = async () => {
   const { rows } = await pool.query(query);
   return rows;
 };
+
+export const getWarehouseItems = async (warehouseId) => {
+    const query = `
+      SELECT
+        id,
+        item_name,
+        quantity,
+        suggested_retail_price,
+        item_code,
+        item_type,
+        brand,
+        remarks
+      FROM items
+      WHERE whouse_id = $1
+    `;
+
+    const { rows } = await pool.query(query, [warehouseId]);
+    return rows;
+};
 /* ============================================================
    CREATE STOCK ITEM
 ============================================================ */

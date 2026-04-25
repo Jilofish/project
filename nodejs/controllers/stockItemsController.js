@@ -95,3 +95,13 @@ export const handleUploadExcel = async (req, res) => {
     res.status(500).json({ error: err.message || "Failed to process Excel" });
   }
 };
+export const getWarehouseItems = async (req, res) => {
+    try {
+        const warehouseId = req.query.warehouse_id;
+        const items = await stockItemsService.getWarehouseItems(warehouseId);
+        res.json(items);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: "Failed to fetch warehouse items" });
+    }
+};
